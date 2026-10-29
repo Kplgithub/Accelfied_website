@@ -23,11 +23,19 @@ npm run dev                   # http://localhost:3000
 | `/agencies` | All companies with name search and filters |
 | `/agencies/[service]` | Companies for one service, with location, budget, rate, size, industry, rating and verified filters |
 | `/profile/[slug]` | Company profile: overview, service focus, portfolio, rating breakdown and reviews |
-| `/get-a-quote` | Project brief form, optionally addressed to one company (`?company=`) |
-| `/write-a-review` | Find a company, then a structured review form |
-| `/get-listed` | Company application form |
+| `/get-a-quote` | Project brief form, optionally addressed to one company (`?company=`). Needs an account |
+| `/write-a-review` | Find a company, then a structured review form. Needs an account |
+| `/get-listed` | Company application form. Needs an account; one company per account |
+| `/join`, `/login` | Account type choice (hire, or get listed), sign up and log in with "stay logged in" |
+| `/forgot-password`, `/reset-password` | Email link to set a new password |
+| `/dashboard` | Overview. Companies see an onboarding checklist, rating and requests; clients see their briefs |
+| `/dashboard/company/*` | Company profile editing, project requests, client reviews with a review link, portfolio |
+| `/dashboard/requests`, `/dashboard/reviews` | Briefs and reviews this account sent |
+| `/dashboard/settings` | Name and password |
 | `/how-reviews-work` | How reviews are checked and scored |
 | `/api/revalidate` | Called by the API after moderation so changes show right away |
+
+The session lives in an httpOnly `af_session` cookie set by server actions. Pages read it inside `<Suspense>` so the rest of each page still prerenders.
 
 ## Rules this codebase follows
 
