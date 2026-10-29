@@ -13,8 +13,8 @@ export const metadata: Metadata = {
 
 export default function DashboardLayout({ children }: LayoutProps<'/dashboard'>) {
   return (
-    <Container className="grid gap-8 py-8 lg:grid-cols-[220px_1fr] lg:gap-12 lg:py-12">
-      <aside className="lg:sticky lg:top-28 lg:self-start">
+    <Container className="grid grid-cols-1 gap-8 py-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-12 lg:py-12">
+      <aside className="min-w-0 lg:sticky lg:top-28 lg:self-start">
         <Suspense fallback={<div className="h-10 lg:h-80" />}>
           <Nav />
         </Suspense>

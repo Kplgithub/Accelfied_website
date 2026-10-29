@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useRef } from 'react';
 
 export interface NavGroup {
   title: string;
@@ -10,8 +11,17 @@ export interface NavGroup {
 
 export function DashboardNav({ groups }: { groups: NavGroup[] }) {
   const pathname = usePathname();
+  const scroller = useRef<HTMLElement>(null);
+  // On phones the links are one scrolling row; bring the current page into view.
+  useEffect(() => {
+    const nav = scroller.current;
+    const active = nav?.querySelector<HTMLElement>('[aria-current="page"]');
+    if (nav && active && nav.scrollWidth > nav.clientWidth) {
+      nav.scrollTo({ left: active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2 });
+    }
+  }, [pathname]);
   return (
-    <nav aria-label="Dashboard" className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:overflow-visible lg:px-0">
+    <nav ref={scroller} aria-label="Dashboard" className="relative -mx-4 overflow-x-auto px-4 lg:mx-0 lg:overflow-visible lg:px-0">
       <div className="flex gap-6 lg:flex-col lg:gap-7">
         {groups.map((group) => (
           <div key={group.title} className="shrink-0">
