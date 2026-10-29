@@ -14,7 +14,7 @@ import { formFields } from './use-form-fields';
 
 const MAX_SERVICES = 5;
 
-export function ListingForm({ groups }: { groups: ServiceGroup[] }) {
+export function ListingForm({ groups, account }: { groups: ServiceGroup[]; account: { email: string } }) {
   const [state, action] = useActionState(applyForListing, initialFormState);
   const { value, error } = formFields(state);
   const [rows, setRows] = useState(() => {
@@ -30,9 +30,7 @@ export function ListingForm({ groups }: { groups: ServiceGroup[] }) {
   if (state.status === 'success') {
     return (
       <SuccessPanel title="Application received" message={state.message}>
-        <ButtonLink href="/" variant="secondary">
-          Back to home
-        </ButtonLink>
+        <ButtonLink href="/dashboard/company">Go to your company dashboard</ButtonLink>
       </SuccessPanel>
     );
   }
@@ -237,17 +235,17 @@ export function ListingForm({ groups }: { groups: ServiceGroup[] }) {
       </fieldset>
 
       <FormSection title="Contact" description="Where client enquiries and our review team reach you. Never shown publicly.">
+        <div className="sm:col-span-2 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-paper px-4 py-3 text-sm">
+          <span className="text-ink-soft">
+            Listing managed by <span className="font-medium text-ink">{account.email}</span>
+          </span>
+        </div>
+
         <Field label="Enquiries email" name="contactEmail" error={error('contactEmail')}>
-          {(ids) => <Input id={ids.id} type="email" name="contactEmail" defaultValue={value('contactEmail')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
+          {(ids) => <Input id={ids.id} type="email" name="contactEmail" defaultValue={value('contactEmail') || account.email} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
         </Field>
         <Field label="Phone" name="contactPhone" optional error={error('contactPhone')}>
           {(ids) => <Input id={ids.id} type="tel" name="contactPhone" defaultValue={value('contactPhone')} aria-describedby={ids.describedBy} />}
-        </Field>
-        <Field label="Your name" name="applicant.name" error={error('applicant.name')}>
-          {(ids) => <Input id={ids.id} name="applicant.name" autoComplete="name" defaultValue={value('applicant.name')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
-        </Field>
-        <Field label="Your email" name="applicant.email" error={error('applicant.email')}>
-          {(ids) => <Input id={ids.id} type="email" name="applicant.email" autoComplete="email" defaultValue={value('applicant.email')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
         </Field>
         <Field label="Your role" name="applicant.jobTitle" optional error={error('applicant.jobTitle')}>
           {(ids) => <Input id={ids.id} name="applicant.jobTitle" autoComplete="organization-title" defaultValue={value('applicant.jobTitle')} aria-describedby={ids.describedBy} />}

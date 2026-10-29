@@ -1,8 +1,13 @@
 import { BadgeCheck, MessageSquareQuote, Search } from 'lucide-react';
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
+import { SignInPrompt } from '@/components/auth/sign-in-prompt';
 import { ListingForm } from '@/components/forms/listing-form';
+import { ButtonLink } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
+import { getMyCompany } from '@/lib/account-data';
 import { getServiceGroups } from '@/lib/data';
+import { getCurrentUser } from '@/lib/session';
 
 export const metadata: Metadata = {
   title: 'List your company',
@@ -10,8 +15,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/get-listed' },
 };
 
-export default async function GetListedPage() {
-  const groups = await getServiceGroups();
+export default function GetListedPage() {
   return (
     <>
       <section className="grain border-b border-line">
@@ -43,10 +47,43 @@ export default async function GetListedPage() {
         </Container>
       </section>
       <Container className="max-w-5xl py-12 lg:py-16">
-        <div className="rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-[var(--shadow-card)] sm:p-10">
-          <ListingForm groups={groups} />
-        </div>
+        <Suspense fallback={<div className="h-[640px] animate-pulse rounded-[var(--radius-card)] bg-surface" />}>
+          <ListingContent />
+        </Suspense>
       </Container>
     </>
+  );
+}
+
+async function ListingContent() {
+  const user = await getCurrentUser();
+  if (!user) {
+    return (
+      <SignInPrompt
+        title="Create an account to list your company"
+        text="Your account manages the listing: edit the profile, see project requests and invite clients to review you."
+        returnTo="/get-listed"
+        joinAs="provider"
+      />
+    );
+  }
+
+  const [groups, existing] = await Promise.all([getServiceGroups(), getMyCompany('/get-listed')]);
+  if (existing && existing.status !== 'rejected') {
+    return (
+      <div className="rounded-[var(--radius-card)] border border-line bg-surface p-8 text-center shadow-[var(--shadow-card)] sm:p-12">
+        <h2 className="font-display text-3xl font-semibold text-ink">You already manage {existing.name}</h2>
+        <p className="mx-auto mt-3 max-w-md text-ink-soft">Each account manages one company. Update its profile from your dashboard.</p>
+        <div className="mt-8">
+          <ButtonLink href="/dashboard/company">Open company dashboard</ButtonLink>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-[var(--shadow-card)] sm:p-10">
+      <ListingForm groups={groups} account={{ email: user.email }} />
+    </div>
   );
 }

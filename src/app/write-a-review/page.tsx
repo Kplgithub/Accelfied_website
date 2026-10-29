@@ -6,7 +6,9 @@ import { CompanyLogo } from '@/components/company/company-logo';
 import { ReviewForm } from '@/components/forms/review-form';
 import { Container } from '@/components/ui/container';
 import { EmptyState } from '@/components/ui/empty-state';
+import { SignInPrompt } from '@/components/auth/sign-in-prompt';
 import { getCompanies, getCompany, getServiceGroups } from '@/lib/data';
+import { getCurrentUser } from '@/lib/session';
 
 export const metadata: Metadata = {
   title: 'Write a review',
@@ -34,7 +36,7 @@ async function ReviewContent({ searchParams }: Pick<PageProps<'/write-a-review'>
     return <CompanyPicker find={find} />;
   }
 
-  const groups = await getServiceGroups();
+  const [groups, user] = await Promise.all([getServiceGroups(), getCurrentUser()]);
   return (
     <>
       <header className="mb-10 flex items-center gap-5">
@@ -46,12 +48,21 @@ async function ReviewContent({ searchParams }: Pick<PageProps<'/write-a-review'>
           </h1>
         </div>
       </header>
-      <div className="rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-[var(--shadow-card)] sm:p-10">
-        <ReviewForm
-          company={{ slug: company.slug, name: company.name, services: company.services.map(({ slug, name }) => ({ slug, name })) }}
-          groups={groups}
+      {user ? (
+        <div className="rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-[var(--shadow-card)] sm:p-10">
+          <ReviewForm
+            company={{ slug: company.slug, name: company.name, services: company.services.map(({ slug, name }) => ({ slug, name })) }}
+            groups={groups}
+            account={{ name: `${user.firstName} ${user.lastName}`, email: user.email }}
+          />
+        </div>
+      ) : (
+        <SignInPrompt
+          title="Log in to write your review"
+          text="Reviews are tied to a real account so clients can trust them. Your email is never shown."
+          returnTo={`/write-a-review?company=${company.slug}`}
         />
-      </div>
+      )}
     </>
   );
 }

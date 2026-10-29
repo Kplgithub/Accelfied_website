@@ -102,3 +102,50 @@ export interface CountryFacet {
   country: string;
   count: number;
 }
+
+export type AccountType = 'client' | 'provider';
+
+export interface Account {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  accountType: AccountType;
+  createdAt: string;
+}
+
+export type CompanyStatus = 'pending' | 'published' | 'rejected' | 'suspended';
+
+export interface OwnedCompany extends CompanyProfile {
+  status: CompanyStatus;
+  contact: { email: string; phone: string };
+  createdAt: string;
+}
+
+export type ReviewStatus = 'pending' | 'published' | 'rejected';
+
+export interface OwnedReview extends Review {
+  status: ReviewStatus;
+  submittedAt: string;
+}
+
+export interface AuthoredReview extends OwnedReview {
+  company: { slug: string; name: string; published: boolean } | null;
+}
+
+export interface Lead {
+  id: string;
+  serviceSlug: string;
+  serviceName: string;
+  budget: string;
+  timeline: string;
+  description: string;
+  preferredLocation: string;
+  contact: { name: string; email: string; phone: string; companyName: string };
+  status: string;
+  createdAt: string;
+}
+
+export interface SentLead extends Lead {
+  company: { slug: string; name: string } | null;
+}

@@ -14,6 +14,7 @@ import { formFields } from './use-form-fields';
 interface Props {
   company: { slug: string; name: string; services: Array<{ slug: string; name: string }> };
   groups: ServiceGroup[];
+  account: { name: string; email: string };
 }
 
 const STORY = [
@@ -31,7 +32,7 @@ const SCORES = [
   { name: 'ratings.willingToRefer', label: 'Likely to refer them' },
 ];
 
-export function ReviewForm({ company, groups }: Props) {
+export function ReviewForm({ company, groups, account }: Props) {
   const [state, action] = useActionState(submitReview, initialFormState);
   const { value, error, checked } = formFields(state);
   const [ongoing, setOngoing] = useState(checked('project.ongoing'));
@@ -133,12 +134,14 @@ export function ReviewForm({ company, groups }: Props) {
         ))}
       </FormSection>
 
-      <FormSection title="About you" description="We use your email only to confirm the review is genuine. It is never shown.">
+      <FormSection title="About you" description="We use your account email only to confirm the review is genuine. It is never shown.">
+        <div className="sm:col-span-2 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-paper px-4 py-3 text-sm">
+          <span className="text-ink-soft">
+            Signed in as <span className="font-medium text-ink">{account.email}</span>
+          </span>
+        </div>
         <Field label="Full name" name="reviewer.name" error={error('reviewer.name')}>
-          {(ids) => <Input id={ids.id} name="reviewer.name" autoComplete="name" defaultValue={value('reviewer.name')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
-        </Field>
-        <Field label="Work email" name="reviewer.email" error={error('reviewer.email')}>
-          {(ids) => <Input id={ids.id} type="email" name="reviewer.email" autoComplete="email" defaultValue={value('reviewer.email')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
+          {(ids) => <Input id={ids.id} name="reviewer.name" autoComplete="name" defaultValue={value('reviewer.name') || account.name} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
         </Field>
         <Field label="Job title" name="reviewer.jobTitle" error={error('reviewer.jobTitle')}>
           {(ids) => <Input id={ids.id} name="reviewer.jobTitle" autoComplete="organization-title" defaultValue={value('reviewer.jobTitle')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}

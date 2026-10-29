@@ -5,12 +5,21 @@ import { useFormStatus } from 'react-dom';
 import type { FormState } from '@/lib/form-state';
 import { Button } from '../ui/button';
 
-export function SubmitButton({ children }: { children: React.ReactNode }) {
+export function SubmitButton({
+  children,
+  pendingLabel = 'Sending…',
+  block = false,
+}: {
+  children: React.ReactNode;
+  pendingLabel?: string;
+  /** Full width at every size, for narrow forms. */
+  block?: boolean;
+}) {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" size="lg" disabled={pending} className="w-full sm:w-auto">
+    <Button type="submit" size="lg" disabled={pending} className={block ? 'w-full' : 'w-full sm:w-auto'}>
       {pending && <span className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />}
-      {pending ? 'Sending…' : children}
+      {pending ? pendingLabel : children}
     </Button>
   );
 }
@@ -31,6 +40,17 @@ export function FormAlert({ state }: { state: FormState }) {
   if (state.status !== 'error' || !state.message) return null;
   return (
     <div role="alert" className="rounded-xl border border-danger/30 bg-danger-tint px-4 py-3 text-[15px] font-medium text-danger">
+      {state.message}
+    </div>
+  );
+}
+
+/** Inline confirmation for forms that stay on screen after saving. */
+export function FormSaved({ state }: { state: FormState }) {
+  if (state.status !== 'success' || !state.message) return null;
+  return (
+    <div role="status" className="flex items-center gap-2 rounded-xl border border-brand/25 bg-brand-tint px-4 py-3 text-[15px] font-medium text-brand">
+      <CheckCircle2 className="size-4 shrink-0" aria-hidden="true" />
       {state.message}
     </div>
   );
