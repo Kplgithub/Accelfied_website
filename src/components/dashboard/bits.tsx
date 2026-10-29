@@ -36,6 +36,7 @@ export function StatTile({ label, value, note }: { label: string; value: ReactNo
 const STATUS_STYLES: Record<string, { label: string; className: string }> = {
   pending: { label: 'In review', className: 'bg-saffron-tint text-saffron-ink' },
   published: { label: 'Live', className: 'bg-accent-tint text-accent' },
+  approved: { label: 'Approved', className: 'bg-accent-tint text-accent' },
   rejected: { label: 'Not approved', className: 'bg-danger-tint text-danger' },
   suspended: { label: 'Paused', className: 'bg-paper-deep text-ink-soft' },
   new: { label: 'Sent', className: 'bg-saffron-tint text-saffron-ink' },
@@ -43,7 +44,15 @@ const STATUS_STYLES: Record<string, { label: string; className: string }> = {
   closed: { label: 'Closed', className: 'bg-paper-deep text-ink-soft' },
 };
 
-export function StatusPill({ status }: { status: CompanyStatus | ReviewStatus | string }) {
-  const style = STATUS_STYLES[status] ?? { label: status, className: 'bg-paper-deep text-ink-soft' };
+/** Pending means something different to each kind of record. */
+const PENDING_LABELS = {
+  company: 'Verifying your details',
+  review: 'Waiting to be published',
+  claim: 'Waiting for verification',
+} as const;
+
+export function StatusPill({ status, kind }: { status: CompanyStatus | ReviewStatus | string; kind?: keyof typeof PENDING_LABELS }) {
+  const base = STATUS_STYLES[status] ?? { label: status, className: 'bg-paper-deep text-ink-soft' };
+  const style = status === 'pending' && kind ? { ...base, label: PENDING_LABELS[kind] } : base;
   return <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${style.className}`}>{style.label}</span>;
 }

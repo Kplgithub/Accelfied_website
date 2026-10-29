@@ -37,7 +37,7 @@ export async function submit(
       const errors: Record<string, string> = {};
       for (const issue of error.issues) if (!errors[issue.path]) errors[issue.path] = friendly(issue.message);
       const message =
-        error.status === 400
+        error.status === 400 && error.issues.length
           ? 'Some fields need a second look.'
           : error.status === 429
             ? 'You have sent a few of these already. Please try again a little later.'

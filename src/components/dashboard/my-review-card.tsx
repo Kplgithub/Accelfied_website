@@ -31,7 +31,7 @@ export function MyReviewCard({ review }: { review: OwnedReview | AuthoredReview 
             {review.project.serviceName}
           </p>
         </div>
-        <StatusPill status={review.status} />
+        <StatusPill status={review.status} kind="review" />
       </div>
       <div className="mt-3 flex items-center gap-2">
         <Stars value={review.ratings.overall} />

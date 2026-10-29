@@ -78,11 +78,11 @@ export async function getCompanyReviews(
   return apiGet<Page<Review>>(`/v1/companies/${encodeURIComponent(slug)}/reviews`, { ...query, limit: 10 });
 }
 
-export async function getFeaturedCompanies(): Promise<CompanySummary[]> {
+export async function getFeaturedCompanies(limit = 6): Promise<CompanySummary[]> {
   'use cache';
   cacheLife({ stale: 300, revalidate: 600, expire: 86_400 });
   cacheTag('companies');
-  const page = await apiGet<Page<CompanySummary>>('/v1/companies', { sort: 'recommended', minRating: 4, limit: 6 });
+  const page = await apiGet<Page<CompanySummary>>('/v1/companies', { sort: 'recommended', minRating: 4, limit });
   // Only companies with real reviews are featured.
   return page.items.filter((company) => company.rating.count > 0);
 }
@@ -99,5 +99,16 @@ export async function getSitemapCompanies(): Promise<Array<{ slug: string; updat
   cacheLife('hours');
   cacheTag('companies');
   const { items } = await apiGet<{ items: Array<{ slug: string; updatedAt: string }> }>('/v1/companies/sitemap');
+  return items;
+}
+
+export type RecentReview = Review & { company: { slug: string; name: string } };
+
+/** Newest published reviews across the directory. */
+export async function getRecentReviews(limit = 6): Promise<RecentReview[]> {
+  'use cache';
+  cacheLife({ stale: 120, revalidate: 300, expire: 86_400 });
+  cacheTag('reviews');
+  const { items } = await apiGet<{ items: RecentReview[] }>('/v1/reviews/recent', { limit });
   return items;
 }

@@ -40,7 +40,7 @@ export function ReviewForm({ company, groups, account }: Props) {
 
   if (state.status === 'success') {
     return (
-      <SuccessPanel title="Review received" message={state.message}>
+      <SuccessPanel title="Waiting for review to be published" message={state.message} steps={['Submitted', 'Our team is verifying', 'Published on the profile']}>
         <ButtonLink href={`/profile/${company.slug}`} variant="secondary">
           Back to {company.name}
         </ButtonLink>

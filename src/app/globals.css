@@ -2,7 +2,7 @@
 
 /*
  * Accelfied design tokens.
- * Deep evergreen for trust, saffron for ratings and highlights, on warm paper.
+ * Brick red for main actions, deep teal for text and dark sections, blue teal for links and trust marks.
  * Components use these semantic names only, never raw hex values.
  */
 :root {

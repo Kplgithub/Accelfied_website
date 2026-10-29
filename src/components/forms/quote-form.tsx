@@ -14,11 +14,16 @@ interface Props {
   groups: ServiceGroup[];
   company?: { slug: string; name: string; services: Array<{ slug: string }> };
   account: { name: string; email: string };
+  /** Answers carried over from the step-by-step brief. */
+  initial?: Partial<Record<'serviceSlug' | 'budget' | 'timeline' | 'preferredLocation' | 'description', string>>;
 }
 
-export function QuoteForm({ groups, company, account }: Props) {
+export function QuoteForm({ groups, company, account, initial = {} }: Props) {
   const [state, action] = useActionState(requestQuote, initialFormState);
-  const { value, error } = formFields(state);
+  const fields = formFields(state);
+  const { error } = fields;
+  // After a failed submit the echoed values win; before that, the carried-over brief.
+  const value = (name: string) => fields.value(name) || (state.status === 'idle' ? (initial[name as keyof typeof initial] ?? '') : '');
 
   if (state.status === 'success') {
     return (

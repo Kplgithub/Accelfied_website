@@ -1,7 +1,7 @@
 import 'server-only';
 import { apiPrivateGet } from './api';
 import { requireUser } from './session';
-import type { AuthoredReview, OwnedCompany, OwnedReview, Page, SentLead, Lead } from './types';
+import type { AuthoredReview, CompanyClaim, OwnedCompany, OwnedReview, Page, SentLead, Lead } from './types';
 
 /**
  * Reads for the signed-in visitor's dashboard. Each call checks the session
@@ -30,4 +30,9 @@ export async function getMyLeads(returnTo: string, page = 1): Promise<Page<SentL
 export async function getMyReviews(returnTo: string, page = 1): Promise<Page<AuthoredReview>> {
   const { token } = await requireUser(returnTo);
   return apiPrivateGet<Page<AuthoredReview>>('/v1/me/reviews', token, { page, limit: 10 });
+}
+
+export async function getMyClaims(returnTo: string): Promise<CompanyClaim[]> {
+  const { token } = await requireUser(returnTo);
+  return (await apiPrivateGet<{ claims: CompanyClaim[] }>('/v1/me/claims', token)).claims;
 }

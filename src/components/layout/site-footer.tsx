@@ -9,6 +9,7 @@ const COLUMNS = [
     links: [
       { href: '/services', label: 'Browse services' },
       { href: '/agencies', label: 'All companies' },
+      { href: '/get-matched', label: 'Get matched' },
       { href: '/get-a-quote', label: 'Get a quote' },
       { href: '/write-a-review', label: 'Write a review' },
     ],
@@ -16,8 +17,18 @@ const COLUMNS = [
   {
     title: 'For companies',
     links: [
-      { href: '/get-listed', label: 'Get listed' },
+      { href: '/join?as=provider', label: 'List your company' },
+      { href: '/agencies', label: 'Claim your company' },
       { href: '/how-reviews-work', label: 'How reviews work' },
+      { href: '/dashboard', label: 'Company dashboard' },
+    ],
+  },
+  {
+    title: 'Account',
+    links: [
+      { href: '/join', label: 'Join' },
+      { href: '/login', label: 'Log in' },
+      { href: '/forgot-password', label: 'Forgot password' },
     ],
   },
   {
@@ -34,12 +45,18 @@ const COLUMNS = [
 export function SiteFooter() {
   return (
     <footer className="grain mt-auto bg-night text-paper/80">
-      <Container className="grid gap-12 py-16 md:grid-cols-[1.4fr_repeat(3,1fr)]">
+      <Container className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
         <div className="max-w-xs">
           <Logo tone="light" />
           <p className="mt-5 text-[15px] leading-relaxed text-paper/65">
             Find the right agency for your next project, judged by what their clients actually say.
           </p>
+          <Link
+            href="/get-matched"
+            className="mt-6 inline-flex h-11 items-center rounded-full bg-brand px-5 text-[15px] font-medium text-white transition-colors hover:bg-brand-strong"
+          >
+            Get matched with companies
+          </Link>
         </div>
         {COLUMNS.map((column) => (
           <div key={column.title}>

@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import { AuthShell } from '@/components/auth/auth-shell';
 import { JoinForm } from '@/components/auth/join-form';
+import { OAuthNotice, SocialSignIn } from '@/components/auth/social-sign-in';
 import { getCurrentUser, safeNext } from '@/lib/session';
 import type { AccountType } from '@/lib/types';
 
@@ -28,6 +29,8 @@ const ROLES: Array<{ value: AccountType; icon: typeof Search; title: string; tex
     text: 'Create a free profile, collect reviews from past clients and receive project requests.',
   },
 ];
+
+const one = (value: string | string[] | undefined) => (typeof value === 'string' ? value : undefined);
 
 export default function JoinPage({ searchParams }: PageProps<'/join'>) {
   return (
@@ -103,6 +106,8 @@ async function JoinContent({ searchParams }: Pick<PageProps<'/join'>, 'searchPar
         </Link>
       }
     >
+      <OAuthNotice reason={one(params.oauth)} provider={one(params.provider)} />
+      <SocialSignIn from="join" accountType={role} next={next} />
       <JoinForm accountType={role} next={next} />
       <p className="mt-5 text-center text-sm lg:hidden">
         <Link href={withNext('/join')} className="font-medium text-accent underline-offset-4 hover:underline">

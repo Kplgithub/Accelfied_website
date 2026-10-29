@@ -3,9 +3,10 @@
 import { refresh } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { ApiError, apiSend } from '@/lib/api';
+import { ApiError, apiGet, apiSend } from '@/lib/api';
 import type { FormState } from '@/lib/form-state';
-import { safeNext, SESSION_COOKIE } from '@/lib/session';
+import { safeNext, SESSION_COOKIE, sessionCookieOptions } from '@/lib/session';
+import { SITE_URL } from '@/lib/site';
 import { clientIp, echo, friendly, text } from '@/lib/submit';
 import type { Account } from '@/lib/types';
 
@@ -15,17 +16,9 @@ interface IssuedSession {
   user: Account;
 }
 
-const isProduction = process.env.NODE_ENV === 'production';
-
 async function startSession(session: IssuedSession, remember: boolean) {
-  (await cookies()).set(SESSION_COOKIE, session.token, {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: 'lax',
-    path: '/',
-    // Without "stay logged in" the cookie ends with the browser session.
-    ...(remember ? { expires: new Date(session.expiresAt) } : {}),
-  });
+  // Without "stay logged in" the cookie ends with the browser session.
+  (await cookies()).set(SESSION_COOKIE, session.token, sessionCookieOptions(remember ? session.expiresAt : undefined));
 }
 
 function failure(error: unknown, form: FormData, fallback: string, omit: string[] = []): FormState {
@@ -161,4 +154,31 @@ export async function changePassword(_prev: FormState, form: FormData): Promise<
     return failure(error, form, 'Password change failed', ['currentPassword', 'password', 'confirmPassword']);
   }
   return { status: 'success', message: 'Password changed. Other devices have been logged out.', nonce: Date.now() };
+}
+
+const OAUTH_PROVIDERS = ['google', 'linkedin'] as const;
+
+/** Sends the visitor to Google or LinkedIn. The provider returns them to /auth/callback/<provider>. */
+export async function startOAuth(form: FormData): Promise<void> {
+  const provider = OAUTH_PROVIDERS.find((item) => item === text(form, 'provider'));
+  const next = safeNext(text(form, 'next'), '');
+  const back = text(form, 'from') === 'join' ? '/join' : '/login';
+  if (!provider) redirect(back);
+
+  let url: string;
+  try {
+    ({ url } = await apiGet<{ url: string }>(`/v1/auth/oauth/${provider}/start`, {
+      redirectUri: `${SITE_URL}/auth/callback/${provider}`,
+      accountType: text(form, 'accountType') === 'provider' ? 'provider' : 'client',
+      next,
+    }));
+  } catch (error) {
+    const reason = error instanceof ApiError && error.code === 'PROVIDER_DISABLED' ? 'unavailable' : 'failed';
+    if (reason === 'failed') console.error('OAuth start failed', error);
+    const params = new URLSearchParams({ oauth: reason, provider });
+    if (next) params.set('next', next);
+    if (back === '/join' && text(form, 'accountType')) params.set('as', text(form, 'accountType'));
+    redirect(`${back}?${params.toString()}`);
+  }
+  redirect(url);
 }

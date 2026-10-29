@@ -1,4 +1,4 @@
-import { Calendar, DollarSign, ExternalLink, Globe, MapPin, PenLine, Timer, Users } from 'lucide-react';
+import { Building2, Calendar, DollarSign, ExternalLink, Globe, MapPin, PenLine, Timer, Users } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -65,7 +65,7 @@ async function Profile({ params, searchParams }: PageProps<'/profile/[slug]'>) {
         <div className="min-w-0 space-y-16">
           <Overview company={company} />
           {company.portfolio.length > 0 && <Portfolio company={company} />}
-          <section id="reviews" className="scroll-mt-28">
+          <section id="reviews" className="scroll-mt-28 lg:scroll-mt-36">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <h2 className="font-display text-3xl font-semibold text-ink">Client reviews</h2>
               <Link href={`/write-a-review?company=${company.slug}`} className="inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:underline">
@@ -92,8 +92,9 @@ async function Profile({ params, searchParams }: PageProps<'/profile/[slug]'>) {
             )}
           </section>
         </div>
-        <aside className="lg:sticky lg:top-28 lg:self-start">
+        <aside className="space-y-4 lg:sticky lg:top-32 lg:self-start">
           <QuoteCard company={company} />
+          <ClaimCard company={company} />
         </aside>
       </Container>
     </>
@@ -167,7 +168,7 @@ function Overview({ company }: { company: CompanyProfile }) {
   ];
   return (
     <>
-      <section id="overview" className="scroll-mt-28">
+      <section id="overview" className="scroll-mt-28 lg:scroll-mt-36">
         <h2 className="font-display text-3xl font-semibold text-ink">Overview</h2>
         <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {facts.map(({ icon: Icon, label, value }) => (
@@ -209,7 +210,7 @@ function Overview({ company }: { company: CompanyProfile }) {
         </div>
       </section>
 
-      <section id="services" className="scroll-mt-28">
+      <section id="services" className="scroll-mt-28 lg:scroll-mt-36">
         <h2 className="font-display text-3xl font-semibold text-ink">Service focus</h2>
         <ul className="mt-6 space-y-4">
           {company.services.map((service) => (
@@ -233,7 +234,7 @@ function Overview({ company }: { company: CompanyProfile }) {
 
 function Portfolio({ company }: { company: CompanyProfile }) {
   return (
-    <section id="portfolio" className="scroll-mt-28">
+    <section id="portfolio" className="scroll-mt-28 lg:scroll-mt-36">
       <h2 className="font-display text-3xl font-semibold text-ink">Portfolio</h2>
       <ul className="mt-6 grid gap-5 sm:grid-cols-2">
         {company.portfolio.map((item) => (
@@ -273,6 +274,21 @@ function QuoteCard({ company }: { company: CompanyProfile }) {
           {hostname(company.website)}
         </a>
       </p>
+    </div>
+  );
+}
+
+function ClaimCard({ company }: { company: CompanyProfile }) {
+  return (
+    <div className="rounded-[var(--radius-card)] border border-dashed border-line-strong bg-surface p-5">
+      <p className="flex items-center gap-2 font-medium text-ink">
+        <Building2 className="size-4 text-accent" aria-hidden="true" />
+        Is this your company?
+      </p>
+      <p className="mt-1.5 text-sm text-ink-soft">Claim it with your work email at {hostname(company.website)}. Our team verifies every claim.</p>
+      <Link href={`/claim/${company.slug}`} className="mt-3 inline-flex text-sm font-medium text-accent underline-offset-4 hover:underline">
+        Claim this company
+      </Link>
     </div>
   );
 }

@@ -149,3 +149,14 @@ export interface Lead {
 export interface SentLead extends Lead {
   company: { slug: string; name: string } | null;
 }
+
+export interface CompanyClaim {
+  id: string;
+  status: 'pending' | 'approved' | 'rejected';
+  workEmail: string;
+  jobTitle: string;
+  reviewNote: string;
+  createdAt: string;
+  decidedAt: string | null;
+  company: { slug: string; name: string } | null;
+}

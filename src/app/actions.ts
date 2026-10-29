@@ -64,7 +64,7 @@ export async function submitReview(_prev: FormState, form: FormData): Promise<Fo
     '/v1/reviews',
     payload,
     form,
-    'Thank you. Our team checks every review before it goes live, usually within two working days.',
+    'Thank you. Our team verifies every review before it is published, usually within two working days. You can follow its status in your dashboard.',
   );
 }
 
@@ -101,6 +101,23 @@ export async function applyForListing(_prev: FormState, form: FormData): Promise
     '/v1/companies/applications',
     payload,
     form,
-    'Application received. We review new companies within two working days and will email you when your profile is live.',
+    'Thanks, your company is in. Our team is verifying the details, usually within two working days. Once approved, your profile goes live with the Verified badge.',
+  );
+}
+
+export async function submitClaim(_prev: FormState, form: FormData): Promise<FormState> {
+  const slug = text(form, 'companySlug');
+  const payload = {
+    workEmail: text(form, 'workEmail'),
+    jobTitle: text(form, 'jobTitle'),
+    phone: text(form, 'phone'),
+    message: text(form, 'message'),
+    confirm: form.get('confirm') === 'on' ? true : undefined,
+  };
+  return submit(
+    `/v1/companies/${encodeURIComponent(slug)}/claims`,
+    payload,
+    form,
+    'Our team is verifying your request, usually within two working days. Once approved, the listing moves to your account and you can manage it from your dashboard.',
   );
 }

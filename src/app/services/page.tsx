@@ -35,7 +35,7 @@ export default async function ServicesPage() {
       </section>
       <Container className="divide-y divide-line py-6">
         {groups.map((group) => (
-          <section key={group.slug} id={group.slug} className="scroll-mt-24 py-12 lg:grid lg:grid-cols-[280px_1fr] lg:gap-12">
+          <section key={group.slug} id={group.slug} className="scroll-mt-24 py-12 lg:scroll-mt-32 lg:grid lg:grid-cols-[280px_1fr] lg:gap-12">
             <div className="flex items-center gap-3 lg:items-start">
               <span className="inline-flex size-12 items-center justify-center rounded-xl bg-brand text-paper">
                 <GroupIcon slug={group.slug} className="size-6" />
