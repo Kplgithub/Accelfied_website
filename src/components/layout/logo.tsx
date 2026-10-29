@@ -10,7 +10,7 @@ export function Logo({ tone = 'dark' }: { tone?: 'dark' | 'light' }) {
         <path
           d="M9.5 26.5L18 9.5l8.5 17"
           fill="none"
-          stroke="#f7f4ee"
+          stroke="#ffffff"
           strokeWidth="3.2"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -18,7 +18,7 @@ export function Logo({ tone = 'dark' }: { tone?: 'dark' | 'light' }) {
         <path
           d="M13 21.2c3.6-1.6 7.6-1.9 12.4-.6"
           fill="none"
-          className="stroke-saffron transition-transform duration-300 group-hover:-translate-y-0.5"
+          className="stroke-accent-soft transition-transform duration-300 group-hover:-translate-y-0.5"
           strokeWidth="3"
           strokeLinecap="round"
         />

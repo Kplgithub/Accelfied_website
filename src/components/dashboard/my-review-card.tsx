@@ -15,7 +15,7 @@ export function MyReviewCard({ review }: { review: OwnedReview | AuthoredReview 
           <p className="text-sm text-ink-soft">
             {company ? (
               company.published ? (
-                <Link href={`/profile/${company.slug}`} className="font-medium text-brand underline-offset-4 hover:underline">
+                <Link href={`/profile/${company.slug}`} className="font-medium text-accent underline-offset-4 hover:underline">
                   {company.name}
                 </Link>
               ) : (

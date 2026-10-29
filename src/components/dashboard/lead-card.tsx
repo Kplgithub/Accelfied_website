@@ -17,7 +17,7 @@ export function LeadCard({ lead, view }: { lead: Lead | SentLead; view: 'client'
               company ? (
                 <>
                   To{' '}
-                  <Link href={`/profile/${company.slug}`} className="font-medium text-brand underline-offset-4 hover:underline">
+                  <Link href={`/profile/${company.slug}`} className="font-medium text-accent underline-offset-4 hover:underline">
                     {company.name}
                   </Link>
                 </>
@@ -51,11 +51,11 @@ export function LeadCard({ lead, view }: { lead: Lead | SentLead; view: 'client'
       </dl>
       {view === 'company' && (
         <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1 border-t border-line pt-4 text-sm">
-          <a href={`mailto:${lead.contact.email}`} className="font-medium text-brand underline-offset-4 hover:underline">
+          <a href={`mailto:${lead.contact.email}`} className="font-medium text-accent underline-offset-4 hover:underline">
             {lead.contact.email}
           </a>
           {lead.contact.phone && (
-            <a href={`tel:${lead.contact.phone.replace(/\s+/g, '')}`} className="font-medium text-brand underline-offset-4 hover:underline">
+            <a href={`tel:${lead.contact.phone.replace(/\s+/g, '')}`} className="font-medium text-accent underline-offset-4 hover:underline">
               {lead.contact.phone}
             </a>
           )}

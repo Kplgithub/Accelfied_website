@@ -25,7 +25,7 @@ async function ResetContent({ searchParams }: Pick<PageProps<'/reset-password'>,
     return (
       <div className="space-y-4">
         <p className="text-ink-soft">This link is missing its code. Open the link from your email again, or ask for a new one.</p>
-        <Link href="/forgot-password" className="font-medium text-brand underline-offset-4 hover:underline">
+        <Link href="/forgot-password" className="font-medium text-accent underline-offset-4 hover:underline">
           Send me a new link
         </Link>
       </div>

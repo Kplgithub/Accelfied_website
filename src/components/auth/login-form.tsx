@@ -26,10 +26,10 @@ export function LoginForm({ next }: { next?: string }) {
       </Field>
       <div className="flex items-center justify-between gap-4 text-sm">
         <label className="flex cursor-pointer items-center gap-2.5 text-ink-soft">
-          <input type="checkbox" name="remember" defaultChecked={checked('remember')} className="size-4 accent-brand" />
+          <input type="checkbox" name="remember" defaultChecked={checked('remember')} className="size-4 accent-accent" />
           Stay logged in
         </label>
-        <Link href="/forgot-password" className="font-medium text-brand underline-offset-4 hover:underline">
+        <Link href="/forgot-password" className="font-medium text-accent underline-offset-4 hover:underline">
           Forgot password?
         </Link>
       </div>
@@ -38,7 +38,7 @@ export function LoginForm({ next }: { next?: string }) {
       </SubmitButton>
       <p className="text-center text-sm text-ink-soft">
         New to Accelfied?{' '}
-        <Link href={joinHref} className="font-medium text-brand underline-offset-4 hover:underline">
+        <Link href={joinHref} className="font-medium text-accent underline-offset-4 hover:underline">
           Create an account
         </Link>
       </p>

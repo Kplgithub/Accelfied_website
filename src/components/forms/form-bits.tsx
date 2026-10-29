@@ -49,7 +49,7 @@ export function FormAlert({ state }: { state: FormState }) {
 export function FormSaved({ state }: { state: FormState }) {
   if (state.status !== 'success' || !state.message) return null;
   return (
-    <div role="status" className="flex items-center gap-2 rounded-xl border border-brand/25 bg-brand-tint px-4 py-3 text-[15px] font-medium text-brand">
+    <div role="status" className="flex items-center gap-2 rounded-xl border border-accent/25 bg-accent-tint px-4 py-3 text-[15px] font-medium text-accent">
       <CheckCircle2 className="size-4 shrink-0" aria-hidden="true" />
       {state.message}
     </div>
@@ -59,7 +59,7 @@ export function FormSaved({ state }: { state: FormState }) {
 export function SuccessPanel({ title, message, children }: { title: string; message?: string; children?: React.ReactNode }) {
   return (
     <div role="status" className="grain rounded-[var(--radius-card)] border border-line bg-surface p-8 text-center sm:p-12">
-      <CheckCircle2 className="mx-auto size-12 text-brand" aria-hidden="true" />
+      <CheckCircle2 className="mx-auto size-12 text-accent" aria-hidden="true" />
       <h2 className="mt-4 font-display text-3xl font-semibold text-ink">{title}</h2>
       {message && <p className="mx-auto mt-3 max-w-md text-ink-soft">{message}</p>}
       {children && <div className="mt-8 flex flex-wrap justify-center gap-3">{children}</div>}

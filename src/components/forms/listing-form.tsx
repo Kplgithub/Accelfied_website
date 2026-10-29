@@ -197,7 +197,7 @@ export function ListingForm({ groups, account }: { groups: ServiceGroup[]; accou
               <button
                 type="button"
                 onClick={() => setRows((current) => [...current, { slug: '', percent: '' }])}
-                className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-brand hover:underline"
+                className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-accent hover:underline"
               >
                 <Plus className="size-4" aria-hidden="true" />
                 Add a service
@@ -205,7 +205,7 @@ export function ListingForm({ groups, account }: { groups: ServiceGroup[]; accou
             ) : (
               <span />
             )}
-            <p className={`text-sm font-medium ${total === 100 ? 'text-success' : 'text-saffron-ink'}`} aria-live="polite">
+            <p className={`text-sm font-medium ${total === 100 ? 'text-success' : 'text-brand'}`} aria-live="polite">
               Total: {total}%
             </p>
           </div>
@@ -226,7 +226,7 @@ export function ListingForm({ groups, account }: { groups: ServiceGroup[]; accou
           {INDUSTRIES.map((industry) => (
             <label key={industry} className="cursor-pointer">
               <input type="checkbox" name="industries" value={industry} defaultChecked={selectedIndustries.has(industry)} className="peer sr-only" />
-              <span className="inline-block rounded-full border border-line-strong px-3.5 py-1.5 text-sm text-ink-soft transition-colors peer-checked:border-brand peer-checked:bg-brand-tint peer-checked:text-brand peer-focus-visible:outline-2 peer-focus-visible:outline-brand">
+              <span className="inline-block rounded-full border border-line-strong px-3.5 py-1.5 text-sm text-ink-soft transition-colors peer-checked:border-accent peer-checked:bg-accent-tint peer-checked:text-accent peer-focus-visible:outline-2 peer-focus-visible:outline-accent">
                 {industry}
               </span>
             </label>

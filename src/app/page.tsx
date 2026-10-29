@@ -19,7 +19,7 @@ export default async function HomePage() {
       <section className="grain overflow-hidden border-b border-line">
         <Container className="grid items-center gap-12 py-14 md:py-20 lg:grid-cols-[1.15fr_0.85fr] lg:py-24">
           <div>
-            <p className="animate-rise text-sm font-semibold tracking-[0.16em] text-saffron-ink uppercase">
+            <p className="animate-rise text-sm font-semibold tracking-[0.16em] text-brand uppercase">
               Agencies, studios &amp; service firms
             </p>
             <h1
@@ -45,7 +45,7 @@ export default async function HomePage() {
                   <Link
                     key={service.slug}
                     href={`/agencies/${service.slug}`}
-                    className="rounded-full border border-line-strong bg-surface/70 px-3.5 py-1.5 text-sm text-ink-soft transition-colors hover:border-brand hover:text-brand"
+                    className="rounded-full border border-line-strong bg-surface/70 px-3.5 py-1.5 text-sm text-ink-soft transition-colors hover:border-accent hover:text-accent"
                   >
                     {service.name}
                   </Link>
@@ -76,7 +76,7 @@ export default async function HomePage() {
             eyebrow="Browse"
             title="Every kind of partner, in one place"
             action={
-              <Link href="/services" className="inline-flex items-center gap-1.5 font-medium text-brand hover:underline">
+              <Link href="/services" className="inline-flex items-center gap-1.5 font-medium text-accent hover:underline">
                 All services <ArrowRight className="size-4" aria-hidden="true" />
               </Link>
             }
@@ -88,7 +88,7 @@ export default async function HomePage() {
                 className="group rounded-[var(--radius-card)] border border-line bg-surface p-6 transition-shadow duration-300 hover:shadow-[var(--shadow-lift)]"
               >
                 <div className="flex items-center gap-3">
-                  <span className="inline-flex size-11 items-center justify-center rounded-xl bg-brand-tint text-brand transition-colors duration-300 group-hover:bg-brand group-hover:text-paper">
+                  <span className="inline-flex size-11 items-center justify-center rounded-xl bg-accent-tint text-accent transition-colors duration-300 group-hover:bg-brand group-hover:text-paper">
                     <GroupIcon slug={group.slug} className="size-5" />
                   </span>
                   <h3 className="font-display text-xl font-semibold text-ink">{group.name}</h3>
@@ -98,7 +98,7 @@ export default async function HomePage() {
                     <li key={service.slug}>
                       <Link
                         href={`/agencies/${service.slug}`}
-                        className="flex items-center justify-between rounded-lg py-1.5 text-[15px] text-ink-soft transition-colors hover:text-brand"
+                        className="flex items-center justify-between rounded-lg py-1.5 text-[15px] text-ink-soft transition-colors hover:text-accent"
                       >
                         {service.name}
                         <ArrowUpRight className="size-4 opacity-0 transition-opacity group-hover:opacity-60" aria-hidden="true" />
@@ -107,7 +107,7 @@ export default async function HomePage() {
                   ))}
                 </ul>
                 {group.services.length > 5 && (
-                  <Link href={`/services#${group.slug}`} className="mt-3 inline-block text-sm font-medium text-brand hover:underline">
+                  <Link href={`/services#${group.slug}`} className="mt-3 inline-block text-sm font-medium text-accent hover:underline">
                     +{group.services.length - 5} more
                   </Link>
                 )}
@@ -137,7 +137,7 @@ export default async function HomePage() {
               },
             ].map((step, index) => (
               <li key={step.title} className="relative border-t-2 border-ink pt-6">
-                <span className="font-display text-sm font-semibold text-saffron-ink">0{index + 1}</span>
+                <span className="font-display text-sm font-semibold text-brand">0{index + 1}</span>
                 <h3 className="mt-2 font-display text-3xl font-semibold text-ink">{step.title}</h3>
                 <p className="mt-3 leading-relaxed text-ink-soft">{step.text}</p>
               </li>
@@ -153,7 +153,7 @@ export default async function HomePage() {
               eyebrow="Highly rated"
               title="Companies clients keep recommending"
               action={
-                <Link href="/agencies?sort=rating" className="inline-flex items-center gap-1.5 font-medium text-brand hover:underline">
+                <Link href="/agencies?sort=rating" className="inline-flex items-center gap-1.5 font-medium text-accent hover:underline">
                   See all <ArrowRight className="size-4" aria-hidden="true" />
                 </Link>
               }
@@ -171,7 +171,7 @@ export default async function HomePage() {
       <section className="py-20 lg:py-28">
         <Container className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
           <div>
-            <p className="text-sm font-semibold tracking-[0.16em] text-saffron-ink uppercase">Why trust these reviews</p>
+            <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">Why trust these reviews</p>
             <h2 className="mt-3 font-display text-4xl leading-tight font-semibold tracking-tight text-ink sm:text-5xl">
               A rating is only worth the reviews behind it.
             </h2>
@@ -179,7 +179,7 @@ export default async function HomePage() {
               Every score on Accelfied is calculated from published client reviews and nothing else. No paid placements
               in ratings, no numbers typed in by hand.
             </p>
-            <Link href="/how-reviews-work" className="mt-6 inline-flex items-center gap-1.5 font-medium text-brand hover:underline">
+            <Link href="/how-reviews-work" className="mt-6 inline-flex items-center gap-1.5 font-medium text-accent hover:underline">
               How reviews work <ArrowRight className="size-4" aria-hidden="true" />
             </Link>
           </div>
@@ -191,7 +191,7 @@ export default async function HomePage() {
               { icon: ArrowUpRight, title: 'Ranked on merit', text: 'Ordering weighs both the rating and how many clients stand behind it.' },
             ].map(({ icon: Icon, title, text }) => (
               <li key={title} className="rounded-[var(--radius-card)] border border-line bg-surface p-6">
-                <Icon className="size-6 text-brand" aria-hidden="true" />
+                <Icon className="size-6 text-accent" aria-hidden="true" />
                 <h3 className="mt-4 font-display text-xl font-semibold text-ink">{title}</h3>
                 <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">{text}</p>
               </li>
@@ -208,7 +208,7 @@ export default async function HomePage() {
             <p className="mt-3 max-w-md text-paper/70">
               Tell us what you need once. We will put your brief in front of companies that fit your budget and timeline.
             </p>
-            <ButtonLink href="/get-a-quote" variant="saffron" size="lg" className="mt-8">
+            <ButtonLink href="/get-a-quote" size="lg" className="mt-8">
               Get a quote <ArrowRight className="size-4" aria-hidden="true" />
             </ButtonLink>
           </div>
@@ -240,7 +240,7 @@ function SectionHeading({ eyebrow, title, action }: { eyebrow: string; title: st
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="max-w-2xl">
-        <p className="text-sm font-semibold tracking-[0.16em] text-saffron-ink uppercase">{eyebrow}</p>
+        <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">{eyebrow}</p>
         <h2 className="mt-3 font-display text-4xl leading-tight font-semibold tracking-tight text-ink sm:text-5xl">{title}</h2>
       </div>
       {action}

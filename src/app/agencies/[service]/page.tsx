@@ -44,11 +44,11 @@ async function Header({ params }: Pick<PageProps<'/agencies/[service]'>, 'params
     <section className="grain border-b border-line">
       <Container className="py-12 lg:py-16">
         <nav aria-label="Breadcrumb" className="text-sm text-ink-soft">
-          <Link href="/services" className="hover:text-brand">
+          <Link href="/services" className="hover:text-accent">
             Services
           </Link>
           <span className="mx-2 text-line-strong">/</span>
-          <Link href={`/services#${service.groupSlug}`} className="hover:text-brand">
+          <Link href={`/services#${service.groupSlug}`} className="hover:text-accent">
             {service.group}
           </Link>
         </nav>

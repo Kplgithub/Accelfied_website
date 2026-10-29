@@ -15,7 +15,7 @@ export function AuthShell({ eyebrow, title, intro, aside, children }: Props) {
     <section className="grain border-b border-line">
       <Container className="grid gap-10 py-12 lg:grid-cols-[1fr_minmax(0,480px)] lg:items-start lg:gap-16 lg:py-20">
         <div className="lg:pt-6">
-          <p className="text-sm font-semibold tracking-[0.16em] text-saffron-ink uppercase">{eyebrow}</p>
+          <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">{eyebrow}</p>
           <h1 className="mt-3 font-display text-4xl leading-[1.08] font-semibold tracking-tight text-ink sm:text-5xl">{title}</h1>
           {intro && <div className="mt-5 max-w-lg text-lg text-ink-soft">{intro}</div>}
           {aside && <div className="mt-10 hidden lg:block">{aside}</div>}

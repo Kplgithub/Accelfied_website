@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { ComponentProps } from 'react';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'saffron' | 'inverse';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'accent' | 'inverse';
 type Size = 'sm' | 'md' | 'lg';
 
 const base =
@@ -11,7 +11,7 @@ const variants: Record<Variant, string> = {
   primary: 'bg-brand text-white shadow-[inset_0_-2px_0_rgb(0_0_0/0.18)] hover:bg-brand-strong',
   secondary: 'bg-surface text-ink ring-1 ring-line-strong hover:ring-ink/40 hover:bg-paper',
   ghost: 'text-ink hover:bg-ink/5',
-  saffron: 'bg-saffron text-night shadow-[inset_0_-2px_0_rgb(0_0_0/0.15)] hover:bg-[#d48c1f]',
+  accent: 'bg-accent text-white shadow-[inset_0_-2px_0_rgb(0_0_0/0.15)] hover:bg-accent-strong',
   inverse: 'bg-paper text-night hover:bg-white',
 };
 

@@ -2,7 +2,7 @@ import { ChevronDown } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 
 const control =
-  'w-full rounded-xl border border-line-strong bg-surface px-3.5 text-[15px] text-ink placeholder:text-ink-faint transition-colors duration-150 hover:border-ink/40 focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/12 aria-[invalid=true]:border-danger aria-[invalid=true]:focus:ring-danger/12';
+  'w-full rounded-xl border border-line-strong bg-surface px-3.5 text-[15px] text-ink placeholder:text-ink-faint transition-colors duration-150 hover:border-ink/40 focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/12 aria-[invalid=true]:border-danger aria-[invalid=true]:focus:ring-danger/12';
 
 interface FieldProps {
   label: string;

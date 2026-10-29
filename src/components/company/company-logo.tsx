@@ -25,7 +25,7 @@ export function CompanyLogo({ name, logoUrl, size = 56 }: { name: string; logoUr
   return (
     <span
       aria-hidden="true"
-      className="inline-flex shrink-0 items-center justify-center rounded-2xl bg-brand-tint font-display font-semibold text-brand"
+      className="inline-flex shrink-0 items-center justify-center rounded-2xl bg-accent-tint font-display font-semibold text-accent"
       style={{ ...style, fontSize: size * 0.36 }}
     >
       {initials(name)}

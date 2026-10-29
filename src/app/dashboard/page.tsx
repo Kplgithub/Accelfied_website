@@ -64,7 +64,7 @@ async function CompanyOverview({ user, company }: { user: Account; company: Owne
                 <LeadCard key={lead.id} lead={lead} view="company" />
               ))}
               {leads.total > 3 && (
-                <Link href="/dashboard/company/requests" className="inline-block text-sm font-medium text-brand underline-offset-4 hover:underline">
+                <Link href="/dashboard/company/requests" className="inline-block text-sm font-medium text-accent underline-offset-4 hover:underline">
                   See all {leads.total} requests
                 </Link>
               )}
@@ -91,8 +91,8 @@ async function ClientOverview({ user }: { user: Account }) {
       <ul className="mb-8 grid gap-4 sm:grid-cols-3">
         {actions.map(({ href, icon: Icon, title, text }) => (
           <li key={href}>
-            <Link href={href} className="group block h-full rounded-2xl border border-line bg-surface p-5 transition-[border-color,box-shadow] hover:border-brand hover:shadow-[var(--shadow-card)]">
-              <Icon className="size-5 text-brand" aria-hidden="true" />
+            <Link href={href} className="group block h-full rounded-2xl border border-line bg-surface p-5 transition-[border-color,box-shadow] hover:border-accent hover:shadow-[var(--shadow-card)]">
+              <Icon className="size-5 text-accent" aria-hidden="true" />
               <p className="mt-3 font-medium text-ink">{title}</p>
               <p className="text-sm text-ink-soft">{text}</p>
             </Link>
@@ -110,7 +110,7 @@ async function ClientOverview({ user }: { user: Account }) {
               <LeadCard key={lead.id} lead={lead} view="client" />
             ))}
             {leads.total > 3 && (
-              <Link href="/dashboard/requests" className="inline-block text-sm font-medium text-brand underline-offset-4 hover:underline">
+              <Link href="/dashboard/requests" className="inline-block text-sm font-medium text-accent underline-offset-4 hover:underline">
                 See all {leads.total} briefs
               </Link>
             )}

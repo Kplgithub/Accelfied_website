@@ -42,7 +42,7 @@ async function ReviewContent({ searchParams }: Pick<PageProps<'/write-a-review'>
       <header className="mb-10 flex items-center gap-5">
         <CompanyLogo name={company.name} logoUrl={company.logoUrl} size={72} />
         <div>
-          <p className="text-sm font-semibold tracking-[0.16em] text-saffron-ink uppercase">Write a review</p>
+          <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">Write a review</p>
           <h1 className="mt-2 font-display text-4xl leading-tight font-semibold tracking-tight text-ink sm:text-5xl">
             How was working with {company.name}?
           </h1>
@@ -72,7 +72,7 @@ async function CompanyPicker({ find }: { find: string }) {
   return (
     <>
       <header className="mb-10 max-w-2xl">
-        <p className="text-sm font-semibold tracking-[0.16em] text-saffron-ink uppercase">Write a review</p>
+        <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">Write a review</p>
         <h1 className="mt-3 font-display text-4xl leading-tight font-semibold tracking-tight text-ink sm:text-5xl">
           Which company did you work with?
         </h1>
@@ -88,7 +88,7 @@ async function CompanyPicker({ find }: { find: string }) {
           defaultValue={find}
           minLength={2}
           placeholder="Type the company name"
-          className="h-13 w-full rounded-l-2xl border border-r-0 border-line-strong bg-surface px-4 text-[16px] outline-none focus:border-brand"
+          className="h-13 w-full rounded-l-2xl border border-r-0 border-line-strong bg-surface px-4 text-[16px] outline-none focus:border-accent"
         />
         <button type="submit" className="inline-flex h-13 cursor-pointer items-center gap-2 rounded-r-2xl bg-brand px-6 font-medium text-white hover:bg-brand-strong">
           <Search className="size-4" aria-hidden="true" />
@@ -109,7 +109,7 @@ async function CompanyPicker({ find }: { find: string }) {
                         {company.headquarters.city}, {company.headquarters.country}
                       </span>
                     </span>
-                    <span className="text-sm font-medium text-brand">Review</span>
+                    <span className="text-sm font-medium text-accent">Review</span>
                   </Link>
                 </li>
               ))}

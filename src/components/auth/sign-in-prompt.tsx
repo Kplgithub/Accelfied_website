@@ -14,7 +14,7 @@ export function SignInPrompt({ title, text, returnTo, joinAs = 'client' }: Props
   const next = encodeURIComponent(returnTo);
   return (
     <div className="grain rounded-[var(--radius-card)] border border-line bg-surface p-8 text-center shadow-[var(--shadow-card)] sm:p-12">
-      <span className="mx-auto inline-flex size-12 items-center justify-center rounded-2xl bg-brand-tint text-brand">
+      <span className="mx-auto inline-flex size-12 items-center justify-center rounded-2xl bg-accent-tint text-accent">
         <LockKeyhole className="size-5" aria-hidden="true" />
       </span>
       <h2 className="mt-5 font-display text-3xl font-semibold text-ink">{title}</h2>

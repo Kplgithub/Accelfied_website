@@ -18,7 +18,7 @@ export function ForgotPasswordForm() {
       <div role="status" className="space-y-5">
         <p className="font-display text-2xl font-semibold text-ink">Check your inbox</p>
         <p className="text-ink-soft">{state.message}</p>
-        <Link href="/login" className="inline-block font-medium text-brand underline-offset-4 hover:underline">
+        <Link href="/login" className="inline-block font-medium text-accent underline-offset-4 hover:underline">
           Back to log in
         </Link>
       </div>
@@ -36,7 +36,7 @@ export function ForgotPasswordForm() {
       </SubmitButton>
       <p className="text-center text-sm text-ink-soft">
         Remembered it?{' '}
-        <Link href="/login" className="font-medium text-brand underline-offset-4 hover:underline">
+        <Link href="/login" className="font-medium text-accent underline-offset-4 hover:underline">
           Log in
         </Link>
       </p>

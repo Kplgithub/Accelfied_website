@@ -111,7 +111,7 @@ export function DirectoryFilters({ countries, showSearch }: { countries: Country
               value={q}
               onChange={(event) => setQ(event.target.value)}
               placeholder="Search by company name or keyword"
-              className="h-11 w-full rounded-l-xl border border-r-0 border-line-strong bg-surface px-3.5 text-[15px] outline-none focus:border-brand"
+              className="h-11 w-full rounded-l-xl border border-r-0 border-line-strong bg-surface px-3.5 text-[15px] outline-none focus:border-accent"
             />
             <button type="submit" className="h-11 cursor-pointer rounded-r-xl bg-ink px-4 text-sm font-medium text-paper hover:bg-night-soft">
               Search
@@ -158,7 +158,7 @@ export function DirectoryFilters({ countries, showSearch }: { countries: Country
         <button
           type="button"
           onClick={clearAll}
-          className="mt-4 inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-brand hover:underline"
+          className="mt-4 inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-accent hover:underline"
         >
           <X className="size-4" aria-hidden="true" />
           Clear all filters
@@ -186,7 +186,7 @@ function FilterSelect({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         aria-label={label}
-        className={`h-11 w-full cursor-pointer rounded-xl border bg-surface px-3 text-[15px] ${value ? 'border-brand text-brand' : 'border-line-strong text-ink'}`}
+        className={`h-11 w-full cursor-pointer rounded-xl border bg-surface px-3 text-[15px] ${value ? 'border-accent text-accent' : 'border-line-strong text-ink'}`}
       >
         {children}
       </select>

@@ -9,8 +9,8 @@ export function JourneyIllustration() {
   ];
   return (
     <div className="relative mx-auto aspect-[5/6] w-full max-w-md" aria-hidden="true">
-      <div className="absolute inset-6 rounded-[2.5rem] bg-brand-tint" />
-      <div className="absolute top-10 right-6 size-24 rounded-full bg-saffron-tint" />
+      <div className="absolute inset-6 rounded-[2.5rem] bg-accent-tint" />
+      <div className="absolute top-10 right-6 size-24 rounded-full bg-accent-tint" />
       <svg viewBox="0 0 400 480" className="absolute inset-0 size-full" fill="none">
         <path
           d="M120 110c120 10 190 40 170 120-18 72-150 60-170 140-8 34 10 56 40 70"

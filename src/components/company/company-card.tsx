@@ -70,7 +70,7 @@ export function CompanyCard({ company, highlightService }: { company: CompanySum
 
 function ServiceFocus({ services, highlight }: { services: CompanySummary['services']; highlight?: string }) {
   if (!services.length) return null;
-  const palette = ['bg-brand', 'bg-saffron', 'bg-[#7a9e8f]', 'bg-[#c9b48a]', 'bg-ink-faint'];
+  const palette = ['bg-brand', 'bg-accent', 'bg-night', 'bg-[#5b8a9b]', 'bg-ink-faint'];
   return (
     <div className="mt-4">
       <div className="flex h-1.5 overflow-hidden rounded-full bg-paper-deep" aria-hidden="true">

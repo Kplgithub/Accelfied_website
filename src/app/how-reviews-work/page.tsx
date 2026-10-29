@@ -30,7 +30,7 @@ const STEPS = [
 export default function HowReviewsWorkPage() {
   return (
     <Container className="max-w-3xl py-14 lg:py-20">
-      <p className="text-sm font-semibold tracking-[0.16em] text-saffron-ink uppercase">Trust</p>
+      <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">Trust</p>
       <h1 className="mt-3 font-display text-5xl leading-tight font-semibold tracking-tight text-ink">How reviews work</h1>
       <p className="mt-5 text-lg leading-relaxed text-ink-soft">
         Reviews are only useful if you can trust them. Here is exactly what happens between a client pressing submit and a

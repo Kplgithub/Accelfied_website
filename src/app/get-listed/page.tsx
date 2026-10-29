@@ -21,7 +21,7 @@ export default function GetListedPage() {
       <section className="grain border-b border-line">
         <Container className="grid gap-10 py-14 lg:grid-cols-[1.2fr_1fr] lg:items-end lg:py-20">
           <div>
-            <p className="text-sm font-semibold tracking-[0.16em] text-saffron-ink uppercase">For companies</p>
+            <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">For companies</p>
             <h1 className="mt-3 font-display text-5xl leading-[1.05] font-semibold tracking-tight text-ink sm:text-6xl">
               Let your <span className="scribble italic">clients</span> do the selling.
             </h1>
@@ -36,7 +36,7 @@ export default function GetListedPage() {
               { icon: BadgeCheck, title: 'Win on trust', text: 'Your rating comes only from real clients, so it means something.' },
             ].map(({ icon: Icon, title, text }) => (
               <li key={title} className="flex gap-4 rounded-2xl border border-line bg-surface p-4">
-                <Icon className="mt-0.5 size-5 shrink-0 text-brand" aria-hidden="true" />
+                <Icon className="mt-0.5 size-5 shrink-0 text-accent" aria-hidden="true" />
                 <div>
                   <p className="font-medium text-ink">{title}</p>
                   <p className="text-sm text-ink-soft">{text}</p>
