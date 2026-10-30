@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -17,6 +18,7 @@ import {
   UserCheck,
 } from 'lucide-react';
 import Link from 'next/link';
+import { PostCard } from '@/components/blog/post-card';
 import { CompanyCard } from '@/components/company/company-card';
 import { GroupIcon } from '@/components/home/group-icon';
 import { HeroTabs } from '@/components/home/hero-tabs';
@@ -27,18 +29,29 @@ import { ButtonLink } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 import { Stars } from '@/components/ui/stars';
 import { countryName } from '@/lib/countries';
-import { getCountryFacets, getFeaturedCompanies, getRecentReviews, getServiceGroups, getStats, type RecentReview } from '@/lib/data';
+import { getCountryFacets, getFeaturedCompanies, getPosts, getRecentReviews, getServiceGroups, getSiteSettings, getStats, getTeamPicks, type RecentReview } from '@/lib/data';
 import { formatDate, formatRating } from '@/lib/format';
 import { INDUSTRIES } from '@/lib/labels';
 import type { CompanySummary, ServiceGroup } from '@/lib/types';
 
+export async function generateMetadata(): Promise<Metadata> {
+  const { seo } = await getSiteSettings();
+  return {
+    ...(seo.home.title ? { title: { absolute: seo.home.title } } : {}),
+    ...(seo.home.description ? { description: seo.home.description } : {}),
+    alternates: { canonical: '/' },
+  };
+}
+
 export default async function HomePage() {
-  const [groups, stats, featured, reviews, countries] = await Promise.all([
+  const [groups, stats, featured, reviews, countries, picks, posts] = await Promise.all([
     getServiceGroups(),
     getStats(),
     getFeaturedCompanies(12),
     getRecentReviews(6),
     getCountryFacets(),
+    getTeamPicks(),
+    getPosts({ limit: 3 }),
   ]);
   const services = groups.flatMap((group) => group.services);
   const popular = services.filter((service) => service.popular);
@@ -169,6 +182,22 @@ export default async function HomePage() {
           </Reveal>
         </Container>
       </section>
+
+      {/* 5b. Picked by our team in the admin panel */}
+      {picks.length > 0 && (
+        <section className="pt-20 lg:pt-28">
+          <Container>
+            <SectionHeading eyebrow="Featured companies" title="Picked by the Accelfied team" action={<ArrowLink href="/agencies">See all companies</ArrowLink>} />
+            <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {picks.slice(0, 6).map((company, index) => (
+                <Reveal key={company.id} delay={(index % 3) * 90} className="h-full">
+                  <CompanyCard company={company} />
+                </Reveal>
+              ))}
+            </div>
+          </Container>
+        </section>
+      )}
 
       {/* 6. Top rated companies */}
       <section className="py-20 lg:py-28">
@@ -415,6 +444,22 @@ export default async function HomePage() {
           </div>
         </Reveal>
       </section>
+
+      {/* 15b. From the blog */}
+      {posts.items.length > 0 && (
+        <section className="pt-20 lg:pt-28">
+          <Container>
+            <SectionHeading eyebrow="From the blog" title="Stories and interviews from the people behind the work" action={<ArrowLink href="/blog">All posts</ArrowLink>} />
+            <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {posts.items.map((post, index) => (
+                <Reveal key={post.slug} delay={index * 90} className="h-full">
+                  <PostCard post={post} />
+                </Reveal>
+              ))}
+            </div>
+          </Container>
+        </section>
+      )}
 
       {/* 16. FAQ */}
       <section className="py-20 lg:py-28">
