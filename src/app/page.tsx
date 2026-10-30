@@ -347,7 +347,7 @@ export default async function HomePage() {
           <SectionHeading eyebrow="The Verified badge" title="What “Verified” means on Accelfied" />
           <div className="mt-12 grid gap-5 md:grid-cols-3">
             {[
-              { icon: Building2, title: 'Verified companies', text: 'After a company lists itself we show “Verifying your details” until our team checks it. Approved listings go live with the badge.' },
+              { icon: Building2, title: 'Verified companies', text: 'Companies on Accelfied Verified pass a document check by our team. They carry the badge and are listed above other companies.' },
               { icon: UserCheck, title: 'Verified reviews', text: 'Reviews come from signed-in clients and wait for our team. Only approved reviews are published and counted in ratings.' },
               { icon: MailCheck, title: 'Verified owners', text: 'If someone else listed your company, you claim it with your work email. We confirm the request before handing it over.' },
             ].map((item, index) => (
@@ -472,15 +472,19 @@ const FAQ = [
   },
   {
     q: 'How are companies ranked?',
-    a: 'By their published client reviews. The ranking weighs both the average score and how many clients stand behind it. Companies cannot pay to change their rating.',
+    a: 'Verified companies are listed first. Within each group, companies are ranked by their published client reviews, weighing both the average score and how many clients stand behind it. Nobody can pay to change a rating.',
   },
   {
     q: 'What happens after I list my company?',
-    a: 'You will see “Verifying your details” while our team checks the listing, usually within two working days. Once approved, your profile goes live with the Verified badge.',
+    a: 'You will see “Verifying your details” while our team checks the listing, usually within two working days. Once approved, your free profile goes live. To earn the Verified badge and a place above other companies, join Accelfied Verified.',
   },
   {
     q: 'Someone else listed my company. What can I do?',
     a: 'Open the profile and choose “Claim this company”. Confirm with your work email on the company domain, and our team will move the listing to your account after checking.',
+  },
+  {
+    q: 'What does Accelfied Verified cost?',
+    a: '₹599 a month plus GST. It adds the Verified badge, a place above other companies, unlimited reviews, promotion by our team, a blog about your company and a published interview.',
   },
   { q: 'Can I sign in with Google or LinkedIn?', a: 'Yes. You can join or log in with Google, LinkedIn or your work email and a password.' },
 ];

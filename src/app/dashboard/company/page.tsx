@@ -9,8 +9,8 @@ import { formatDate } from '@/lib/format';
 export const metadata: Metadata = { title: 'Company profile' };
 
 const STATUS_TEXT = {
-  pending: 'Verifying your details. Our team checks every new listing, usually within two working days. Once approved, your profile goes live with the Verified badge.',
-  published: 'Your profile is live and verified. Clients can find you, send briefs and review your work.',
+  pending: 'Verifying your details. Our team checks every new listing, usually within two working days, and emails you when your profile is live.',
+  published: 'Your profile is live. Clients can find you, send briefs and review your work.',
   rejected: 'We could not approve this listing. Reply to our email so we can help you fix it.',
   suspended: 'Your profile is paused and hidden from clients. Contact support to restore it.',
 } as const;

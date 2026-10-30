@@ -101,7 +101,7 @@ export async function applyForListing(_prev: FormState, form: FormData): Promise
     '/v1/companies/applications',
     payload,
     form,
-    'Thanks, your company is in. Our team is verifying the details, usually within two working days. Once approved, your profile goes live with the Verified badge.',
+    'Thanks, your company is in. Our team is verifying the details, usually within two working days. Once approved, your profile goes live.',
   );
 }
 

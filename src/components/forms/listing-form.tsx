@@ -29,7 +29,7 @@ export function ListingForm({ groups, account }: { groups: ServiceGroup[]; accou
 
   if (state.status === 'success') {
     return (
-      <SuccessPanel title="Verifying your details" message={state.message} steps={['Submitted', 'Verifying your details', 'Live with Verified badge']}>
+      <SuccessPanel title="Verifying your details" message={state.message} steps={['Submitted', 'Verifying your details', 'Profile goes live']}>
         <ButtonLink href="/dashboard/company">Go to your company dashboard</ButtonLink>
       </SuccessPanel>
     );
