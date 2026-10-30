@@ -1,0 +1,109 @@
+'use client';
+
+import { Lock } from 'lucide-react';
+import { useState, useTransition } from 'react';
+import { confirmVerifiedPayment, startVerifiedPlan } from '@/app/billing-actions';
+import { Button } from '../ui/button';
+
+const CHECKOUT_SRC = 'https://checkout.razorpay.com/v1/checkout.js';
+
+interface CheckoutResponse {
+  razorpay_payment_id: string;
+  razorpay_subscription_id: string;
+  razorpay_signature: string;
+}
+
+interface RazorpayInstance {
+  open(): void;
+  on(event: 'payment.failed', handler: (response: { error?: { description?: string } }) => void): void;
+}
+
+declare global {
+  interface Window {
+    Razorpay?: new (options: Record<string, unknown>) => RazorpayInstance;
+  }
+}
+
+let loading: Promise<void> | null = null;
+
+/** Loads Razorpay Checkout once, on the first press. */
+function loadCheckout(): Promise<void> {
+  if (window.Razorpay) return Promise.resolve();
+  loading ??= new Promise<void>((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = CHECKOUT_SRC;
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => {
+      loading = null;
+      script.remove();
+      reject(new Error('checkout script failed'));
+    };
+    document.head.appendChild(script);
+  });
+  return loading;
+}
+
+/**
+ * Starts the monthly plan: the server creates a Razorpay subscription,
+ * Checkout takes the first payment, and the server checks its signature.
+ */
+export function VerifiedCheckout({ label, companyName, email, name }: { label: string; companyName: string; email: string; name: string }) {
+  const [message, setMessage] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [confirming, startConfirm] = useTransition();
+
+  async function start() {
+    setMessage('');
+    setBusy(true);
+    try {
+      const [plan] = await Promise.all([startVerifiedPlan(), loadCheckout()]);
+      if (!plan.ok) {
+        setMessage(plan.message);
+        setBusy(false);
+        return;
+      }
+      if (!window.Razorpay) throw new Error('checkout missing');
+      const checkout = new window.Razorpay({
+        key: plan.keyId,
+        subscription_id: plan.subscriptionId,
+        name: 'Accelfied',
+        description: `Verified plan for ${companyName}`,
+        prefill: { name, email },
+        theme: { color: '#C7362F' },
+        modal: { ondismiss: () => setBusy(false) },
+        handler: (response: CheckoutResponse) =>
+          startConfirm(async () => {
+            const result = await confirmVerifiedPayment(response);
+            setBusy(false);
+            if (!result.ok) setMessage(result.message);
+          }),
+      });
+      checkout.on('payment.failed', (response) => {
+        setMessage(response.error?.description ? `Payment failed: ${response.error.description}` : 'Payment failed. You have not been charged.');
+      });
+      checkout.open();
+    } catch {
+      setMessage('The payment window could not open. Check your connection and try again.');
+      setBusy(false);
+    }
+  }
+
+  const working = busy || confirming;
+  return (
+    <div>
+      <Button type="button" size="lg" onClick={start} disabled={working} className="w-full sm:w-auto">
+        {working && <span className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />}
+        {confirming ? 'Confirming payment…' : busy ? 'Opening payment…' : label}
+      </Button>
+      <p className="mt-2 flex items-center gap-1.5 text-sm text-ink-faint sm:justify-end">
+        <Lock className="size-3.5" aria-hidden="true" /> Secure payment by Razorpay. Cancel any time.
+      </p>
+      {message && (
+        <p role="alert" className="mt-3 rounded-xl border border-danger/30 bg-danger-tint px-4 py-3 text-sm font-medium text-danger">
+          {message}
+        </p>
+      )}
+    </div>
+  );
+}

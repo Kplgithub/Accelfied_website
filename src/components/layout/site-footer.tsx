@@ -45,7 +45,7 @@ const COLUMNS = [
 
 export function SiteFooter() {
   return (
-    <footer className="grain mt-auto bg-night text-paper/80">
+    <footer className="grain mt-auto bg-night print:hidden text-paper/80">
       <Container className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
         <div className="max-w-xs">
           <Logo tone="light" />
