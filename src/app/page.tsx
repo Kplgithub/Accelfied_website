@@ -95,7 +95,7 @@ export default async function HomePage() {
           <div className="lg:pt-6">
             <p className="inline-flex animate-rise items-center gap-2 rounded-full bg-white/8 px-3.5 py-1.5 text-sm font-medium text-accent-soft ring-1 ring-white/12">
               <BadgeCheck className="size-4" aria-hidden="true" />
-              Every listing and review is checked by our team
+              Every listing and every review is checked by our team
             </p>
             <h1
               className="mt-6 animate-rise font-display text-[2.6rem] leading-[1.04] font-semibold tracking-[-0.025em] sm:text-6xl lg:text-[4.2rem]"
