@@ -8,7 +8,16 @@ import type { CountryFacet } from '@/lib/types';
 
 const FILTER_KEYS = ['country', 'budget', 'hourlyRate', 'teamSize', 'industry', 'minRating', 'verified', 'q'] as const;
 
-export function DirectoryFilters({ countries, showSearch }: { countries: CountryFacet[]; showSearch: boolean }) {
+export function DirectoryFilters({
+  countries,
+  showSearch,
+  showLocation = true,
+}: {
+  countries: CountryFacet[];
+  showSearch: boolean;
+  /** Location pages already fix the place, so they hide this filter. */
+  showLocation?: boolean;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -41,14 +50,16 @@ export function DirectoryFilters({ countries, showSearch }: { countries: Country
 
   const selects = (
     <>
-      <FilterSelect label="Location" value={params.get('country') ?? ''} onChange={(v) => update('country', v)}>
-        <option value="">Any location</option>
-        {countries.map((c) => (
-          <option key={c.countryCode} value={c.countryCode}>
-            {c.country} ({c.count})
-          </option>
-        ))}
-      </FilterSelect>
+      {showLocation && (
+        <FilterSelect label="Location" value={params.get('country') ?? ''} onChange={(v) => update('country', v)}>
+          <option value="">Any location</option>
+          {countries.map((c) => (
+            <option key={c.countryCode} value={c.countryCode}>
+              {c.country} ({c.count})
+            </option>
+          ))}
+        </FilterSelect>
+      )}
       <FilterSelect label="Your budget" value={params.get('budget') ?? ''} onChange={(v) => update('budget', v)}>
         <option value="">Any budget</option>
         {BUDGETS.map((b) => (

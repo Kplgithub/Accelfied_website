@@ -40,6 +40,7 @@ async function Nav() {
           { href: '/dashboard/company/requests', label: 'Project requests' },
           { href: '/dashboard/company/reviews', label: 'Client reviews' },
           { href: '/dashboard/company/portfolio', label: 'Portfolio' },
+          { href: '/dashboard/company/badge', label: 'Website badge' },
           { href: '/dashboard/company/verified', label: company.verified ? 'Verified plan' : 'Get Verified' },
           { href: '/dashboard/company/billing', label: 'Billing' },
         ]

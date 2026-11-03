@@ -234,3 +234,17 @@ export interface SiteSettings {
   contact: { email: string; phone: string; address: string };
   seo: Record<'home' | 'services' | 'agencies' | 'blog' | 'getVerified', SeoEntry>;
 }
+
+/** A service offered in a country (city empty) or a city, by published companies. */
+export interface ServicePlace {
+  service: string;
+  serviceName: string;
+  countryCode: string;
+  country: string;
+  city: string;
+  citySlug: string;
+  companies: number;
+  reviews: number;
+  /** Review-weighted rating, 0 when there are no reviews. */
+  rating: number;
+}

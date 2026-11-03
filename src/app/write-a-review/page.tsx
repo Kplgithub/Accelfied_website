@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   title: 'Write a review',
   description: 'Share your experience working with an agency or service company. Every review is checked before it is published.',
   alternates: { canonical: '/write-a-review' },
+  robots: { index: false, follow: true },
 };
 
 export default function WriteAReviewPage({ searchParams }: PageProps<'/write-a-review'>) {

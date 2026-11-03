@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: 'Log in',
   description: 'Log in to your Accelfied account.',
   alternates: { canonical: '/login' },
+  robots: { index: false, follow: true },
 };
 
 export default function LoginPage({ searchParams }: PageProps<'/login'>) {

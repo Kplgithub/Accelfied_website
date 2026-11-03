@@ -4,17 +4,31 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { getCompanies, getCountryFacets, type DirectoryQuery } from '@/lib/data';
 import { hasActiveFilters } from '@/lib/directory';
 import { pluralize } from '@/lib/format';
+import { SITE_URL } from '@/lib/site';
+import { JsonLd } from '@/components/seo/json-ld';
 import { DirectoryFilters } from './directory-filters';
 import { Pagination } from './pagination';
 
-export async function DirectoryResults({ query, basePath }: { query: DirectoryQuery; basePath: string }) {
-  const [page, countries] = await Promise.all([getCompanies(query), getCountryFacets(query.service)]);
-  const filtered = hasActiveFilters(query);
+/** Query keys that come from the page address itself, not from the filter bar. */
+type FixedKey = 'service' | 'country' | 'city';
+
+export async function DirectoryResults({
+  query,
+  basePath,
+  fixed = ['service'],
+}: {
+  query: DirectoryQuery;
+  basePath: string;
+  fixed?: FixedKey[];
+}) {
+  const placeFixed = fixed.includes('country');
+  const [page, countries] = await Promise.all([getCompanies(query), placeFixed ? Promise.resolve([]) : getCountryFacets(query.service)]);
+  const filtered = hasActiveFilters(placeFixed ? { ...query, country: undefined, city: undefined } : query);
 
   const hrefFor = (target: number) => {
     const params = new URLSearchParams();
     for (const [key, value] of Object.entries(query)) {
-      if (key === 'service' || key === 'page' || value === undefined) continue;
+      if ((fixed as string[]).includes(key) || key === 'page' || value === undefined) continue;
       params.set(key, Array.isArray(value) ? value.join(',') : String(value));
     }
     if (target > 1) params.set('page', String(target));
@@ -23,7 +37,8 @@ export async function DirectoryResults({ query, basePath }: { query: DirectoryQu
 
   return (
     <>
-      <DirectoryFilters countries={countries} showSearch={!query.service} />
+      {page.page === 1 && page.items.length > 0 && <JsonLd data={itemListLd(page.items)} />}
+      <DirectoryFilters countries={countries} showSearch={!query.service} showLocation={!placeFixed} />
       <p className="mt-6 text-sm text-ink-soft" aria-live="polite">
         {page.total === 0 ? 'No companies match yet' : `${pluralize(page.total, 'company', 'companies')} found`}
       </p>
@@ -50,6 +65,20 @@ export async function DirectoryResults({ query, basePath }: { query: DirectoryQu
       )}
     </>
   );
+}
+
+/** The companies shown, in order, so search engines can read the ranking as a list. */
+function itemListLd(items: Array<{ slug: string; name: string }>): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: items.map((company, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: `${SITE_URL}/profile/${company.slug}`,
+      name: company.name,
+    })),
+  };
 }
 
 export function DirectorySkeleton() {
