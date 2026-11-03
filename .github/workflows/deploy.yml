@@ -1,0 +1,59 @@
+# Deploys the website to the server on every push to main.
+# Repository secrets needed: SSH_HOST, SSH_USER, SSH_PRIVATE_KEY.
+# The server keeps its own .env (never uploaded): /home/ubuntu/accelfied-website/.env
+# The API (accelfied-api) must be running, because `next build` reads from it.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-accelfied-website
+  cancel-in-progress: false
+
+env:
+  APP_DIR: /home/ubuntu/accelfied-website
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Copy code to the server
+        run: |
+          ssh -i ~/.ssh/deploy_key "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "mkdir -p $APP_DIR"
+          rsync -az --delete \
+            --exclude '.git' --exclude 'node_modules' --exclude '.next' \
+            --exclude '.env' --exclude '.env.local' --exclude '.env.production' \
+            -e "ssh -i ~/.ssh/deploy_key" \
+            ./ "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:$APP_DIR/"
+
+      - name: Build and restart on the server
+        run: |
+          ssh -i ~/.ssh/deploy_key "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "APP_DIR=$APP_DIR bash -s" <<'REMOTE'
+          set -euo pipefail
+          # The droplet has 1 GB RAM + swap: let builds use swap instead of crashing.
+          export NODE_OPTIONS=--max-old-space-size=1536
+
+          cd "$APP_DIR"
+          test -f .env || { echo "Missing $APP_DIR/.env on the server"; exit 1; }
+          npm ci --no-audit --no-fund
+          npm run build
+          if pm2 describe accelfied-web >/dev/null 2>&1; then
+            pm2 reload accelfied-web --update-env
+          else
+            pm2 start node_modules/next/dist/bin/next --name accelfied-web --cwd "$APP_DIR" -- start -p 3101 -H 127.0.0.1
+          fi
+          pm2 save
+          REMOTE
