@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: 'Forgot password',
   description: 'Get a link to set a new Accelfied password.',
   alternates: { canonical: '/forgot-password' },
+  robots: { index: false, follow: true },
 };
 
 export default function ForgotPasswordPage() {

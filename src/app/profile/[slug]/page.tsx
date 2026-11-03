@@ -17,8 +17,9 @@ import { countryName } from '@/lib/countries';
 import { getCompany, getCompanyReviews, getPosts, getSitemapCompanies } from '@/lib/data';
 import { hostname } from '@/lib/format';
 import { hourlyRateLabel, minProjectLabel, teamSizeLabel } from '@/lib/labels';
+import { JsonLd, breadcrumbLd } from '@/components/seo/json-ld';
 import { SITE_URL } from '@/lib/site';
-import type { CompanyProfile } from '@/lib/types';
+import type { CompanyProfile, Review } from '@/lib/types';
 
 /** Placeholder so the route can be validated at build time before any company is published. */
 const SHELL_SLUG = '__shell__';
@@ -37,7 +38,7 @@ export async function generateMetadata({ params }: PageProps<'/profile/[slug]'>)
     title: `${company.name} reviews, rates and services`,
     description: `${company.tagline || company.name}.${rating}`.slice(0, 300),
     alternates: { canonical: `/profile/${company.slug}` },
-    openGraph: company.logoUrl ? { images: [company.logoUrl] } : undefined,
+    openGraph: { type: 'profile', url: `/profile/${company.slug}` },
   };
 }
 
@@ -56,11 +57,9 @@ async function Profile({ params, searchParams }: PageProps<'/profile/[slug]'>) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        // Structured data for search engines. Aggregate rating is only emitted when real reviews exist.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd(company)).replace(/</g, '\\u003c') }}
-      />
+      <Suspense fallback={null}>
+        <ProfileLd company={company} />
+      </Suspense>
       <ProfileHeader company={company} />
       <Container className="grid gap-12 py-12 lg:grid-cols-[1fr_320px] lg:gap-14">
         <div className="min-w-0 space-y-16">
@@ -335,8 +334,9 @@ async function CompanyPosts({ slug, name }: { slug: string; name: string }) {
 }
 
 function ProfileSkeleton() {
+  // At least a screen tall, so the footer never flashes into view and then jumps away when the profile streams in.
   return (
-    <div aria-hidden="true">
+    <div aria-hidden="true" className="min-h-dvh">
       <section className="grain border-b border-line">
         <Container className="flex items-center gap-5 py-14">
           <div className="size-22 animate-pulse rounded-2xl bg-paper-deep" />
@@ -353,21 +353,37 @@ function ProfileSkeleton() {
   );
 }
 
-function jsonLd(company: CompanyProfile) {
+/**
+ * Structured data for search engines: the company, its rating and its latest
+ * reviews. Rating and reviews are only emitted when real published reviews exist.
+ */
+async function ProfileLd({ company }: { company: CompanyProfile }) {
+  const reviews = company.rating.count > 0 ? (await getCompanyReviews(company.slug)).items : [];
+  const profileUrl = `${SITE_URL}/profile/${company.slug}`;
+  const crumbs = [{ name: 'Companies', url: `${SITE_URL}/agencies` }];
+  if (company.services[0]) crumbs.push({ name: company.services[0].name, url: `${SITE_URL}/agencies/${company.services[0].slug}` });
+  crumbs.push({ name: company.name, url: profileUrl });
+  return <JsonLd data={[organizationLd(company, reviews), breadcrumbLd(crumbs)]} />;
+}
+
+function organizationLd(company: CompanyProfile, reviews: Review[]): Record<string, unknown> {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
+    '@id': `${SITE_URL}/profile/${company.slug}#company`,
     name: company.name,
     url: company.website,
     logo: company.logoUrl || undefined,
-    description: company.tagline || undefined,
+    description: company.description || company.tagline || undefined,
     foundingDate: company.foundedYear ? String(company.foundedYear) : undefined,
     address: {
       '@type': 'PostalAddress',
       addressLocality: company.headquarters.city,
+      addressRegion: company.headquarters.region || undefined,
       addressCountry: company.headquarters.countryCode,
     },
     mainEntityOfPage: `${SITE_URL}/profile/${company.slug}`,
+    knowsAbout: company.services.map((service) => service.name),
     ...(company.rating.count > 0
       ? {
           aggregateRating: {
@@ -377,6 +393,18 @@ function jsonLd(company: CompanyProfile) {
             bestRating: 5,
             worstRating: 1,
           },
+          review: reviews.map((review) => ({
+            '@type': 'Review',
+            name: review.project.title,
+            reviewBody: review.content.results || review.content.solution || undefined,
+            datePublished: review.publishedAt ?? undefined,
+            author: review.reviewer.name
+              ? { '@type': 'Person', name: review.reviewer.name, jobTitle: review.reviewer.jobTitle || undefined }
+              : review.reviewer.companyName
+                ? { '@type': 'Organization', name: review.reviewer.companyName }
+                : { '@type': 'Person', name: 'Anonymous' },
+            reviewRating: { '@type': 'Rating', ratingValue: review.ratings.overall, bestRating: 5, worstRating: 1 },
+          })),
         }
       : {}),
   };

@@ -1,7 +1,7 @@
 import 'server-only';
 import { cacheLife, cacheTag } from 'next/cache';
 import { ApiError, apiGet } from './api';
-import type { CompanyProfile, CompanySummary, CountryFacet, Page, Post, PostCard, PostKind, Review, Service, ServiceGroup, SiteSettings } from './types';
+import type { CompanyProfile, CompanySummary, CountryFacet, Page, Post, PostCard, PostKind, Review, Service, ServiceGroup, ServicePlace, SiteSettings } from './types';
 
 /**
  * Cached reads from the API. Every function here is safe to call from any
@@ -168,4 +168,33 @@ export async function getSitemapPosts(): Promise<Array<{ slug: string; updatedAt
   cacheTag('blog');
   const { items } = await apiGet<{ items: Array<{ slug: string; updatedAt: string }> }>('/v1/blog/sitemap');
   return items;
+}
+
+/** Every service offered per country and per city, from published listings. Feeds location pages and the sitemap. */
+export async function getServicePlaces(): Promise<ServicePlace[]> {
+  'use cache';
+  cacheLife({ stale: 600, revalidate: 1_800, expire: 86_400 });
+  cacheTag('companies');
+  const { items } = await apiGet<{ items: ServicePlace[] }>('/v1/seo/places');
+  return items;
+}
+
+export interface SitemapCompanies {
+  items: Array<{ slug: string; updatedAt: string }>;
+  total: number;
+  pageSize: number;
+}
+
+/** One sitemap file of published profiles (page counts from 0). */
+export async function getSitemapCompanyPage(page: number): Promise<SitemapCompanies> {
+  'use cache';
+  cacheLife('hours');
+  cacheTag('companies');
+  return apiGet<SitemapCompanies>('/v1/seo/sitemap/companies', { page });
+}
+
+/** Ids of the profile sitemap files: one per page of published profiles. */
+export async function profileSitemapIds(): Promise<Array<{ id: number }>> {
+  const { total, pageSize } = await getSitemapCompanyPage(0);
+  return Array.from({ length: Math.max(1, Math.ceil(total / pageSize)) }, (_, id) => ({ id }));
 }

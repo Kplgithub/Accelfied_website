@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: 'Get a quote',
   description: 'Describe your project once and hear back from companies that fit your budget and timeline.',
   alternates: { canonical: '/get-a-quote' },
+  robots: { index: false, follow: true },
 };
 
 export default function GetAQuotePage({ searchParams }: PageProps<'/get-a-quote'>) {

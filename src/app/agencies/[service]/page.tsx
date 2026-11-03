@@ -3,9 +3,13 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { DirectoryResults, DirectorySkeleton } from '@/components/directory/directory-results';
+import { PlaceLinks } from '@/components/directory/place-links';
+import { JsonLd, breadcrumbLd } from '@/components/seo/json-ld';
 import { Container } from '@/components/ui/container';
 import { getService, getServiceGroups } from '@/lib/data';
 import { parseDirectoryParams } from '@/lib/directory';
+import { placeName, relatedPlaces } from '@/lib/places';
+import { SITE_URL } from '@/lib/site';
 
 export async function generateStaticParams() {
   const groups = await getServiceGroups();
@@ -32,6 +36,9 @@ export default function ServiceDirectoryPage({ params, searchParams }: PageProps
         <Suspense fallback={<DirectorySkeleton />}>
           <Results params={params} searchParams={searchParams} />
         </Suspense>
+        <Suspense fallback={null}>
+          <Locations params={params} />
+        </Suspense>
       </Container>
     </>
   );
@@ -42,6 +49,13 @@ async function Header({ params }: Pick<PageProps<'/agencies/[service]'>, 'params
   if (!service) notFound();
   return (
     <section className="grain border-b border-line">
+      <JsonLd
+        data={breadcrumbLd([
+          { name: 'Services', url: `${SITE_URL}/services` },
+          { name: service.group, url: `${SITE_URL}/services#${service.groupSlug}` },
+          { name: service.name, url: `${SITE_URL}/agencies/${service.slug}` },
+        ])}
+      />
       <Container className="py-12 lg:py-16">
         <nav aria-label="Breadcrumb" className="text-sm text-ink-soft">
           <Link href="/services" className="hover:text-accent">
@@ -77,4 +91,17 @@ async function Results({ params, searchParams }: PageProps<'/agencies/[service]'
   const { service } = await params;
   const query = parseDirectoryParams(await searchParams, service);
   return <DirectoryResults query={query} basePath={`/agencies/${service}`} />;
+}
+
+/** Links to this service's country and city pages, busiest first. */
+async function Locations({ params }: Pick<PageProps<'/agencies/[service]'>, 'params'>) {
+  const service = await getService((await params).service);
+  if (!service) return null;
+  const { countries, cities } = await relatedPlaces(service.slug);
+  return (
+    <>
+      <PlaceLinks title={`${service.name} companies by country`} places={countries} label={(p) => `${service.name} in ${placeName(p)}`} />
+      <PlaceLinks title={`${service.name} companies by city`} places={cities} label={(p) => `${service.name} in ${p.city}`} />
+    </>
+  );
 }

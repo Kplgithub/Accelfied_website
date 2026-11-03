@@ -26,12 +26,14 @@ import { TabbedPanels } from '@/components/home/tabbed-panels';
 import { CountUp } from '@/components/motion/count-up';
 import { Reveal } from '@/components/motion/reveal';
 import { ButtonLink } from '@/components/ui/button';
+import { JsonLd } from '@/components/seo/json-ld';
 import { Container } from '@/components/ui/container';
 import { Stars } from '@/components/ui/stars';
 import { countryName } from '@/lib/countries';
 import { getCountryFacets, getFeaturedCompanies, getPosts, getRecentReviews, getServiceGroups, getSiteSettings, getStats, getTeamPicks, type RecentReview } from '@/lib/data';
 import { formatDate, formatRating } from '@/lib/format';
 import { INDUSTRIES } from '@/lib/labels';
+import { SITE_URL } from '@/lib/site';
 import type { CompanySummary, ServiceGroup } from '@/lib/types';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -42,6 +44,31 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: { canonical: '/' },
   };
 }
+
+/** Tells search engines who runs the site and how to search it (sitelinks search box). */
+const SITE_LD = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${SITE_URL}/#organization`,
+    name: 'Accelfied',
+    url: SITE_URL,
+    logo: `${SITE_URL}/logo.png`,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${SITE_URL}/#website`,
+    name: 'Accelfied',
+    url: SITE_URL,
+    publisher: { '@id': `${SITE_URL}/#organization` },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: { '@type': 'EntryPoint', urlTemplate: `${SITE_URL}/agencies?q={search_term_string}` },
+      'query-input': 'required name=search_term_string',
+    },
+  },
+];
 
 export default async function HomePage() {
   const [groups, stats, featured, reviews, countries, picks, posts] = await Promise.all([
@@ -58,6 +85,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <JsonLd data={SITE_LD} />
       {/* 1. Hero */}
       <section className="relative overflow-hidden bg-night text-paper">
         <div className="grid-lines absolute inset-0" aria-hidden="true" />

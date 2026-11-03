@@ -22,6 +22,9 @@ npm run dev                   # http://localhost:3000
 | `/services` | Every service, grouped |
 | `/agencies` | All companies with name search and filters |
 | `/agencies/[service]` | Companies for one service, with location, budget, rate, size, industry, rating and verified filters |
+| `/agencies/[service]/[country]`, `/agencies/[service]/[country]/[city]` | Location pages, for example "Top Web Development Companies in Pune", built from `/v1/seo/places`. Only places with listed companies exist |
+| `/badge/[slug]` | Embeddable SVG badge ("Verified on", "Reviewed on" or "Listed on Accelfied") that companies put on their own site |
+| `/dashboard/company/badge` | Badge preview and the HTML code to embed it |
 | `/profile/[slug]` | Company profile: overview, service focus, portfolio, rating breakdown and reviews |
 | `/get-a-quote` | Project brief form, optionally addressed to one company (`?company=`). Needs an account |
 | `/write-a-review` | Find a company, then a structured review form. Needs an account |
@@ -50,3 +53,11 @@ The session lives in an httpOnly `af_session` cookie set by server actions. Page
 - Page shells are prerendered (Partial Prerendering). Only the parts that depend on the URL query, such as filters and review pages, render per request, and they stream in.
 - When a moderator publishes a company or review, the API calls `/api/revalidate` with the affected tags. Visitors see the change on their next visit instead of waiting for the cache to expire.
 - Forms post through Server Actions. The API URL never reaches the browser, and the visitor's IP is forwarded so the API can rate-limit per person.
+
+## Search engines
+
+- **Metadata.** Every public page has a title, description and canonical URL. Link previews use generated images (`opengraph-image.tsx` for the site and per company profile). Form and account pages carry `noindex`; private areas are blocked in `robots.txt`.
+- **Structured data.** Home: `Organization` and `WebSite` with search. Directory and location pages: `BreadcrumbList` and `ItemList`. Profiles: `Organization` with `AggregateRating` and `Review` entries, only when published reviews exist.
+- **Sitemaps.** `robots.txt` lists `/sitemap.xml` (main pages and blog), `/agencies/sitemap.xml` (services and location pages) and `/profile/sitemap/<n>.xml` (40,000 profiles per file, so it keeps working at any size).
+- **Thin pages stay out.** A location page with fewer than `MIN_COMPANIES_TO_INDEX` (3) companies still works for visitors but is `noindex` and left out of the sitemap, until more companies join.
+- **Backlinks.** Companies copy their badge code from the dashboard. The badge links to their profile and reflects live data, and it says Verified only for companies on the Verified plan.
