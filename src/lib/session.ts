@@ -46,7 +46,8 @@ export function safeNext(value: unknown, fallback = '/dashboard'): string {
 export function sessionCookieOptions(expiresAt?: string) {
   return {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    // COOKIE_SECURE=false lets sign-in work over plain http (e.g. http://IP:port) until a domain with https is set up.
+    secure: process.env.COOKIE_SECURE ? process.env.COOKIE_SECURE === 'true' : process.env.NODE_ENV === 'production',
     sameSite: 'lax' as const,
     path: '/',
     ...(expiresAt ? { expires: new Date(expiresAt) } : {}),
