@@ -1,7 +1,7 @@
 import 'server-only';
 import { cacheLife, cacheTag } from 'next/cache';
 import { ApiError, apiGet } from './api';
-import type { CompanyProfile, CompanySummary, CountryFacet, Page, Review, Service, ServiceGroup } from './types';
+import type { CompanyProfile, CompanySummary, CountryFacet, Page, Post, PostCard, PostKind, Review, Service, ServiceGroup, SiteSettings } from './types';
 
 /**
  * Cached reads from the API. Every function here is safe to call from any
@@ -110,5 +110,62 @@ export async function getRecentReviews(limit = 6): Promise<RecentReview[]> {
   cacheLife({ stale: 120, revalidate: 300, expire: 86_400 });
   cacheTag('reviews');
   const { items } = await apiGet<{ items: RecentReview[] }>('/v1/reviews/recent', { limit });
+  return items;
+}
+
+const EMPTY_SEO = { title: '', description: '' };
+const DEFAULT_SETTINGS: SiteSettings = {
+  announcement: { active: false, text: '', linkLabel: '', href: '' },
+  contact: { email: '', phone: '', address: '' },
+  seo: { home: EMPTY_SEO, services: EMPTY_SEO, agencies: EMPTY_SEO, blog: EMPTY_SEO, getVerified: EMPTY_SEO },
+};
+
+/** Announcement bar, contact details and page titles set in the admin panel. */
+export async function getSiteSettings(): Promise<SiteSettings> {
+  'use cache';
+  cacheLife({ stale: 60, revalidate: 300, expire: 86_400 });
+  cacheTag('site');
+  try {
+    return await apiGet<SiteSettings>('/v1/site');
+  } catch (error) {
+    // The site keeps working on defaults if settings cannot be read.
+    console.error('Site settings unavailable', error);
+    return DEFAULT_SETTINGS;
+  }
+}
+
+/** Companies our team picked for the home page, in their order. */
+export async function getTeamPicks(): Promise<CompanySummary[]> {
+  'use cache';
+  cacheLife({ stale: 60, revalidate: 300, expire: 86_400 });
+  cacheTag('featured', 'companies');
+  const { items } = await apiGet<{ items: CompanySummary[] }>('/v1/companies/featured');
+  return items;
+}
+
+export async function getPosts(query: { kind?: PostKind; company?: string; page?: number; limit?: number } = {}): Promise<Page<PostCard>> {
+  'use cache';
+  cacheLife({ stale: 60, revalidate: 300, expire: 86_400 });
+  cacheTag('blog');
+  return apiGet<Page<PostCard>>('/v1/blog', { limit: 12, ...query });
+}
+
+export async function getPost(slug: string): Promise<Post | null> {
+  'use cache';
+  cacheLife({ stale: 60, revalidate: 300, expire: 86_400 });
+  cacheTag('blog', `blog:${slug}`);
+  try {
+    return await apiGet<Post>(`/v1/blog/${encodeURIComponent(slug)}`);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return null;
+    throw error;
+  }
+}
+
+export async function getSitemapPosts(): Promise<Array<{ slug: string; updatedAt: string }>> {
+  'use cache';
+  cacheLife('hours');
+  cacheTag('blog');
+  const { items } = await apiGet<{ items: Array<{ slug: string; updatedAt: string }> }>('/v1/blog/sitemap');
   return items;
 }

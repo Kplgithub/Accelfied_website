@@ -17,13 +17,16 @@ import type { Metadata } from 'next';
 import { Reveal } from '@/components/motion/reveal';
 import { ButtonLink } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
+import { withSeo } from '@/lib/seo';
 import { formatRupees, PLAN_COMPARISON, VERIFIED_PLAN, verifiedMonthlyWithGst } from '@/lib/verified-plan';
 
-export const metadata: Metadata = {
-  title: 'Get Verified',
-  description: `Accelfied Verified: the Verified badge, a place above other companies, unlimited reviews and promotion by our team, for ${formatRupees(VERIFIED_PLAN.monthly)} a month plus GST.`,
-  alternates: { canonical: '/get-verified' },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return withSeo('getVerified', {
+    title: 'Get Verified',
+    description: `Accelfied Verified: the Verified badge, a place above other companies, unlimited reviews and promotion by our team, for ${formatRupees(VERIFIED_PLAN.monthly)} a month plus GST.`,
+    alternates: { canonical: '/get-verified' },
+  });
+}
 
 const START = '/dashboard/company/verified';
 const PRICE = formatRupees(VERIFIED_PLAN.monthly);

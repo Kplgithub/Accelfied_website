@@ -3,12 +3,15 @@ import { Suspense } from 'react';
 import { DirectoryResults, DirectorySkeleton } from '@/components/directory/directory-results';
 import { Container } from '@/components/ui/container';
 import { parseDirectoryParams } from '@/lib/directory';
+import { withSeo } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'All companies',
-  description: 'Search every company on Accelfied and compare them by client reviews, rates, team size and location.',
-  alternates: { canonical: '/agencies' },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return withSeo('agencies', {
+    title: 'All companies',
+    description: 'Search every company on Accelfied and compare them by client reviews, rates, team size and location.',
+    alternates: { canonical: '/agencies' },
+  });
+}
 
 export default function AllAgenciesPage({ searchParams }: PageProps<'/agencies'>) {
   return (

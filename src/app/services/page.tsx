@@ -3,12 +3,15 @@ import Link from 'next/link';
 import { GroupIcon } from '@/components/home/group-icon';
 import { Container } from '@/components/ui/container';
 import { getServiceGroups } from '@/lib/data';
+import { withSeo } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'All services',
-  description: 'Browse every service on Accelfied, from software development and design to marketing, IT and business services.',
-  alternates: { canonical: '/services' },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return withSeo('services', {
+    title: 'All services',
+    description: 'Browse every service on Accelfied, from software development and design to marketing, IT and business services.',
+    alternates: { canonical: '/services' },
+  });
+}
 
 export default async function ServicesPage() {
   const groups = await getServiceGroups();

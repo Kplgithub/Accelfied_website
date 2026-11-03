@@ -202,3 +202,35 @@ export interface Invoice {
   razorpayPaymentId: string;
   seller: { legalName: string; gstin: string; address: string };
 }
+
+export type PostKind = 'article' | 'company-feature' | 'interview';
+
+export interface PostCard {
+  slug: string;
+  title: string;
+  excerpt: string;
+  coverUrl: string;
+  kind: PostKind;
+  company: { slug: string; name: string; logoUrl: string; verified: boolean } | null;
+  interviewee: { name: string; role: string };
+  tags: string[];
+  authorName: string;
+  publishedAt: string;
+  readMinutes: number;
+}
+
+export interface Post extends PostCard {
+  body: string;
+  seoTitle: string;
+  seoDescription: string;
+  updatedAt: string;
+}
+
+type SeoEntry = { title: string; description: string };
+
+/** Settings our team changes from the admin panel. */
+export interface SiteSettings {
+  announcement: { active: boolean; text: string; linkLabel: string; href: string };
+  contact: { email: string; phone: string; address: string };
+  seo: Record<'home' | 'services' | 'agencies' | 'blog' | 'getVerified', SeoEntry>;
+}

@@ -14,6 +14,7 @@ export const NAV_LINKS = [
   { href: '/services', label: 'Browse services' },
   { href: '/agencies', label: 'All companies' },
   { href: '/write-a-review', label: 'Write a review' },
+  { href: '/blog', label: 'Blog' },
   { href: '/get-listed', label: 'For companies' },
   { href: '/get-verified', label: 'Get Verified' },
 ];

@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
+import { PostCard } from '@/components/blog/post-card';
 import { CompanyLogo } from '@/components/company/company-logo';
 import { RatingInline } from '@/components/company/rating-inline';
 import { RatingSummary } from '@/components/company/rating-summary';
@@ -13,7 +14,7 @@ import { ButtonLink, buttonClass } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 import { EmptyState } from '@/components/ui/empty-state';
 import { countryName } from '@/lib/countries';
-import { getCompany, getCompanyReviews, getSitemapCompanies } from '@/lib/data';
+import { getCompany, getCompanyReviews, getPosts, getSitemapCompanies } from '@/lib/data';
 import { hostname } from '@/lib/format';
 import { hourlyRateLabel, minProjectLabel, teamSizeLabel } from '@/lib/labels';
 import { SITE_URL } from '@/lib/site';
@@ -91,6 +92,9 @@ async function Profile({ params, searchParams }: PageProps<'/profile/[slug]'>) {
               </div>
             )}
           </section>
+          <Suspense fallback={null}>
+            <CompanyPosts slug={company.slug} name={company.name} />
+          </Suspense>
         </div>
         <aside className="space-y-4 lg:sticky lg:top-32 lg:self-start">
           <QuoteCard company={company} />
@@ -302,7 +306,7 @@ async function ReviewList({ slug, searchParams }: { slug: string; searchParams: 
     <>
       <div className="space-y-6">
         {reviews.items.map((review) => (
-          <ReviewCard key={review.id} review={review} />
+          <ReviewCard key={review.id} review={review} reportFrom={`/profile/${slug}#reviews`} />
         ))}
       </div>
       <Pagination
@@ -311,6 +315,22 @@ async function ReviewList({ slug, searchParams }: { slug: string; searchParams: 
         hrefFor={(target) => `/profile/${slug}${target > 1 ? `?page=${target}` : ''}#reviews`}
       />
     </>
+  );
+}
+
+/** Blog posts and interviews that feature this company. Hidden when there are none. */
+async function CompanyPosts({ slug, name }: { slug: string; name: string }) {
+  const posts = await getPosts({ company: slug, limit: 4 });
+  if (!posts.items.length) return null;
+  return (
+    <section id="featured-in" className="scroll-mt-28 lg:scroll-mt-36">
+      <h2 className="font-display text-3xl font-semibold text-ink">{name} on the Accelfied blog</h2>
+      <div className="mt-6 grid gap-5 sm:grid-cols-2">
+        {posts.items.map((post) => (
+          <PostCard key={post.slug} post={post} />
+        ))}
+      </div>
+    </section>
   );
 }
 

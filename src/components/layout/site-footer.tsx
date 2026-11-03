@@ -1,5 +1,7 @@
+import { Mail, MapPin, Phone } from 'lucide-react';
 import { cacheLife } from 'next/cache';
 import Link from 'next/link';
+import { getSiteSettings } from '@/lib/data';
 import { Container } from '../ui/container';
 import { Logo } from './logo';
 
@@ -12,6 +14,7 @@ const COLUMNS = [
       { href: '/get-matched', label: 'Get matched' },
       { href: '/get-a-quote', label: 'Get a quote' },
       { href: '/write-a-review', label: 'Write a review' },
+      { href: '/blog', label: 'Blog and interviews' },
     ],
   },
   {
@@ -58,6 +61,7 @@ export function SiteFooter() {
           >
             Get matched with companies
           </Link>
+          <FooterContact />
         </div>
         {COLUMNS.map((column) => (
           <div key={column.title}>
@@ -83,6 +87,31 @@ export function SiteFooter() {
         </Container>
       </div>
     </footer>
+  );
+}
+
+/** Contact details set in the admin panel; nothing shows until they are filled in. */
+async function FooterContact() {
+  const { contact } = await getSiteSettings();
+  if (!contact.email && !contact.phone && !contact.address) return null;
+  return (
+    <address className="mt-7 space-y-2 text-[15px] not-italic text-paper/70">
+      {contact.email && (
+        <a href={`mailto:${contact.email}`} className="flex items-center gap-2 transition-colors hover:text-white">
+          <Mail className="size-4 shrink-0 text-accent-soft" aria-hidden="true" /> {contact.email}
+        </a>
+      )}
+      {contact.phone && (
+        <a href={`tel:${contact.phone.replace(/[^\d+]/g, '')}`} className="flex items-center gap-2 transition-colors hover:text-white">
+          <Phone className="size-4 shrink-0 text-accent-soft" aria-hidden="true" /> {contact.phone}
+        </a>
+      )}
+      {contact.address && (
+        <p className="flex items-start gap-2">
+          <MapPin className="mt-1 size-4 shrink-0 text-accent-soft" aria-hidden="true" /> {contact.address}
+        </p>
+      )}
+    </address>
   );
 }
 

@@ -3,6 +3,7 @@ import { formatDate, formatMonthYear, formatRating } from '@/lib/format';
 import { budgetLabel, teamSizeLabel } from '@/lib/labels';
 import type { Review } from '@/lib/types';
 import { Stars } from '../ui/stars';
+import { ReportReview } from './report-review';
 
 const SCORES: Array<{ key: keyof Review['ratings']; label: string }> = [
   { key: 'quality', label: 'Quality' },
@@ -11,7 +12,8 @@ const SCORES: Array<{ key: keyof Review['ratings']; label: string }> = [
   { key: 'willingToRefer', label: 'Would refer' },
 ];
 
-export function ReviewCard({ review }: { review: Review }) {
+/** `reportFrom` is the page to come back to after logging in to report the review. */
+export function ReviewCard({ review, reportFrom }: { review: Review; reportFrom?: string }) {
   const { reviewer, project } = review;
   const period = `${formatMonthYear(project.startedOn)} – ${project.ongoing || !project.endedOn ? 'Ongoing' : formatMonthYear(project.endedOn)}`;
 
@@ -87,6 +89,7 @@ export function ReviewCard({ review }: { review: Review }) {
             <Section title="Results">{review.content.results}</Section>
           </div>
           {review.publishedAt && <p className="mt-6 text-[13px] text-ink-faint">Published {formatDate(review.publishedAt)}</p>}
+          {reportFrom && <ReportReview reviewId={review.id} returnTo={reportFrom} />}
         </div>
       </div>
     </article>
