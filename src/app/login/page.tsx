@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import { AuthShell } from '@/components/auth/auth-shell';
 import { LoginForm } from '@/components/auth/login-form';
+import { OAuthNotice, SocialSignIn } from '@/components/auth/social-sign-in';
 import { getCurrentUser, safeNext } from '@/lib/session';
 
 export const metadata: Metadata = {
@@ -35,10 +36,12 @@ async function LoginContent({ searchParams }: Pick<PageProps<'/login'>, 'searchP
       intro={next ? 'Log in to continue where you left off.' : 'Pick up your briefs, reviews and company profile where you left them.'}
     >
       {params.reset === '1' && (
-        <p role="status" className="mb-5 rounded-xl border border-brand/25 bg-brand-tint px-4 py-3 text-[15px] font-medium text-brand">
+        <p role="status" className="mb-5 rounded-xl border border-accent/25 bg-accent-tint px-4 py-3 text-[15px] font-medium text-accent">
           Your password is changed. Log in with the new one.
         </p>
       )}
+      <OAuthNotice reason={typeof params.oauth === 'string' ? params.oauth : undefined} provider={typeof params.provider === 'string' ? params.provider : undefined} />
+      <SocialSignIn from="login" next={next} />
       <LoginForm next={next} />
     </AuthShell>
   );

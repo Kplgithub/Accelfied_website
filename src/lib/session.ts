@@ -38,5 +38,17 @@ export function loginHref(returnTo: string): string {
 /** Only same-site paths are allowed as a post-login destination. */
 export function safeNext(value: unknown, fallback = '/dashboard'): string {
   if (typeof value !== 'string' || !value.startsWith('/') || value.startsWith('//') || value.startsWith('/\\')) return fallback;
-  return value.slice(0, 500);
+  // Long enough for a carried-over brief from /get-matched; cutting a URL short would break it.
+  return value.length <= 6000 ? value : fallback;
+}
+
+/** Cookie settings for a new session. Without an expiry the cookie ends with the browser session. */
+export function sessionCookieOptions(expiresAt?: string) {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax' as const,
+    path: '/',
+    ...(expiresAt ? { expires: new Date(expiresAt) } : {}),
+  };
 }

@@ -39,7 +39,7 @@ export function JoinForm({ accountType, next }: { accountType: AccountType; next
       </Field>
       <div>
         <label className="flex cursor-pointer items-start gap-3 text-sm text-ink-soft">
-          <input type="checkbox" name="terms" defaultChecked={checked('terms')} className="mt-0.5 size-4 accent-brand" aria-invalid={Boolean(error('terms'))} />
+          <input type="checkbox" name="terms" defaultChecked={checked('terms')} className="mt-0.5 size-4 accent-accent" aria-invalid={Boolean(error('terms'))} />
           <span>I agree to the Accelfied terms of use and privacy policy.</span>
         </label>
         {error('terms') && (
@@ -53,7 +53,7 @@ export function JoinForm({ accountType, next }: { accountType: AccountType; next
       </SubmitButton>
       <p className="text-center text-sm text-ink-soft">
         Already have an account?{' '}
-        <Link href={next ? `/login?next=${encodeURIComponent(next)}` : '/login'} className="font-medium text-brand underline-offset-4 hover:underline">
+        <Link href={next ? `/login?next=${encodeURIComponent(next)}` : '/login'} className="font-medium text-accent underline-offset-4 hover:underline">
           Log in
         </Link>
       </p>

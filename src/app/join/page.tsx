@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import { AuthShell } from '@/components/auth/auth-shell';
 import { JoinForm } from '@/components/auth/join-form';
+import { OAuthNotice, SocialSignIn } from '@/components/auth/social-sign-in';
 import { getCurrentUser, safeNext } from '@/lib/session';
 import type { AccountType } from '@/lib/types';
 
@@ -28,6 +29,8 @@ const ROLES: Array<{ value: AccountType; icon: typeof Search; title: string; tex
     text: 'Create a free profile, collect reviews from past clients and receive project requests.',
   },
 ];
+
+const one = (value: string | string[] | undefined) => (typeof value === 'string' ? value : undefined);
 
 export default function JoinPage({ searchParams }: PageProps<'/join'>) {
   return (
@@ -61,15 +64,15 @@ async function JoinContent({ searchParams }: Pick<PageProps<'/join'>, 'searchPar
             <li key={value}>
               <Link
                 href={withNext(`/join?as=${value}`)}
-                className="group flex items-start gap-4 rounded-2xl border border-line p-5 transition-[border-color,box-shadow] duration-200 hover:border-brand hover:shadow-[var(--shadow-card)]"
+                className="group flex items-start gap-4 rounded-2xl border border-line p-5 transition-[border-color,box-shadow] duration-200 hover:border-accent hover:shadow-[var(--shadow-card)]"
               >
-                <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-tint text-brand">
+                <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-xl bg-accent-tint text-accent">
                   <Icon className="size-5" aria-hidden="true" />
                 </span>
                 <span className="flex-1">
                   <span className="flex items-center justify-between gap-2 font-medium text-ink">
                     {title}
-                    <ArrowRight className="size-4 text-ink-faint transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-brand" aria-hidden="true" />
+                    <ArrowRight className="size-4 text-ink-faint transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-accent" aria-hidden="true" />
                   </span>
                   <span className="mt-1 block text-sm text-ink-soft">{text}</span>
                 </span>
@@ -79,7 +82,7 @@ async function JoinContent({ searchParams }: Pick<PageProps<'/join'>, 'searchPar
         </ul>
         <p className="mt-6 text-center text-sm text-ink-soft">
           Already have an account?{' '}
-          <Link href={withNext('/login')} className="font-medium text-brand underline-offset-4 hover:underline">
+          <Link href={withNext('/login')} className="font-medium text-accent underline-offset-4 hover:underline">
             Log in
           </Link>
         </p>
@@ -98,14 +101,16 @@ async function JoinContent({ searchParams }: Pick<PageProps<'/join'>, 'searchPar
           : 'Save time on every project: send briefs, track replies and share reviews from one place.'
       }
       aside={
-        <Link href={withNext('/join')} className="text-sm font-medium text-brand underline-offset-4 hover:underline">
+        <Link href={withNext('/join')} className="text-sm font-medium text-accent underline-offset-4 hover:underline">
           {isProvider ? 'Looking to hire instead?' : 'Want to list your company instead?'}
         </Link>
       }
     >
+      <OAuthNotice reason={one(params.oauth)} provider={one(params.provider)} />
+      <SocialSignIn from="join" accountType={role} next={next} />
       <JoinForm accountType={role} next={next} />
       <p className="mt-5 text-center text-sm lg:hidden">
-        <Link href={withNext('/join')} className="font-medium text-brand underline-offset-4 hover:underline">
+        <Link href={withNext('/join')} className="font-medium text-accent underline-offset-4 hover:underline">
           {isProvider ? 'Looking to hire instead?' : 'Want to list your company instead?'}
         </Link>
       </p>

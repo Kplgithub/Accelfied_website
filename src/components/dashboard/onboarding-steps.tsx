@@ -66,7 +66,7 @@ export function OnboardingSteps({ steps }: { steps: Step[] }) {
             <li key={step.title} className={`flex gap-4 rounded-2xl p-3.5 ${isCurrent ? 'bg-paper' : ''}`}>
               <span
                 className={`mt-0.5 inline-flex size-7 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
-                  step.done ? 'bg-brand text-white' : isCurrent ? 'bg-saffron text-night' : 'bg-paper-deep text-ink-faint'
+                  step.done ? 'bg-accent text-white' : isCurrent ? 'bg-brand text-white' : 'bg-paper-deep text-ink-faint'
                 }`}
               >
                 {step.done ? <Check className="size-4" aria-hidden="true" /> : index + 1}

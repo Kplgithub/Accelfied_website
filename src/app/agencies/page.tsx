@@ -15,7 +15,7 @@ export default function AllAgenciesPage({ searchParams }: PageProps<'/agencies'>
     <>
       <section className="grain border-b border-line">
         <Container className="py-12 lg:py-16">
-          <p className="text-sm font-semibold tracking-[0.16em] text-saffron-ink uppercase">Directory</p>
+          <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">Directory</p>
           <h1 className="mt-3 font-display text-4xl leading-tight font-semibold tracking-tight text-ink sm:text-5xl">
             Every company on Accelfied
           </h1>

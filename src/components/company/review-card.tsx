@@ -58,7 +58,7 @@ export function ReviewCard({ review }: { review: Review }) {
               )}
             </ul>
             {review.verified && (
-              <p className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-medium text-brand">
+              <p className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-medium text-accent">
                 <BadgeCheck className="size-4" aria-hidden="true" />
                 Verified client
               </p>
@@ -67,7 +67,7 @@ export function ReviewCard({ review }: { review: Review }) {
         </aside>
 
         <div className="min-w-0">
-          <p className="text-xs font-semibold tracking-[0.12em] text-saffron-ink uppercase">{project.serviceName}</p>
+          <p className="text-xs font-semibold tracking-[0.12em] text-brand uppercase">{project.serviceName}</p>
           <h3 className="mt-1.5 font-display text-2xl leading-snug font-semibold text-ink">{project.title}</h3>
           <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-ink-soft">
             <li className="inline-flex items-center gap-1.5">

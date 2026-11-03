@@ -25,7 +25,7 @@ export function HeroSearch({ groups }: { groups: ServiceGroup[] }) {
     <form onSubmit={onSubmit} className="w-full" role="search" aria-label="Find companies">
       <div className="flex flex-col gap-2 rounded-[1.6rem] border border-line bg-surface p-2 shadow-[var(--shadow-lift)] md:flex-row md:items-center md:gap-0">
         <label className="flex flex-1 items-center gap-3 rounded-2xl px-4 py-3 md:py-2">
-          <Search className="size-5 shrink-0 text-brand" aria-hidden="true" />
+          <Search className="size-5 shrink-0 text-accent" aria-hidden="true" />
           <span className="sr-only">Service you need</span>
           <select
             value={service}
@@ -51,7 +51,7 @@ export function HeroSearch({ groups }: { groups: ServiceGroup[] }) {
         </label>
         <span className="hidden h-8 w-px bg-line md:block" aria-hidden="true" />
         <label className="flex flex-1 items-center gap-3 rounded-2xl px-4 py-3 md:py-2">
-          <MapPin className="size-5 shrink-0 text-brand" aria-hidden="true" />
+          <MapPin className="size-5 shrink-0 text-accent" aria-hidden="true" />
           <span className="sr-only">Location</span>
           <select
             value={country}

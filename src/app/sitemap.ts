@@ -10,6 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/agencies`, changeFrequency: 'daily', priority: 0.8 },
     { url: `${SITE_URL}/get-listed`, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${SITE_URL}/how-reviews-work`, changeFrequency: 'monthly', priority: 0.4 },
+    { url: `${SITE_URL}/get-verified`, changeFrequency: 'monthly', priority: 0.5 },
     ...groups.flatMap((group) =>
       group.services.map((service) => ({
         url: `${SITE_URL}/agencies/${service.slug}`,

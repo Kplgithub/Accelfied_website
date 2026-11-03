@@ -29,7 +29,7 @@ export default async function PortfolioPage() {
               </div>
               {item.description && <p className="mt-2 line-clamp-3 text-sm text-ink-soft">{item.description}</p>}
               {item.url && (
-                <a href={item.url} target="_blank" rel="noopener noreferrer" className="mt-auto inline-flex items-center gap-1.5 pt-3 text-sm font-medium text-brand underline-offset-4 hover:underline">
+                <a href={item.url} target="_blank" rel="noopener noreferrer" className="mt-auto inline-flex items-center gap-1.5 pt-3 text-sm font-medium text-accent underline-offset-4 hover:underline">
                   View project
                   <ExternalLink className="size-3.5" aria-hidden="true" />
                 </a>

@@ -29,7 +29,7 @@ export function StarInput({ name, label, defaultValue, error }: { name: string; 
               />
               <svg
                 viewBox="0 0 20 20"
-                className={`size-8 transition-transform duration-150 peer-focus-visible:outline-2 peer-focus-visible:outline-brand hover:scale-110 ${star <= shown ? 'fill-saffron' : 'fill-line-strong'}`}
+                className={`size-8 transition-transform duration-150 peer-focus-visible:outline-2 peer-focus-visible:outline-accent hover:scale-110 ${star <= shown ? 'fill-saffron' : 'fill-line-strong'}`}
                 aria-hidden="true"
               >
                 <path d="M10 1.6l2.47 5.2 5.66.7-4.17 3.9 1.07 5.62L10 14.3l-5.03 2.72 1.07-5.62L1.87 7.5l5.66-.7L10 1.6z" />

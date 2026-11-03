@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 export function Badge({ children, tone = 'neutral' }: { children: ReactNode; tone?: 'neutral' | 'brand' | 'saffron' }) {
   const tones = {
     neutral: 'bg-paper-deep text-ink-soft',
-    brand: 'bg-brand-tint text-brand',
+    brand: 'bg-accent-tint text-accent',
     saffron: 'bg-saffron-tint text-saffron-ink',
   };
   return (

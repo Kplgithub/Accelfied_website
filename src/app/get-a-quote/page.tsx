@@ -32,7 +32,7 @@ async function QuoteContent({ searchParams }: Pick<PageProps<'/get-a-quote'>, 's
   return (
     <>
       <header className="mb-10 max-w-2xl">
-        <p className="text-sm font-semibold tracking-[0.16em] text-saffron-ink uppercase">Get a quote</p>
+        <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">Get a quote</p>
         <h1 className="mt-3 font-display text-4xl leading-tight font-semibold tracking-tight text-ink sm:text-5xl">
           {company ? `Tell ${company.name} about your project` : 'Tell us about your project'}
         </h1>

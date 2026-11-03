@@ -15,7 +15,7 @@ export function MyReviewCard({ review }: { review: OwnedReview | AuthoredReview 
           <p className="text-sm text-ink-soft">
             {company ? (
               company.published ? (
-                <Link href={`/profile/${company.slug}`} className="font-medium text-brand underline-offset-4 hover:underline">
+                <Link href={`/profile/${company.slug}`} className="font-medium text-accent underline-offset-4 hover:underline">
                   {company.name}
                 </Link>
               ) : (
@@ -31,7 +31,7 @@ export function MyReviewCard({ review }: { review: OwnedReview | AuthoredReview 
             {review.project.serviceName}
           </p>
         </div>
-        <StatusPill status={review.status} />
+        <StatusPill status={review.status} kind="review" />
       </div>
       <div className="mt-3 flex items-center gap-2">
         <Stars value={review.ratings.overall} />

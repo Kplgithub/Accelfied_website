@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Hourglass } from 'lucide-react';
 import { useFormStatus } from 'react-dom';
 import type { FormState } from '@/lib/form-state';
 import { Button } from '../ui/button';
@@ -49,19 +49,52 @@ export function FormAlert({ state }: { state: FormState }) {
 export function FormSaved({ state }: { state: FormState }) {
   if (state.status !== 'success' || !state.message) return null;
   return (
-    <div role="status" className="flex items-center gap-2 rounded-xl border border-brand/25 bg-brand-tint px-4 py-3 text-[15px] font-medium text-brand">
+    <div role="status" className="flex items-center gap-2 rounded-xl border border-accent/25 bg-accent-tint px-4 py-3 text-[15px] font-medium text-accent">
       <CheckCircle2 className="size-4 shrink-0" aria-hidden="true" />
       {state.message}
     </div>
   );
 }
 
-export function SuccessPanel({ title, message, children }: { title: string; message?: string; children?: React.ReactNode }) {
+interface SuccessProps {
+  title: string;
+  message?: string;
+  children?: React.ReactNode;
+  /** Shows a "waiting on our team" timeline: done, in progress, still to come. */
+  steps?: [string, string, string];
+}
+
+export function SuccessPanel({ title, message, children, steps }: SuccessProps) {
   return (
     <div role="status" className="grain rounded-[var(--radius-card)] border border-line bg-surface p-8 text-center sm:p-12">
-      <CheckCircle2 className="mx-auto size-12 text-brand" aria-hidden="true" />
-      <h2 className="mt-4 font-display text-3xl font-semibold text-ink">{title}</h2>
+      {steps ? (
+        <span className="relative mx-auto flex size-16 items-center justify-center">
+          <span className="absolute inset-0 animate-ping rounded-full bg-saffron/25 motion-reduce:animate-none" aria-hidden="true" />
+          <span className="relative inline-flex size-16 items-center justify-center rounded-full bg-saffron-tint text-saffron-ink">
+            <Hourglass className="size-7" aria-hidden="true" />
+          </span>
+        </span>
+      ) : (
+        <CheckCircle2 className="mx-auto size-12 text-accent" aria-hidden="true" />
+      )}
+      <h2 className="mt-5 font-display text-3xl font-semibold text-ink">{title}</h2>
       {message && <p className="mx-auto mt-3 max-w-md text-ink-soft">{message}</p>}
+      {steps && (
+        <ol className="mx-auto mt-8 grid max-w-lg grid-cols-3 gap-2 text-left text-xs sm:text-sm">
+          {steps.map((step, index) => (
+            <li key={step} className="flex flex-col gap-2">
+              <span
+                className={`h-1.5 rounded-full ${index === 0 ? 'bg-accent' : index === 1 ? 'animate-pulse bg-saffron' : 'bg-line'}`}
+                aria-hidden="true"
+              />
+              <span className={index === 2 ? 'text-ink-faint' : 'font-medium text-ink'}>
+                {step}
+                <span className="sr-only">{index === 0 ? ' (done)' : index === 1 ? ' (in progress)' : ' (next)'}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
+      )}
       {children && <div className="mt-8 flex flex-wrap justify-center gap-3">{children}</div>}
     </div>
   );
