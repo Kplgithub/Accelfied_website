@@ -20,7 +20,7 @@ export const NAV_LINKS = [
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-line/80 bg-paper/85 backdrop-blur-md supports-[backdrop-filter]:bg-paper/75">
+    <header className="sticky top-0 z-40 print:hidden border-b border-line/80 bg-paper/85 backdrop-blur-md supports-[backdrop-filter]:bg-paper/75">
       <Container className="flex h-16 items-center justify-between gap-6 lg:h-[68px]">
         <Logo />
         <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">

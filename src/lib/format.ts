@@ -10,6 +10,7 @@ const fullDate = new Intl.DateTimeFormat('en-IN', {
   minute: '2-digit',
   timeZone: TIME_ZONE,
 });
+const dayOnly = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: TIME_ZONE });
 const compact = new Intl.NumberFormat('en-IN', { notation: 'compact', maximumFractionDigits: 1 });
 const whole = new Intl.NumberFormat('en-IN');
 
@@ -19,6 +20,11 @@ export function formatMonthYear(iso: string): string {
 
 export function formatDate(iso: string): string {
   return `${fullDate.format(new Date(iso))} IST`;
+}
+
+/** Calendar day in IST, without the time. */
+export function formatDay(iso: string): string {
+  return dayOnly.format(new Date(iso));
 }
 
 export function formatCount(value: number): string {

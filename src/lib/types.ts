@@ -160,3 +160,45 @@ export interface CompanyClaim {
   decidedAt: string | null;
   company: { slug: string; name: string } | null;
 }
+
+export type SubscriptionStatus = 'created' | 'authenticated' | 'active' | 'pending' | 'halted' | 'cancelled' | 'completed' | 'expired' | 'paused';
+
+export interface VerificationDetails {
+  legalName: string;
+  gstin?: string;
+  registrationNumber: string;
+  pan: string;
+  address: string;
+  status: 'pending' | 'approved' | 'rejected';
+  reviewNote?: string;
+  submittedAt: string;
+  decidedAt: string | null;
+}
+
+/** Amounts are in paise. */
+export interface Billing {
+  enabled: boolean;
+  keyId: string | null;
+  plan: { name: string; taxable: number; gst: number; total: number; currency: 'INR' };
+  company: { id: string; name: string; status: CompanyStatus; verified: boolean } | null;
+  subscription: { id: string; status: SubscriptionStatus; currentEnd: string | null; cancelAtCycleEnd: boolean } | null;
+  verification: VerificationDetails | null;
+  invoices: Array<{ id: string; number: string; total: number; paidAt: string; periodStart: string | null; periodEnd: string | null }>;
+}
+
+export interface Invoice {
+  _id: string;
+  number: string;
+  description: string;
+  taxable: number;
+  cgst: number;
+  sgst: number;
+  igst: number;
+  total: number;
+  billedTo: { name: string; gstin?: string; address?: string };
+  periodStart: string | null;
+  periodEnd: string | null;
+  paidAt: string;
+  razorpayPaymentId: string;
+  seller: { legalName: string; gstin: string; address: string };
+}

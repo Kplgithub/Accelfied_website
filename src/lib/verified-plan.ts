@@ -47,3 +47,10 @@ export const PLAN_COMPARISON: Array<{ title: string; rows: Array<{ label: string
     ],
   },
 ];
+
+/** Subscription states in which the company has paid for the current month. */
+export const PAYING_STATUSES = ['authenticated', 'active', 'pending'] as const;
+
+/** Paise to rupees, with paise shown. */
+export const formatPaise = (paise: number) =>
+  new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 }).format(paise / 100);

@@ -13,8 +13,8 @@ export const metadata: Metadata = {
 
 export default function DashboardLayout({ children }: LayoutProps<'/dashboard'>) {
   return (
-    <Container className="grid grid-cols-1 gap-8 py-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-12 lg:py-12">
-      <aside className="min-w-0 lg:sticky lg:top-32 lg:self-start">
+    <Container className="grid grid-cols-1 gap-8 py-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-12 lg:py-12 print:block print:py-0">
+      <aside className="min-w-0 print:hidden lg:sticky lg:top-32 lg:self-start">
         <Suspense fallback={<div className="h-10 lg:h-80" />}>
           <Nav />
         </Suspense>
@@ -40,7 +40,8 @@ async function Nav() {
           { href: '/dashboard/company/requests', label: 'Project requests' },
           { href: '/dashboard/company/reviews', label: 'Client reviews' },
           { href: '/dashboard/company/portfolio', label: 'Portfolio' },
-          { href: '/dashboard/company/verified', label: 'Get Verified' },
+          { href: '/dashboard/company/verified', label: company.verified ? 'Verified plan' : 'Get Verified' },
+          { href: '/dashboard/company/billing', label: 'Billing' },
         ]
       : [{ href: '/dashboard/company', label: 'List your company' }],
   };
