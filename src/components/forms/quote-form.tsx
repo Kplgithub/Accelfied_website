@@ -13,15 +13,17 @@ import { formFields } from './use-form-fields';
 interface Props {
   groups: ServiceGroup[];
   company?: { slug: string; name: string; services: Array<{ slug: string }> };
+  account: { name: string; email: string };
 }
 
-export function QuoteForm({ groups, company }: Props) {
+export function QuoteForm({ groups, company, account }: Props) {
   const [state, action] = useActionState(requestQuote, initialFormState);
   const { value, error } = formFields(state);
 
   if (state.status === 'success') {
     return (
       <SuccessPanel title="Brief sent" message={state.message}>
+        <ButtonLink href="/dashboard/requests">Track it in your dashboard</ButtonLink>
         <ButtonLink href={company ? `/profile/${company.slug}` : '/agencies'} variant="secondary">
           {company ? `Back to ${company.name}` : 'Keep browsing'}
         </ButtonLink>
@@ -101,12 +103,14 @@ export function QuoteForm({ groups, company }: Props) {
         </div>
       </FormSection>
 
-      <FormSection title="Your details" description="Shared only with the companies you contact.">
+      <FormSection title="Your details" description="Shared only with the companies you contact. Replies come to your account email.">
+        <div className="sm:col-span-2 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-paper px-4 py-3 text-sm">
+          <span className="text-ink-soft">
+            Signed in as <span className="font-medium text-ink">{account.email}</span>
+          </span>
+        </div>
         <Field label="Full name" name="contact.name" error={error('contact.name')}>
-          {(ids) => <Input id={ids.id} name="contact.name" autoComplete="name" defaultValue={value('contact.name')} required aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
-        </Field>
-        <Field label="Work email" name="contact.email" error={error('contact.email')}>
-          {(ids) => <Input id={ids.id} type="email" name="contact.email" autoComplete="email" defaultValue={value('contact.email')} required aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
+          {(ids) => <Input id={ids.id} name="contact.name" autoComplete="name" defaultValue={value('contact.name') || account.name} required aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
         </Field>
         <Field label="Phone" name="contact.phone" optional error={error('contact.phone')}>
           {(ids) => <Input id={ids.id} type="tel" name="contact.phone" autoComplete="tel" defaultValue={value('contact.phone')} aria-describedby={ids.describedBy} />}

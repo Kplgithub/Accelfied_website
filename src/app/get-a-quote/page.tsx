@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { QuoteForm } from '@/components/forms/quote-form';
 import { Container } from '@/components/ui/container';
+import { SignInPrompt } from '@/components/auth/sign-in-prompt';
 import { getCompany, getServiceGroups } from '@/lib/data';
+import { getCurrentUser } from '@/lib/session';
 
 export const metadata: Metadata = {
   title: 'Get a quote',
@@ -22,9 +24,10 @@ export default function GetAQuotePage({ searchParams }: PageProps<'/get-a-quote'
 
 async function QuoteContent({ searchParams }: Pick<PageProps<'/get-a-quote'>, 'searchParams'>) {
   const { company: slug } = await searchParams;
-  const [groups, company] = await Promise.all([
+  const [groups, company, user] = await Promise.all([
     getServiceGroups(),
     typeof slug === 'string' && slug ? getCompany(slug) : Promise.resolve(null),
+    getCurrentUser(),
   ]);
   return (
     <>
@@ -39,12 +42,21 @@ async function QuoteContent({ searchParams }: Pick<PageProps<'/get-a-quote'>, 's
             : 'Share your brief once. We will match it with companies that fit your budget, timeline and service.'}
         </p>
       </header>
-      <div className="rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-[var(--shadow-card)] sm:p-10">
-        <QuoteForm
-          groups={groups}
-          company={company ? { slug: company.slug, name: company.name, services: company.services } : undefined}
+      {user ? (
+        <div className="rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-[var(--shadow-card)] sm:p-10">
+          <QuoteForm
+            groups={groups}
+            company={company ? { slug: company.slug, name: company.name, services: company.services } : undefined}
+            account={{ name: `${user.firstName} ${user.lastName}`, email: user.email }}
+          />
+        </div>
+      ) : (
+        <SignInPrompt
+          title="Log in to send your brief"
+          text="With a free account you can follow every reply and quote in one place."
+          returnTo={company ? `/get-a-quote?company=${company.slug}` : '/get-a-quote'}
         />
-      </div>
+      )}
     </>
   );
 }

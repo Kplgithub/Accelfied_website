@@ -1,0 +1,45 @@
+import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import { AuthShell } from '@/components/auth/auth-shell';
+import { LoginForm } from '@/components/auth/login-form';
+import { getCurrentUser, safeNext } from '@/lib/session';
+
+export const metadata: Metadata = {
+  title: 'Log in',
+  description: 'Log in to your Accelfied account.',
+  alternates: { canonical: '/login' },
+};
+
+export default function LoginPage({ searchParams }: PageProps<'/login'>) {
+  return (
+    <Suspense fallback={<div className="h-[560px]" />}>
+      <LoginContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function LoginContent({ searchParams }: Pick<PageProps<'/login'>, 'searchParams'>) {
+  const params = await searchParams;
+  const next = typeof params.next === 'string' ? safeNext(params.next, '') || undefined : undefined;
+  if (await getCurrentUser()) redirect(next ?? '/dashboard');
+
+  return (
+    <AuthShell
+      eyebrow="Welcome back"
+      title={
+        <>
+          Log in to <span className="scribble italic">Accelfied</span>
+        </>
+      }
+      intro={next ? 'Log in to continue where you left off.' : 'Pick up your briefs, reviews and company profile where you left them.'}
+    >
+      {params.reset === '1' && (
+        <p role="status" className="mb-5 rounded-xl border border-brand/25 bg-brand-tint px-4 py-3 text-[15px] font-medium text-brand">
+          Your password is changed. Log in with the new one.
+        </p>
+      )}
+      <LoginForm next={next} />
+    </AuthShell>
+  );
+}

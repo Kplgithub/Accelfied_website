@@ -88,3 +88,4 @@ export const teamSizeLabel = lookup(TEAM_SIZES);
 export const hourlyRateLabel = lookup(HOURLY_RATES);
 export const minProjectLabel = lookup(MIN_PROJECT_SIZES);
 export const budgetLabel = lookup(BUDGETS);
+export const timelineLabel = lookup(TIMELINES);

@@ -1,5 +1,8 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
+import { getCurrentUser } from '@/lib/session';
 import { ButtonLink } from '../ui/button';
+import { AccountMenu } from './account-menu';
 import { Container } from '../ui/container';
 import { Logo } from './logo';
 import { MobileMenu } from './mobile-menu';
@@ -28,12 +31,47 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <ButtonLink href="/get-a-quote" size="sm" className="hidden sm:inline-flex">
-            Get a quote
-          </ButtonLink>
-          <MobileMenu links={NAV_LINKS} />
+          <Suspense
+            fallback={
+              <>
+                <QuoteButton />
+                <MobileMenu links={NAV_LINKS} />
+              </>
+            }
+          >
+            <AccountActions />
+          </Suspense>
         </div>
       </Container>
     </header>
+  );
+}
+
+/** Reads the session cookie, so it streams in after the static header. */
+async function AccountActions() {
+  const user = await getCurrentUser();
+  return (
+    <>
+      {user ? (
+        <AccountMenu firstName={user.firstName} lastName={user.lastName} email={user.email} />
+      ) : (
+        <Link
+          href="/login"
+          className="hidden rounded-full px-3.5 py-2 text-[15px] font-medium text-ink transition-colors duration-150 hover:bg-ink/5 lg:inline-flex"
+        >
+          Log in
+        </Link>
+      )}
+      <QuoteButton />
+      <MobileMenu links={NAV_LINKS} account={user ? { firstName: user.firstName, email: user.email } : null} />
+    </>
+  );
+}
+
+function QuoteButton() {
+  return (
+    <ButtonLink href="/get-a-quote" size="sm" className="hidden sm:inline-flex">
+      Get a quote
+    </ButtonLink>
   );
 }
