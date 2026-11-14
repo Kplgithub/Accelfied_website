@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { Markdown } from '@/components/blog/markdown';
 import { KIND_LABEL, PostCard } from '@/components/blog/post-card';
+import { ReadTracker } from '@/components/blog/read-tracker';
 import { CompanyLogo } from '@/components/company/company-logo';
 import { ButtonLink } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
@@ -61,6 +62,7 @@ async function PostView({ params }: Pick<PageProps<'/blog/[slug]'>, 'params'>) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
+      <ReadTracker slug={post.slug} bodyId="post-body" />
       <article>
         <header className="grain border-b border-line">
           <Container className="max-w-4xl py-12 lg:py-16">
@@ -86,7 +88,7 @@ async function PostView({ params }: Pick<PageProps<'/blog/[slug]'>, 'params'>) {
           </Container>
         )}
         <Container className="grid max-w-5xl gap-10 py-12 lg:grid-cols-[minmax(0,1fr)_260px] lg:py-16">
-          <div className="min-w-0">
+          <div id="post-body" className="min-w-0">
             {post.interviewee.name && (
               <p className="mb-8 rounded-2xl border border-line bg-surface px-5 py-4 text-[15px] text-ink-soft">
                 In conversation with <span className="font-semibold text-ink">{post.interviewee.name}</span>
