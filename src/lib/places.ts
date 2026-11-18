@@ -6,10 +6,11 @@ import type { ServicePlace } from './types';
 
 /**
  * Location pages with fewer companies than this stay reachable for visitors
- * but are kept out of search results and the sitemap, so search engines only
- * see pages with enough real listings to be useful.
+ * but are kept out of search results and the sitemap. One company is enough
+ * (kapil, 2026-11-18): every location page also carries its own real-data facts
+ * and FAQ (PlaceFacts), so even a small page is not thin.
  */
-export const MIN_COMPANIES_TO_INDEX = 3;
+export const MIN_COMPANIES_TO_INDEX = 1;
 
 /** URL-safe form of a place name: "New Delhi" becomes "new-delhi". */
 export function placeSlug(input: string): string {

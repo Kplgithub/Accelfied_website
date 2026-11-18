@@ -6,8 +6,8 @@ export function generateStaticParams() {
   return placeStaticParams('city');
 }
 
-export async function generateMetadata({ params }: PageProps<'/agencies/[service]/[country]/[city]'>): Promise<Metadata> {
-  return placeMetadata(await params);
+export async function generateMetadata({ params, searchParams }: PageProps<'/agencies/[service]/[country]/[city]'>): Promise<Metadata> {
+  return placeMetadata(await params, searchParams);
 }
 
 /** "Top web development companies in Pune": one page per service and city with listed companies. */

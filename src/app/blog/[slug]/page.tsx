@@ -10,6 +10,7 @@ import { CompanyLogo } from '@/components/company/company-logo';
 import { JsonLd, breadcrumbLd } from '@/components/seo/json-ld';
 import { ButtonLink } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
+import { blogFaq } from '@/lib/blog-faq';
 import { getPost, getPosts, getSitemapPosts } from '@/lib/data';
 import { formatDay } from '@/lib/format';
 import { MAX_TITLE, OG_DEFAULTS } from '@/lib/seo-text';
@@ -59,6 +60,7 @@ async function PostView({ params }: Pick<PageProps<'/blog/[slug]'>, 'params'>) {
   const { slug } = await params;
   const post = await getPost(slug);
   if (!post) notFound();
+  const faq = blogFaq(post.body);
   const more = (await getPosts({ limit: 4 })).items.filter((item) => item.slug !== post.slug).slice(0, 3);
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -83,6 +85,15 @@ async function PostView({ params }: Pick<PageProps<'/blog/[slug]'>, 'params'>) {
             { name: 'Blog', url: `${SITE_URL}/blog` },
             { name: post.title, url: `${SITE_URL}/blog/${post.slug}` },
           ]),
+          ...(faq.length
+            ? [
+                {
+                  '@context': 'https://schema.org',
+                  '@type': 'FAQPage',
+                  mainEntity: faq.map((item) => ({ '@type': 'Question', name: item.q, acceptedAnswer: { '@type': 'Answer', text: item.a } })),
+                },
+              ]
+            : []),
         ]}
       />
       <ReadTracker slug={post.slug} bodyId="post-body" />

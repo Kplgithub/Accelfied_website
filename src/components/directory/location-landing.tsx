@@ -12,6 +12,7 @@ import { findPlace, placeName, placePath, placeUrl, relatedPlaces } from '@/lib/
 import { SITE_URL } from '@/lib/site';
 import type { Service, ServicePlace } from '@/lib/types';
 import { DirectoryResults, DirectorySkeleton } from './directory-results';
+import { PlaceFacts } from './place-facts';
 import { PlaceLinks } from './place-links';
 
 export interface PlaceParams {
@@ -97,6 +98,9 @@ async function Landing({ params, searchParams }: { params: Promise<PlaceParams>;
       <Container className="py-10">
         <Suspense fallback={<DirectorySkeleton />}>
           <Results place={place} searchParams={searchParams} />
+        </Suspense>
+        <Suspense fallback={null}>
+          <PlaceFacts service={service} place={place} />
         </Suspense>
         <Related service={service} place={place} />
       </Container>

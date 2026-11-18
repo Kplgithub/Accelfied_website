@@ -2,6 +2,7 @@ import 'server-only';
 import type { Metadata } from 'next';
 import { placeHeading, placeSummary, resolvePlace, type PlaceParams } from '@/components/directory/location-landing';
 import { getServicePlaces } from './data';
+import { pagedCanonical } from './page-param';
 import { MAX_DESCRIPTION } from './seo-text';
 import { countrySlug, isIndexable, placePath } from './places';
 
@@ -17,11 +18,15 @@ export async function placeStaticParams(level: 'country' | 'city'): Promise<Plac
   return places.map((p) => ({ service: p.service, country: countrySlug(p.countryCode), ...(level === 'city' ? { city: p.citySlug } : {}) }));
 }
 
-export async function placeMetadata(params: PlaceParams): Promise<Metadata> {
+export async function placeMetadata(
+  params: PlaceParams,
+  searchParams: Promise<Record<string, string | string[] | undefined>>,
+): Promise<Metadata> {
   const resolved = await resolvePlace(params);
   if (!resolved) return { title: 'Page not found', robots: { index: false } };
   const { service, place } = resolved;
-  const title = placeHeading(service, place);
+  const { canonical, suffix } = await pagedCanonical(placePath(place), searchParams);
+  const title = `${placeHeading(service, place)}${suffix}`;
   const summary = placeSummary(service, place);
   // Search results cut descriptions at about 155 characters, so the longest call to action that fits is used.
   const cta = [' Compare client reviews, hourly rates and project sizes, then request quotes.', ' Compare reviews and rates.', ''].find(
@@ -31,7 +36,7 @@ export async function placeMetadata(params: PlaceParams): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: { canonical: placePath(place) },
+    alternates: { canonical },
     // Pages with only a few listings stay out of search results until more companies join.
     robots: isIndexable(place) ? undefined : { index: false, follow: true },
   };

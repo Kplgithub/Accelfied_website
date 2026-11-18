@@ -8,6 +8,7 @@ import { JsonLd, breadcrumbLd } from '@/components/seo/json-ld';
 import { Container } from '@/components/ui/container';
 import { getService, getServiceGroups } from '@/lib/data';
 import { parseDirectoryParams } from '@/lib/directory';
+import { pagedCanonical } from '@/lib/page-param';
 import { listedServices, placeName, relatedPlaces } from '@/lib/places';
 import { SITE_URL } from '@/lib/site';
 
@@ -16,13 +17,14 @@ export async function generateStaticParams() {
   return groups.flatMap((group) => group.services.map((service) => ({ service: service.slug })));
 }
 
-export async function generateMetadata({ params }: PageProps<'/agencies/[service]'>): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: PageProps<'/agencies/[service]'>): Promise<Metadata> {
   const [service, listed] = await Promise.all([getService((await params).service), listedServices()]);
   if (!service) return { title: 'Service not found' };
+  const { canonical, suffix } = await pagedCanonical(`/agencies/${service.slug}`, searchParams);
   return {
-    title: `Top ${service.name} Companies`,
+    title: `Top ${service.name} Companies${suffix}`,
     description: `Compare ${service.name.toLowerCase()} companies by verified client reviews, hourly rates, minimum project size and location.`,
-    alternates: { canonical: `/agencies/${service.slug}` },
+    alternates: { canonical },
     robots: listed.has(service.slug) ? undefined : { index: false, follow: true },
   };
 }
