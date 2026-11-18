@@ -20,7 +20,7 @@ export default async function CompanyProfilePage() {
   if (!company) {
     return (
       <>
-        <DashboardHeader eyebrow="My company" title="List your company" intro="Four short steps between you and your first client review." />
+        <DashboardHeader eyebrow="My company" title="List your company" intro="A few short steps between you and your first client review." />
         <Panel>
           <OnboardingSteps steps={companySteps(null)} />
         </Panel>
