@@ -24,7 +24,7 @@ import { formatPrice, PLAN_COMPARISON, SPONSORED_PLACE, VERIFIED_PLAN, YEARLY_SA
 export async function generateMetadata(): Promise<Metadata> {
   return withSeo('getVerified', {
     title: 'Get Verified',
-    description: `Accelfied Verified: the Verified badge, a place above other companies, unlimited reviews and promotion by our team, for ${formatPrice(VERIFIED_PLAN.monthly)} a month or ${formatPrice(VERIFIED_PLAN.yearly)} a year.`,
+    description: `Get verified on Accelfied: the Verified badge, a place above other companies, unlimited reviews and promotion by our team, for ${formatPrice(VERIFIED_PLAN.monthly)} a month or ${formatPrice(VERIFIED_PLAN.yearly)} a year.`,
     alternates: { canonical: '/get-verified' },
   });
 }
@@ -55,12 +55,12 @@ export default function GetVerifiedPage() {
               Get checked once. <span className="scribble italic">Win</span> trust every day.
             </h1>
             <p className="mt-6 max-w-xl animate-rise text-lg leading-relaxed text-paper/72" style={{ animationDelay: '160ms' }}>
-              Businesses want proof before they hand over a project. With Accelfied Verified, our team checks your company papers, adds the Verified badge to
+              Businesses want proof before they hand over a project. With the Verified plan, our team checks your company papers, adds the Verified badge to
               your profile, places you above unchecked listings and puts your name in front of more buyers.
             </p>
             <div className="mt-9 flex animate-rise flex-col gap-3 sm:flex-row sm:items-center" style={{ animationDelay: '240ms' }}>
               <ButtonLink href={START} size="lg">
-                Verify your business <ArrowRight className="size-4" aria-hidden="true" />
+                Get your business Accelfied <ArrowRight className="size-4" aria-hidden="true" />
               </ButtonLink>
               <p className="text-paper/70">
                 <span className="font-display text-2xl font-semibold text-paper">{PRICE}</span> / month, GST included
@@ -133,7 +133,7 @@ export default function GetVerifiedPage() {
           <Reveal className="text-center">
             <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">Plans</p>
             <h2 id="compare-heading" className="mt-3 font-display text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
-              Free profile vs Accelfied Verified
+              Free profile vs Verified plan
             </h2>
           </Reveal>
           <Reveal className="mt-12 overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface shadow-[var(--shadow-card)]">
@@ -192,7 +192,7 @@ export default function GetVerifiedPage() {
                 included.
               </p>
               <ButtonLink href={START}>
-                Verify your business <ArrowRight className="size-4" aria-hidden="true" />
+                Get your business Accelfied <ArrowRight className="size-4" aria-hidden="true" />
               </ButtonLink>
             </div>
           </Reveal>
@@ -268,11 +268,11 @@ export default function GetVerifiedPage() {
       <section className="grain border-y border-line bg-surface py-20 lg:py-28">
         <Container>
           <Reveal className="text-center">
-            <h2 className="font-display text-4xl font-semibold tracking-tight text-ink sm:text-5xl">How to get Verified</h2>
+            <h2 className="font-display text-4xl font-semibold tracking-tight text-ink sm:text-5xl">How to get Accelfied</h2>
           </Reveal>
           <ol className="mt-12 grid gap-5 md:grid-cols-3">
             {[
-              { icon: Wallet, title: 'Join the plan', text: `Start ${VERIFIED_PLAN.name} for ${PRICE} a month from your company dashboard.` },
+              { icon: Wallet, title: 'Join the plan', text: `Start the ${VERIFIED_PLAN.name} for ${PRICE} a month from your company dashboard.` },
               { icon: FileCheck2, title: 'Share your documents', text: 'Send your business documents, such as GST and registration, so our team can confirm your company.' },
               { icon: BadgeCheck, title: 'Get your badge', text: 'Once our team confirms your business, the Verified badge goes live and you move above other companies.' },
             ].map((step, index) => (
@@ -286,7 +286,7 @@ export default function GetVerifiedPage() {
           </ol>
           <Reveal className="mt-10 text-center">
             <ButtonLink href={START} size="lg">
-              Verify your business <ArrowRight className="size-4" aria-hidden="true" />
+              Get your business Accelfied <ArrowRight className="size-4" aria-hidden="true" />
             </ButtonLink>
           </Reveal>
         </Container>
@@ -320,11 +320,11 @@ export default function GetVerifiedPage() {
           <span className="orb -top-24 right-10 size-72 bg-white/25" aria-hidden="true" />
           <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h2 className="font-display text-3xl leading-tight font-semibold sm:text-5xl">Ready to get Verified?</h2>
+              <h2 className="font-display text-3xl leading-tight font-semibold sm:text-5xl">Ready to get Accelfied?</h2>
               <p className="mt-3 max-w-xl text-lg text-white/80">Show buyers your business is real, checked and ready to take on their project.</p>
             </div>
             <ButtonLink href={START} size="lg" variant="inverse" className="shrink-0">
-              Verify your business <ArrowRight className="size-4" aria-hidden="true" />
+              Get your business Accelfied <ArrowRight className="size-4" aria-hidden="true" />
             </ButtonLink>
           </div>
         </Reveal>
@@ -353,7 +353,7 @@ function PlanCell({ value }: { value: boolean | string }) {
 
 const FAQ = [
   {
-    q: 'What is Accelfied Verified?',
+    q: 'What is the Verified plan?',
     a: 'A paid plan for companies. Our team checks your business, and you get the Verified badge, a place above other companies, unlimited reviews and promotion by our team.',
   },
   { q: 'Who should join?', a: 'Any agency, studio or service firm listed on Accelfied that wants more clients to trust and find it.' },
@@ -377,5 +377,5 @@ const FAQ = [
     q: 'What happens if I stop the plan?',
     a: 'Your free profile stays live with all published reviews. The Verified badge, the higher position and the other Verified features end with the plan.',
   },
-  { q: 'Can I start with a free profile and upgrade later?', a: 'Yes. List your company for free and join Verified whenever you are ready.' },
+  { q: 'Can I start with a free profile and upgrade later?', a: 'Yes. List your company for free and join the Verified plan whenever you are ready.' },
 ];

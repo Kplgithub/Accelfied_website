@@ -16,7 +16,7 @@ export const NAV_LINKS = [
   { href: '/write-a-review', label: 'Write a review' },
   { href: '/blog', label: 'Blog' },
   { href: '/get-listed', label: 'For companies' },
-  { href: '/get-verified', label: 'Get Verified' },
+  { href: '/get-verified', label: 'Get Accelfied' },
 ];
 
 export function SiteHeader() {

@@ -11,7 +11,7 @@ export const CONTACT_TOPICS = [
   { value: 'general', label: 'A general question' },
   { value: 'reviews', label: 'A review' },
   { value: 'listing', label: 'My company listing' },
-  { value: 'verified', label: 'Accelfied Verified' },
+  { value: 'verified', label: 'The Verified plan' },
   { value: 'billing', label: 'Billing or a refund' },
   { value: 'partnership', label: 'Partnership' },
   { value: 'press', label: 'Press' },
