@@ -98,7 +98,7 @@ export function profileSections(company: OwnedCompany, details: CompanyDetails):
     {
       key: 'packages',
       title: 'Packages',
-      tip: 'Show a price range with Small, Medium and Large packages.',
+      tip: 'Show a price range with Starter, Growth and Scale packages.',
       done: details.packages.some((item) => item.status === 'published'),
       weight: 10,
       href: '/dashboard/company/packages',

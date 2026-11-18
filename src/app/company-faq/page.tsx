@@ -7,8 +7,8 @@ import { Container } from '@/components/ui/container';
 import { COMPANY_FAQ } from '@/lib/company-faq';
 
 export const metadata: Metadata = {
-  title: 'Help for companies',
-  description: 'Answers for agencies and service companies on Accelfied: listing, profile, packages, client reviews, project briefs and Verified plans.',
+  title: 'Help for agencies and IT companies',
+  description: 'How agencies and IT companies in India get listed on Accelfied, collect client reviews, show package prices and win more projects. Straight answers.',
   alternates: { canonical: '/company-faq' },
 };
 

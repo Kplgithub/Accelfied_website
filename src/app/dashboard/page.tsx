@@ -167,12 +167,12 @@ async function ClientOverview({ user }: { user: Account }) {
         <div className="relative grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] md:items-center">
           <div>
             <p className="text-xs font-semibold tracking-[0.16em] text-accent-soft uppercase">Get started</p>
-            <h2 className="mt-2 font-display text-3xl leading-tight font-semibold">Find the perfect partner for your project</h2>
+            <h2 className="mt-2 font-display text-3xl leading-tight font-semibold">Let’s find the right team for your project</h2>
           </div>
           <ul className="space-y-3">
             {[
-              { href: '/project-brief', icon: FileText, title: 'Get matched with companies in 5 minutes or less', text: 'Answer seven questions, we write the brief.' },
-              { href: '/agencies', icon: Search, title: 'Explore verified companies on your own', text: 'Compare by rating, rate and location.' },
+              { href: '/project-brief', icon: FileText, title: 'Tell us what you need, get quotes', text: 'Seven quick questions. We write the brief for you.' },
+              { href: '/agencies', icon: Search, title: 'Browse companies yourself', text: 'Compare by reviews, price and city.' },
             ].map(({ href, icon: Icon, title, text }) => (
               <li key={href}>
                 <Link href={href} className="group flex items-center gap-4 rounded-2xl bg-white/8 p-4 ring-1 ring-white/10 transition-[background-color,transform] hover:-translate-y-0.5 hover:bg-white/14">

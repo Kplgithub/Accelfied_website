@@ -11,7 +11,7 @@ export function HealthGauge({ score, label }: { score: number; label: string }) 
   }, [score]);
   const angle = -90 + (value / 100) * 180;
   return (
-    <div className="relative h-[76px] w-[136px] shrink-0" role="meter" aria-valuemin={0} aria-valuemax={100} aria-valuenow={score} aria-label={`Profile health ${score} out of 100, ${label}`}>
+    <div className="relative h-[76px] w-[136px] shrink-0" role="meter" aria-valuemin={0} aria-valuemax={100} aria-valuenow={score} aria-label={`Profile score ${score} out of 100, ${label}`}>
       <svg viewBox="0 0 136 76" className="size-full" aria-hidden="true">
         <defs>
           <linearGradient id="health-arc" x1="0" x2="1" y1="0" y2="0">

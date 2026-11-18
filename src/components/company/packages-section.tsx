@@ -15,7 +15,7 @@ export function FeatureValue({ value }: { value: string }) {
   return <span className="text-sm text-ink">{text}</span>;
 }
 
-/** Small, Medium and Large price cards for each package, with a full feature comparison. */
+/** Starter, Growth and Scale price cards for each package, with a full feature comparison. */
 export function PackagesSection({ packages, companySlug }: { packages: CompanyPackage[]; companySlug: string }) {
   const [active, setActive] = useState(0);
   const [compare, setCompare] = useState(false);

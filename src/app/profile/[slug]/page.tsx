@@ -247,7 +247,7 @@ function Overview({ company, details }: { company: CompanyProfile; details: Publ
       </section>
 
       <section id="services" className="scroll-mt-28 lg:scroll-mt-36">
-        <h2 className="font-display text-3xl font-semibold text-ink">Service focus</h2>
+        <h2 className="font-display text-3xl font-semibold text-ink">Where their work goes</h2>
         <div className="mt-6 grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <Reveal>
             <Donut caption="Service lines" slices={company.services.map((service) => ({ label: service.name, value: service.percent }))} size={150} />
@@ -294,7 +294,7 @@ function Pricing({ company, details }: { company: CompanyProfile; details: Publi
   ];
   return (
     <section id="pricing" className="scroll-mt-28 lg:scroll-mt-36">
-      <h2 className="font-display text-3xl font-semibold text-ink">Pricing snapshot</h2>
+      <h2 className="font-display text-3xl font-semibold text-ink">Pricing at a glance</h2>
       <dl className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {tiles.map(({ icon: Icon, label, value, note }, index) => (
           <Reveal key={label} delay={index * 70} className="rounded-2xl border border-line bg-surface p-4">

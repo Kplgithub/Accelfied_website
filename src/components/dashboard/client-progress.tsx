@@ -11,7 +11,7 @@ export interface ClientStep {
   cta: string;
 }
 
-/** "You are one step closer": a ring that fills with each finished step, and the list of steps. */
+/** "Your hiring journey": a ring that fills with each finished step, and the list of steps. */
 export function ClientProgress({ steps }: { steps: ClientStep[] }) {
   const done = steps.filter((step) => step.done).length;
   const [shown, setShown] = useState(0);
@@ -24,7 +24,7 @@ export function ClientProgress({ steps }: { steps: ClientStep[] }) {
   return (
     <div className="grid items-center gap-8 rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-[var(--shadow-card)] md:grid-cols-[220px_minmax(0,1fr)] sm:p-7">
       <div className="text-center">
-        <p className="font-display text-lg font-semibold text-ink">{done === steps.length ? 'All done. Nice work!' : 'You are one step closer'}</p>
+        <p className="font-display text-lg font-semibold text-ink">{done === steps.length ? 'All done. Nice work!' : 'Your hiring journey'}</p>
         <div className="relative mx-auto mt-4 size-32">
           <svg viewBox="0 0 42 42" className="size-full -rotate-90" role="img" aria-label={`${done} of ${steps.length} steps done`}>
             <circle cx="21" cy="21" r="15.9155" fill="none" stroke="var(--paper-deep)" strokeWidth="3.5" />

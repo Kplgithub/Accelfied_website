@@ -22,7 +22,7 @@ export function CompanyHome({ company, health, analytics, hasPackages }: { compa
     <div className="space-y-6">
       <div className="grid gap-6 lg:grid-cols-2">
         <Reveal className="rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-[var(--shadow-card)]">
-          <p className="text-xs font-semibold tracking-[0.14em] text-ink-faint uppercase">Profile health</p>
+          <p className="text-xs font-semibold tracking-[0.14em] text-ink-faint uppercase">Profile score</p>
           <div className="mt-3 flex items-center gap-5">
             <HealthGauge score={health.score} label={health.label} />
             <div>
@@ -94,7 +94,7 @@ export function CompanyHome({ company, health, analytics, hasPackages }: { compa
               </span>
               <div>
                 <p className="font-display text-xl font-semibold text-ink">Show clients a price range</p>
-                <p className="mt-1 max-w-xl text-sm text-ink-soft">Add Small, Medium and Large packages. Clients who see prices send better-fit briefs.</p>
+                <p className="mt-1 max-w-xl text-sm text-ink-soft">Add Starter, Growth and Scale packages. Clients who can see prices send briefs that fit your budget.</p>
               </div>
             </div>
             <ButtonLink href="/dashboard/company/packages" size="sm">

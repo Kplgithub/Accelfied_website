@@ -17,7 +17,7 @@ export async function SimilarCompanies({ slug, service }: { slug: string; servic
   return (
     <section aria-labelledby="similar-title" className="rounded-[var(--radius-card)] border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
       <h2 id="similar-title" className="font-display text-lg font-semibold text-ink">
-        Similar companies
+        Other teams to consider
       </h2>
       <p className="mt-0.5 text-sm text-ink-soft">Also offering {service.name}</p>
       <ul className="mt-4 space-y-1">

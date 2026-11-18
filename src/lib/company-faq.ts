@@ -43,7 +43,7 @@ export const COMPANY_FAQ: FaqTopic[] = [
     title: 'Your profile',
     items: [
       {
-        q: 'What is the profile health score?',
+        q: 'What is the profile score?',
         a: 'A score out of 100 on your dashboard that shows how complete your profile is. Each section you fill in, such as services, client focus, locations, portfolio and packages, adds to it. Complete profiles get more enquiries.',
       },
       {
@@ -52,14 +52,14 @@ export const COMPANY_FAQ: FaqTopic[] = [
       },
       {
         q: 'What are packages?',
-        a: 'Fixed-price offers in three sizes, Small, Medium and Large, with a delivery time and a list of what is included. They appear in the Pricing section of your profile, where clients can compare them side by side. You can add up to 8.',
+        a: 'Fixed-price offers in three levels, Starter, Growth and Scale, each with a delivery time and a list of what is included. Clients see them under Pricing on your profile and can compare all three side by side. You can add up to 8.',
       },
       {
         q: 'Can I hide a package without deleting it?',
         a: 'Yes. Tick "Hide from my profile" while editing it. It stays in your dashboard and you can show it again any time.',
       },
       {
-        q: 'Where does the pricing snapshot come from?',
+        q: 'Where do the numbers in “Pricing at a glance” come from?',
         a: 'Minimum project size and hourly rate come from your profile. The most common project size and the value-for-money rating come only from your published client reviews.',
       },
     ],

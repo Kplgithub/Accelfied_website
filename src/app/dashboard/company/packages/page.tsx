@@ -26,7 +26,7 @@ export default async function PackagesPage({ searchParams }: PageProps<'/dashboa
       <DashboardHeader
         eyebrow="My company"
         title="Packages"
-        intro="Show clients a price range with Small, Medium and Large options. Packages appear in the Pricing section of your profile."
+        intro="Give clients a clear price range with Starter, Growth and Scale options. They show up under Pricing on your profile."
         action={
           company.status === 'published' && details.packages.length > 0 ? (
             <ButtonLink href={`/profile/${company.slug}#pricing`} variant="secondary" size="sm">

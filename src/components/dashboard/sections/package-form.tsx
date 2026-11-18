@@ -9,7 +9,7 @@ import { FormAlert, FormSaved, SubmitButton } from '../../forms/form-bits';
 import { formFields } from '../../forms/use-form-fields';
 import { Field, Input, Select, Textarea } from '../../ui/field';
 
-const TIERS = ['Small', 'Medium', 'Large'] as const;
+const TIERS = ['Starter', 'Growth', 'Scale'] as const;
 const MAX_FEATURES = 20;
 
 const STARTER_FEATURES = [
@@ -69,7 +69,7 @@ export function PackageForm({ item, services, onDone }: { item?: CompanyPackage;
 
       <div>
         <h3 className="font-display text-lg font-semibold text-ink">Prices</h3>
-        <p className="mt-1 text-sm text-ink-soft">In US dollars. Prices go up from Small to Large.</p>
+        <p className="mt-1 text-sm text-ink-soft">In US dollars. Prices go up from Starter to Scale.</p>
         {error('tiers') && (
           <p role="alert" className="mt-2 text-[13px] font-medium text-danger">
             {error('tiers')}

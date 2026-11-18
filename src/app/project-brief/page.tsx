@@ -8,8 +8,8 @@ import { getServiceGroups } from '@/lib/data';
 import { getCurrentUser } from '@/lib/session';
 
 export const metadata: Metadata = {
-  title: 'Create a project brief',
-  description: 'Answer seven short questions. We write your project brief and send it to up to five verified companies that fit.',
+  title: 'Free project brief: get quotes from top companies in India',
+  description: 'Answer seven quick questions about your project. We turn them into a clear brief you can send to up to five software, app or marketing companies in India.',
   alternates: { canonical: '/project-brief' },
 };
 

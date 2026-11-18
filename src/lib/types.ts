@@ -402,7 +402,7 @@ export interface CompanyPackage {
   serviceSlug: string;
   serviceName: string;
   description: string;
-  tiers: Array<{ name: 'Small' | 'Medium' | 'Large'; price: number; duration: string; summary: string }>;
+  tiers: Array<{ name: 'Starter' | 'Growth' | 'Scale'; price: number; duration: string; summary: string }>;
   features: Array<{ label: string; values: string[] }>;
   status: 'published' | 'hidden';
 }
