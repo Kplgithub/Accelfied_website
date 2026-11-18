@@ -124,6 +124,15 @@ export async function getFeaturedCompanies(limit = 6): Promise<CompanySummary[]>
   return page.items.filter((company) => company.rating.count > 0);
 }
 
+/** Highest-rated companies with at least one published review, for /llms.txt. Never includes unrated companies. */
+export async function getTopRatedCompanies(limit = 50): Promise<CompanySummary[]> {
+  'use cache';
+  cacheLife({ stale: 3_600, revalidate: 3_600, expire: 86_400 });
+  cacheTag('companies');
+  const page = await apiGet<Page<CompanySummary>>('/v1/companies', { sort: 'rating', minRating: 1, limit });
+  return page.items.filter((company) => company.rating.count > 0);
+}
+
 export async function getStats(): Promise<{ companies: number; reviews: number }> {
   'use cache';
   cacheLife({ stale: 300, revalidate: 600, expire: 86_400 });
