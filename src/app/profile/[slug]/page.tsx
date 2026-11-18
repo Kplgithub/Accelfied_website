@@ -15,9 +15,10 @@ import { Container } from '@/components/ui/container';
 import { EmptyState } from '@/components/ui/empty-state';
 import { countryName } from '@/lib/countries';
 import { getCompany, getCompanyReviews, getPosts, getSitemapCompanies } from '@/lib/data';
-import { hostname } from '@/lib/format';
+import { formatRating, hostname, pluralize } from '@/lib/format';
 import { hourlyRateLabel, minProjectLabel, teamSizeLabel } from '@/lib/labels';
 import { JsonLd, breadcrumbLd } from '@/components/seo/json-ld';
+import { MAX_DESCRIPTION, OG_DEFAULTS } from '@/lib/seo-text';
 import { SITE_URL } from '@/lib/site';
 import type { CompanyProfile, Review } from '@/lib/types';
 import { PersonAvatar } from '@/components/company/person-avatar';
@@ -38,12 +39,11 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<'/profile/[slug]'>): Promise<Metadata> {
   const company = await getCompany((await params).slug);
   if (!company) return { title: 'Company not found', robots: { index: false } };
-  const rating = company.rating.count > 0 ? ` Rated ${company.rating.average.toFixed(1)}/5 from ${company.rating.count} client reviews.` : '';
   return {
     title: `${company.name} reviews, rates and services`,
-    description: `${company.tagline || company.name}.${rating}`.slice(0, 300),
+    description: profileDescription(company),
     alternates: { canonical: `/profile/${company.slug}` },
-    openGraph: { type: 'profile', url: `/profile/${company.slug}` },
+    openGraph: { ...OG_DEFAULTS, type: 'profile', url: `/profile/${company.slug}` },
   };
 }
 
@@ -455,4 +455,27 @@ function organizationLd(company: CompanyProfile, reviews: Review[]): Record<stri
         }
       : {}),
   };
+}
+
+/**
+ * Search snippet built from real listing data: what the company does, its rating only when published reviews
+ * exist, and where it is. Parts are dropped from the end until it fits in a search result.
+ */
+function profileDescription(company: CompanyProfile): string {
+  const tagline = company.tagline.trim().replace(/[.!\s]+$/, '');
+  const lead = tagline ? `${company.name}: ${tagline}.` : `${company.name}.`;
+  const place = [company.headquarters.city, countryName(company.headquarters.countryCode)].filter(Boolean).join(', ');
+  const services = company.services.slice(0, 2).map((service) => service.name).join(' and ');
+  const parts = [
+    lead,
+    company.rating.count > 0 ? `Rated ${formatRating(company.rating.average)}/5 from ${pluralize(company.rating.count, 'client review')}.` : '',
+    services && place ? `${services} company in ${place}.` : '',
+    'See client reviews, rates and portfolio.',
+  ].filter(Boolean);
+  let text = parts.join(' ');
+  while (text.length > MAX_DESCRIPTION && parts.length > 1) {
+    parts.pop();
+    text = parts.join(' ');
+  }
+  return text.length > MAX_DESCRIPTION ? `${text.slice(0, MAX_DESCRIPTION - 1).trimEnd()}…` : text;
 }

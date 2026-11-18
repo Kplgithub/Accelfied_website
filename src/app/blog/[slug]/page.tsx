@@ -7,10 +7,13 @@ import { Markdown } from '@/components/blog/markdown';
 import { KIND_LABEL, PostCard } from '@/components/blog/post-card';
 import { ReadTracker } from '@/components/blog/read-tracker';
 import { CompanyLogo } from '@/components/company/company-logo';
+import { JsonLd, breadcrumbLd } from '@/components/seo/json-ld';
 import { ButtonLink } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
+import { blogFaq } from '@/lib/blog-faq';
 import { getPost, getPosts, getSitemapPosts } from '@/lib/data';
 import { formatDay } from '@/lib/format';
+import { MAX_TITLE, OG_DEFAULTS } from '@/lib/seo-text';
 import { SITE_URL } from '@/lib/site';
 
 const SHELL_SLUG = '__shell__';
@@ -24,11 +27,24 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<'/blog/[slug]'>): Promise<Metadata> {
   const post = await getPost((await params).slug);
   if (!post) return { title: 'Post not found', robots: { index: false } };
+  const title = post.seoTitle || post.title;
+  // Long titles skip the " | Accelfied" suffix so search results show the keyword part, not a cut-off brand.
+  const fits = title.length + ' | Accelfied'.length <= MAX_TITLE;
+  // Without a cover, the site's own link preview is used so shares never show an empty card.
+  const images = [post.coverUrl || '/opengraph-image'];
   return {
-    title: post.seoTitle ? { absolute: post.seoTitle } : post.title,
+    title: post.seoTitle || !fits ? { absolute: title } : title,
     description: (post.seoDescription || post.excerpt).slice(0, 300) || undefined,
     alternates: { canonical: `/blog/${post.slug}` },
-    openGraph: { type: 'article', publishedTime: post.publishedAt, modifiedTime: post.updatedAt, images: post.coverUrl ? [post.coverUrl] : undefined },
+    openGraph: {
+      ...OG_DEFAULTS,
+      type: 'article',
+      url: `/blog/${post.slug}`,
+      publishedTime: post.publishedAt,
+      modifiedTime: post.updatedAt,
+      images,
+    },
+    twitter: { card: 'summary_large_image', images },
   };
 }
 
@@ -44,24 +60,42 @@ async function PostView({ params }: Pick<PageProps<'/blog/[slug]'>, 'params'>) {
   const { slug } = await params;
   const post = await getPost(slug);
   if (!post) notFound();
+  const faq = blogFaq(post.body);
   const more = (await getPosts({ limit: 4 })).items.filter((item) => item.slug !== post.slug).slice(0, 3);
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: post.title,
     description: post.excerpt || undefined,
-    image: post.coverUrl || undefined,
+    image: post.coverUrl || `${SITE_URL}/opengraph-image`,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,
     author: { '@type': 'Organization', name: post.authorName },
-    publisher: { '@type': 'Organization', name: 'Accelfied', url: SITE_URL },
+    publisher: { '@type': 'Organization', '@id': `${SITE_URL}/#organization`, name: 'Accelfied', url: SITE_URL, logo: `${SITE_URL}/logo.png` },
     mainEntityOfPage: `${SITE_URL}/blog/${post.slug}`,
     ...(post.company ? { about: { '@type': 'Organization', name: post.company.name, url: `${SITE_URL}/profile/${post.company.slug}` } } : {}),
   };
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
+      <JsonLd
+        data={[
+          jsonLd,
+          breadcrumbLd([
+            { name: 'Blog', url: `${SITE_URL}/blog` },
+            { name: post.title, url: `${SITE_URL}/blog/${post.slug}` },
+          ]),
+          ...(faq.length
+            ? [
+                {
+                  '@context': 'https://schema.org',
+                  '@type': 'FAQPage',
+                  mainEntity: faq.map((item) => ({ '@type': 'Question', name: item.q, acceptedAnswer: { '@type': 'Answer', text: item.a } })),
+                },
+              ]
+            : []),
+        ]}
+      />
       <ReadTracker slug={post.slug} bodyId="post-body" />
       <article>
         <header className="grain border-b border-line">
@@ -84,7 +118,7 @@ async function PostView({ params }: Pick<PageProps<'/blog/[slug]'>, 'params'>) {
         {post.coverUrl && (
           <Container className="max-w-5xl pt-10">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={post.coverUrl} alt="" className="aspect-[2/1] w-full rounded-[var(--radius-card)] object-cover" />
+            <img src={post.coverUrl} alt={post.title} fetchPriority="high" className="aspect-[2/1] w-full rounded-[var(--radius-card)] object-cover" />
           </Container>
         )}
         <Container className="grid max-w-5xl gap-10 py-12 lg:grid-cols-[minmax(0,1fr)_260px] lg:py-16">

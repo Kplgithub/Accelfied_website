@@ -3,14 +3,17 @@ import { Suspense } from 'react';
 import { DirectoryResults, DirectorySkeleton } from '@/components/directory/directory-results';
 import { Container } from '@/components/ui/container';
 import { parseDirectoryParams } from '@/lib/directory';
+import { pagedCanonical } from '@/lib/page-param';
 import { withSeo } from '@/lib/seo';
 
-export async function generateMetadata(): Promise<Metadata> {
-  return withSeo('agencies', {
+export async function generateMetadata({ searchParams }: PageProps<'/agencies'>): Promise<Metadata> {
+  const { canonical, suffix } = await pagedCanonical('/agencies', searchParams);
+  const metadata = await withSeo('agencies', {
     title: 'All companies',
     description: 'Search every company on Accelfied and compare them by client reviews, rates, team size and location.',
-    alternates: { canonical: '/agencies' },
+    alternates: { canonical },
   });
+  return suffix ? { ...metadata, title: `All companies${suffix}` } : metadata;
 }
 
 export default function AllAgenciesPage({ searchParams }: PageProps<'/agencies'>) {

@@ -6,8 +6,8 @@ export function generateStaticParams() {
   return placeStaticParams('country');
 }
 
-export async function generateMetadata({ params }: PageProps<'/agencies/[service]/[country]'>): Promise<Metadata> {
-  return placeMetadata(await params);
+export async function generateMetadata({ params, searchParams }: PageProps<'/agencies/[service]/[country]'>): Promise<Metadata> {
+  return placeMetadata(await params, searchParams);
 }
 
 /** "Top web development companies in India": one page per service and country with listed companies. */

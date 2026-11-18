@@ -48,6 +48,14 @@ export async function getCompanies(query: DirectoryQuery): Promise<Page<CompanyS
   return apiGet<Page<CompanySummary>>('/v1/companies', { ...query, limit: 12 });
 }
 
+/** Up to 50 companies of one place (the API's page limit), for the real-data facts on location pages. */
+export async function getPlaceCompanies(query: Pick<DirectoryQuery, 'service' | 'country' | 'city'>): Promise<Page<CompanySummary>> {
+  'use cache';
+  cacheLife({ stale: 300, revalidate: 600, expire: 86_400 });
+  cacheTag('companies');
+  return apiGet<Page<CompanySummary>>('/v1/companies', { ...query, sort: 'rating', limit: 50 });
+}
+
 export async function getCountryFacets(service?: string): Promise<CountryFacet[]> {
   'use cache';
   cacheLife({ stale: 300, revalidate: 600, expire: 86_400 });
