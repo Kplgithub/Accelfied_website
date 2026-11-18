@@ -1,14 +1,17 @@
-/** Accelfied Verified: the paid plan for companies. Prices in rupees. */
+/** Accelfied Verified: the paid plan for companies. $59 a month, GST included. */
 export const VERIFIED_PLAN = {
   name: 'Accelfied Verified',
-  monthly: 599,
-  gstRate: 0.18,
+  monthly: 59,
+  currency: 'USD',
 } as const;
 
-export const verifiedMonthlyWithGst = Math.round(VERIFIED_PLAN.monthly * (1 + VERIFIED_PLAN.gstRate) * 100) / 100;
+/** A whole price for marketing copy, such as "$59". */
+export const formatPrice = (value: number, currency: string = VERIFIED_PLAN.currency) =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: Number.isInteger(value) ? 0 : 2 }).format(value);
 
-export const formatRupees = (value: number) =>
-  new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: Number.isInteger(value) ? 0 : 2 }).format(value);
+/** Amounts from the API come in the currency's smallest unit (cents). Older invoices are in INR. */
+export const formatMoney = (minor: number, currency = 'USD') =>
+  new Intl.NumberFormat(currency === 'INR' ? 'en-IN' : 'en-US', { style: 'currency', currency, minimumFractionDigits: 2 }).format(minor / 100);
 
 /** true = included, false = not included, string = what you get. */
 type Cell = boolean | string;
@@ -42,7 +45,8 @@ export const PLAN_COMPARISON: Array<{ title: string; rows: Array<{ label: string
     title: 'Growth support from our team',
     rows: [
       { label: 'We promote your company across Accelfied', free: false, verified: true },
-      { label: 'A blog post about your company, by name', free: false, verified: true },
+      { label: 'A blog post about your company, written by our team', free: false, verified: true },
+      { label: 'That post shared on our LinkedIn, once you approve it', free: false, verified: true },
       { label: 'Your personal interview, published on Accelfied', free: false, verified: true },
     ],
   },
@@ -50,7 +54,3 @@ export const PLAN_COMPARISON: Array<{ title: string; rows: Array<{ label: string
 
 /** Subscription states in which the company has paid for the current month. */
 export const PAYING_STATUSES = ['authenticated', 'active', 'pending'] as const;
-
-/** Paise to rupees, with paise shown. */
-export const formatPaise = (paise: number) =>
-  new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 }).format(paise / 100);

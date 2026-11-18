@@ -8,6 +8,7 @@ import { SITE_URL } from '@/lib/site';
 import { JsonLd } from '@/components/seo/json-ld';
 import { DirectoryFilters } from './directory-filters';
 import { Pagination } from './pagination';
+import { ListImpressions } from '../tracking/list-impressions';
 
 /** Query keys that come from the page address itself, not from the filter bar. */
 type FixedKey = 'service' | 'country' | 'city';
@@ -50,6 +51,7 @@ export async function DirectoryResults({
             ))}
           </div>
           <Pagination page={page.page} totalPages={page.totalPages} hrefFor={hrefFor} />
+          <ListImpressions slugs={page.items.map((company) => company.slug)} offset={(page.page - 1) * page.limit} />
         </>
       ) : (
         <div className="mt-4">

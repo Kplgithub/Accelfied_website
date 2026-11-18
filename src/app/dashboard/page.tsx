@@ -2,6 +2,7 @@ import { FileText, PenLine, Search } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { DashboardHeader, Panel, StatTile, StatusPill } from '@/components/dashboard/bits';
+import { VerifyEmailBanner } from '@/components/dashboard/verify-email-banner';
 import { LeadCard } from '@/components/dashboard/lead-card';
 import { companySteps, OnboardingSteps } from '@/components/dashboard/onboarding-steps';
 import { ButtonLink } from '@/components/ui/button';
@@ -21,6 +22,7 @@ export default async function DashboardPage() {
   const claims = await getMyClaims(HERE);
   return (
     <>
+      {!user.emailVerified && <VerifyEmailBanner email={user.email} />}
       {user.accountType === 'provider' || company ? <CompanyOverview user={user} company={company} /> : <ClientOverview user={user} />}
       {claims.length > 0 && <ClaimsPanel claims={claims} />}
     </>

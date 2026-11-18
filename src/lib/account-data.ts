@@ -1,7 +1,23 @@
 import 'server-only';
 import { ApiError, apiPrivateGet } from './api';
 import { requireUser } from './session';
-import type { AuthoredReview, Billing, CompanyClaim, Invoice, OwnedCompany, OwnedReview, Page, SentLead, Lead } from './types';
+import type {
+  AuthoredReview,
+  Billing,
+  CompanyAnalytics,
+  CompanyClaim,
+  Conversation,
+  Invoice,
+  OwnedCompany,
+  OwnedReview,
+  Page,
+  ReviewInvite,
+  SavedCompany,
+  SenderRole,
+  SentLead,
+  Lead,
+  Thread,
+} from './types';
 
 /**
  * Reads for the signed-in visitor's dashboard. Each call checks the session
@@ -52,4 +68,44 @@ export async function getMyInvoice(returnTo: string, id: string): Promise<Invoic
     if (error instanceof ApiError && error.status === 404) return null;
     throw error;
   }
+}
+
+export async function getMyConversations(returnTo: string, as: SenderRole, page = 1): Promise<Page<Conversation>> {
+  const { token } = await requireUser(returnTo);
+  return apiPrivateGet<Page<Conversation>>('/v1/me/conversations', token, { as, page, limit: 20 });
+}
+
+export async function getUnreadCounts(token: string): Promise<{ client: number; company: number }> {
+  try {
+    return await apiPrivateGet<{ client: number; company: number }>('/v1/me/conversations/unread', token);
+  } catch {
+    return { client: 0, company: 0 };
+  }
+}
+
+/** Null when the conversation does not exist or is not this account's. */
+export async function getThread(returnTo: string, id: string, before?: string): Promise<Thread | null> {
+  const { token } = await requireUser(returnTo);
+  if (!/^[a-f\d]{24}$/i.test(id)) return null;
+  try {
+    return await apiPrivateGet<Thread>(`/v1/me/conversations/${id}`, token, { before });
+  } catch (error) {
+    if (error instanceof ApiError && (error.status === 404 || error.status === 403)) return null;
+    throw error;
+  }
+}
+
+export async function getMyShortlist(returnTo: string, page = 1): Promise<Page<SavedCompany>> {
+  const { token } = await requireUser(returnTo);
+  return apiPrivateGet<Page<SavedCompany>>('/v1/me/shortlist', token, { page, limit: 12 });
+}
+
+export async function getMyCompanyAnalytics(returnTo: string, days: number): Promise<CompanyAnalytics> {
+  const { token } = await requireUser(returnTo);
+  return apiPrivateGet<CompanyAnalytics>('/v1/me/company/analytics', token, { days });
+}
+
+export async function getMyReviewInvites(returnTo: string, page = 1): Promise<Page<ReviewInvite>> {
+  const { token } = await requireUser(returnTo);
+  return apiPrivateGet<Page<ReviewInvite>>('/v1/me/company/review-invites', token, { page, limit: 20 });
 }

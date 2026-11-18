@@ -12,6 +12,7 @@ import { findPlace, placeName, placePath, placeUrl, relatedPlaces } from '@/lib/
 import { SITE_URL } from '@/lib/site';
 import type { Service, ServicePlace } from '@/lib/types';
 import { DirectoryResults, DirectorySkeleton } from './directory-results';
+import { PlaceFacts } from './place-facts';
 import { PlaceLinks } from './place-links';
 
 export interface PlaceParams {
@@ -35,9 +36,10 @@ export function placeHeading(service: Service, place: ServicePlace): string {
 /** One sentence of real numbers about the place, used in the page intro and description. */
 export function placeSummary(service: Service, place: ServicePlace): string {
   const where = place.city ? `${place.city}, ${countryName(place.countryCode)}` : countryName(place.countryCode);
-  const base = `${pluralize(place.companies, 'company', 'companies')} in ${where} offer ${service.name.toLowerCase()}.`;
+  const one = place.companies === 1;
+  const base = `${pluralize(place.companies, 'company', 'companies')} in ${where} ${one ? 'offers' : 'offer'} ${service.name.toLowerCase()}.`;
   if (!place.reviews) return base;
-  return `${base} Clients rate them ${formatRating(place.rating)} out of 5 on average, across ${pluralize(place.reviews, 'published review')}.`;
+  return `${base} Clients rate ${one ? 'it' : 'them'} ${formatRating(place.rating)} out of 5 on average, across ${pluralize(place.reviews, 'published review')}.`;
 }
 
 export function LocationLanding({ params, searchParams }: { params: Promise<PlaceParams>; searchParams: SearchParams }) {
@@ -96,6 +98,9 @@ async function Landing({ params, searchParams }: { params: Promise<PlaceParams>;
       <Container className="py-10">
         <Suspense fallback={<DirectorySkeleton />}>
           <Results place={place} searchParams={searchParams} />
+        </Suspense>
+        <Suspense fallback={null}>
+          <PlaceFacts service={service} place={place} />
         </Suspense>
         <Related service={service} place={place} />
       </Container>

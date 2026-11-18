@@ -1,4 +1,4 @@
-import { Building2, Calendar, DollarSign, ExternalLink, Globe, MapPin, PenLine, Timer, Users } from 'lucide-react';
+import { Building2, Calendar, DollarSign, ExternalLink, Globe, MapPin, MessageSquare, PenLine, Timer, Users } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -15,11 +15,17 @@ import { Container } from '@/components/ui/container';
 import { EmptyState } from '@/components/ui/empty-state';
 import { countryName } from '@/lib/countries';
 import { getCompany, getCompanyReviews, getPosts, getSitemapCompanies } from '@/lib/data';
-import { hostname } from '@/lib/format';
+import { formatRating, hostname, pluralize } from '@/lib/format';
 import { hourlyRateLabel, minProjectLabel, teamSizeLabel } from '@/lib/labels';
 import { JsonLd, breadcrumbLd } from '@/components/seo/json-ld';
+import { MAX_DESCRIPTION, OG_DEFAULTS } from '@/lib/seo-text';
 import { SITE_URL } from '@/lib/site';
 import type { CompanyProfile, Review } from '@/lib/types';
+import { PersonAvatar } from '@/components/company/person-avatar';
+import { SaveButton } from '@/components/company/save-button';
+import { ProfileView } from '@/components/tracking/profile-view';
+import { WebsiteLink } from '@/components/tracking/website-link';
+import { SocialLinks } from '@/components/ui/social-icon';
 
 /** Placeholder so the route can be validated at build time before any company is published. */
 const SHELL_SLUG = '__shell__';
@@ -33,12 +39,11 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<'/profile/[slug]'>): Promise<Metadata> {
   const company = await getCompany((await params).slug);
   if (!company) return { title: 'Company not found', robots: { index: false } };
-  const rating = company.rating.count > 0 ? ` Rated ${company.rating.average.toFixed(1)}/5 from ${company.rating.count} client reviews.` : '';
   return {
     title: `${company.name} reviews, rates and services`,
-    description: `${company.tagline || company.name}.${rating}`.slice(0, 300),
+    description: profileDescription(company),
     alternates: { canonical: `/profile/${company.slug}` },
-    openGraph: { type: 'profile', url: `/profile/${company.slug}` },
+    openGraph: { ...OG_DEFAULTS, type: 'profile', url: `/profile/${company.slug}` },
   };
 }
 
@@ -60,11 +65,13 @@ async function Profile({ params, searchParams }: PageProps<'/profile/[slug]'>) {
       <Suspense fallback={null}>
         <ProfileLd company={company} />
       </Suspense>
+      <ProfileView slug={company.slug} />
       <ProfileHeader company={company} />
       <Container className="grid gap-12 py-12 lg:grid-cols-[1fr_320px] lg:gap-14">
         <div className="min-w-0 space-y-16">
           <Overview company={company} />
           {company.portfolio.length > 0 && <Portfolio company={company} />}
+          {company.team.length > 0 && <Team company={company} />}
           <section id="reviews" className="scroll-mt-28 lg:scroll-mt-36">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <h2 className="font-display text-3xl font-semibold text-ink">Client reviews</h2>
@@ -138,10 +145,11 @@ function ProfileHeader({ company }: { company: CompanyProfile }) {
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <a href={company.website} target="_blank" rel="noopener nofollow" className={buttonClass('secondary')}>
+            <SaveButton slug={company.slug} name={company.name} variant="button" />
+            <WebsiteLink slug={company.slug} href={company.website} className={buttonClass('secondary')}>
               <Globe className="size-4" aria-hidden="true" />
               Visit website
-            </a>
+            </WebsiteLink>
             <ButtonLink href={`/get-a-quote?company=${company.slug}`}>Get a quote</ButtonLink>
           </div>
         </div>
@@ -150,6 +158,7 @@ function ProfileHeader({ company }: { company: CompanyProfile }) {
             { href: '#overview', label: 'Overview' },
             { href: '#services', label: 'Services' },
             ...(company.portfolio.length ? [{ href: '#portfolio', label: 'Portfolio' }] : []),
+            ...(company.team.length ? [{ href: '#team', label: 'Team' }] : []),
             { href: '#reviews', label: 'Reviews' },
           ].map((item) => (
             <a key={item.href} href={item.href} className="rounded-full px-4 py-2 whitespace-nowrap text-ink-soft hover:bg-ink/5 hover:text-ink">
@@ -211,6 +220,14 @@ function Overview({ company }: { company: CompanyProfile }) {
             </div>
           )}
         </div>
+        {Object.values(company.socials).some(Boolean) && (
+          <div className="mt-8">
+            <h3 className="text-sm font-semibold text-ink">Find {company.name} online</h3>
+            <div className="mt-3">
+              <SocialLinks socials={company.socials} companyName={company.name} />
+            </div>
+          </div>
+        )}
       </section>
 
       <section id="services" className="scroll-mt-28 lg:scroll-mt-36">
@@ -262,6 +279,29 @@ function Portfolio({ company }: { company: CompanyProfile }) {
   );
 }
 
+function Team({ company }: { company: CompanyProfile }) {
+  return (
+    <section id="team" className="scroll-mt-28 lg:scroll-mt-36">
+      <h2 className="font-display text-3xl font-semibold text-ink">Team</h2>
+      <p className="mt-2 text-ink-soft">The people you would work with at {company.name}.</p>
+      <ul className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
+        {company.team.map((member) => (
+          <li key={member.id} className="flex flex-col items-center rounded-2xl border border-line bg-surface p-5 text-center">
+            <PersonAvatar name={member.name} photoUrl={member.photoUrl} size={88} />
+            <p className="mt-3 font-medium text-ink">{member.name}</p>
+            {member.role && <p className="text-sm text-ink-soft">{member.role}</p>}
+            {member.linkedinUrl && (
+              <a href={member.linkedinUrl} target="_blank" rel="noopener noreferrer nofollow" className="mt-2 text-[13px] font-medium text-accent hover:underline">
+                LinkedIn
+              </a>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 function QuoteCard({ company }: { company: CompanyProfile }) {
   return (
     <div className="grain overflow-hidden rounded-[var(--radius-card)] bg-night p-6 text-paper">
@@ -272,10 +312,17 @@ function QuoteCard({ company }: { company: CompanyProfile }) {
       <ButtonLink href={`/get-a-quote?company=${company.slug}`} className="mt-6 w-full">
         Get a quote
       </ButtonLink>
+      <Link
+        href={`/dashboard/messages/new?company=${company.slug}`}
+        className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full border border-paper/25 text-[15px] font-medium text-paper transition-colors hover:border-paper/60"
+      >
+        <MessageSquare className="size-4" aria-hidden="true" />
+        Send a message
+      </Link>
       <p className="mt-4 text-center text-sm text-paper/60">
-        <a href={company.website} target="_blank" rel="noopener nofollow" className="hover:text-white">
+        <WebsiteLink slug={company.slug} href={company.website} className="hover:text-white">
           {hostname(company.website)}
-        </a>
+        </WebsiteLink>
       </p>
     </div>
   );
@@ -408,4 +455,27 @@ function organizationLd(company: CompanyProfile, reviews: Review[]): Record<stri
         }
       : {}),
   };
+}
+
+/**
+ * Search snippet built from real listing data: what the company does, its rating only when published reviews
+ * exist, and where it is. Parts are dropped from the end until it fits in a search result.
+ */
+function profileDescription(company: CompanyProfile): string {
+  const tagline = company.tagline.trim().replace(/[.!\s]+$/, '');
+  const lead = tagline ? `${company.name}: ${tagline}.` : `${company.name}.`;
+  const place = [company.headquarters.city, countryName(company.headquarters.countryCode)].filter(Boolean).join(', ');
+  const services = company.services.slice(0, 2).map((service) => service.name).join(' and ');
+  const parts = [
+    lead,
+    company.rating.count > 0 ? `Rated ${formatRating(company.rating.average)}/5 from ${pluralize(company.rating.count, 'client review')}.` : '',
+    services && place ? `${services} company in ${place}.` : '',
+    'See client reviews, rates and portfolio.',
+  ].filter(Boolean);
+  let text = parts.join(' ');
+  while (text.length > MAX_DESCRIPTION && parts.length > 1) {
+    parts.pop();
+    text = parts.join(' ');
+  }
+  return text.length > MAX_DESCRIPTION ? `${text.slice(0, MAX_DESCRIPTION - 1).trimEnd()}…` : text;
 }

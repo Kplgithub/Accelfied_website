@@ -7,7 +7,7 @@ import { Reveal } from '@/components/motion/reveal';
 import { Container } from '@/components/ui/container';
 import { EmptyState } from '@/components/ui/empty-state';
 import { getPosts, getSiteSettings } from '@/lib/data';
-import { pageParam } from '@/lib/page-param';
+import { pageParam, pagedCanonical } from '@/lib/page-param';
 import type { PostKind } from '@/lib/types';
 
 const KINDS: Array<{ value: PostKind | ''; label: string }> = [
@@ -17,12 +17,13 @@ const KINDS: Array<{ value: PostKind | ''; label: string }> = [
   { value: 'article', label: 'Guides' },
 ];
 
-export async function generateMetadata(): Promise<Metadata> {
-  const { seo } = await getSiteSettings();
+export async function generateMetadata({ searchParams }: PageProps<'/blog'>): Promise<Metadata> {
+  const [{ seo }, { canonical, suffix }] = await Promise.all([getSiteSettings(), pagedCanonical('/blog', searchParams)]);
+  const title = seo.blog.title || 'Blog: guides, company stories and founder interviews';
   return {
-    title: seo.blog.title ? { absolute: seo.blog.title } : 'Blog: guides, company stories and founder interviews',
+    title: seo.blog.title ? { absolute: `${title}${suffix}` } : `${title}${suffix}`,
     description: seo.blog.description || 'Guides on hiring agencies, stories of the companies on Accelfied, and interviews with the people who run them.',
-    alternates: { canonical: '/blog' },
+    alternates: { canonical },
   };
 }
 

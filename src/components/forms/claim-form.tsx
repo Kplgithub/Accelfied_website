@@ -19,7 +19,7 @@ export function ClaimForm({ company, account }: Props) {
 
   if (state.status === 'success') {
     return (
-      <SuccessPanel title="Verifying your claim" message={state.message} steps={['Request sent', 'Our team is verifying', 'Listing moves to you']}>
+      <SuccessPanel title="Verifying your claim" message={state.message} steps={['Request sent', 'Email and team check', 'Listing moves to you']}>
         <ButtonLink href="/dashboard">Go to your dashboard</ButtonLink>
         <ButtonLink href={`/profile/${company.slug}`} variant="secondary">
           Back to {company.name}

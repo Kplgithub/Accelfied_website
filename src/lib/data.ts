@@ -48,6 +48,14 @@ export async function getCompanies(query: DirectoryQuery): Promise<Page<CompanyS
   return apiGet<Page<CompanySummary>>('/v1/companies', { ...query, limit: 12 });
 }
 
+/** Up to 50 companies of one place (the API's page limit), for the real-data facts on location pages. */
+export async function getPlaceCompanies(query: Pick<DirectoryQuery, 'service' | 'country' | 'city'>): Promise<Page<CompanySummary>> {
+  'use cache';
+  cacheLife({ stale: 300, revalidate: 600, expire: 86_400 });
+  cacheTag('companies');
+  return apiGet<Page<CompanySummary>>('/v1/companies', { ...query, sort: 'rating', limit: 50 });
+}
+
 export async function getCountryFacets(service?: string): Promise<CountryFacet[]> {
   'use cache';
   cacheLife({ stale: 300, revalidate: 600, expire: 86_400 });
@@ -117,6 +125,7 @@ const EMPTY_SEO = { title: '', description: '' };
 const DEFAULT_SETTINGS: SiteSettings = {
   announcement: { active: false, text: '', linkLabel: '', href: '' },
   contact: { email: '', phone: '', address: '' },
+  legal: { companyName: '', grievanceOfficer: '', grievanceEmail: '', jurisdictionCity: '', updatedOn: '' },
   seo: { home: EMPTY_SEO, services: EMPTY_SEO, agencies: EMPTY_SEO, blog: EMPTY_SEO, getVerified: EMPTY_SEO },
 };
 
@@ -126,7 +135,9 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   cacheLife({ stale: 60, revalidate: 300, expire: 86_400 });
   cacheTag('site');
   try {
-    return await apiGet<SiteSettings>('/v1/site');
+    const settings = await apiGet<SiteSettings>('/v1/site');
+    // An API older than this website may not send every section yet.
+    return { ...DEFAULT_SETTINGS, ...settings, legal: { ...DEFAULT_SETTINGS.legal, ...settings.legal } };
   } catch (error) {
     // The site keeps working on defaults if settings cannot be read.
     console.error('Site settings unavailable', error);
@@ -197,4 +208,16 @@ export async function getSitemapCompanyPage(page: number): Promise<SitemapCompan
 export async function profileSitemapIds(): Promise<Array<{ id: number }>> {
   const { total, pageSize } = await getSitemapCompanyPage(0);
   return Array.from({ length: Math.max(1, Math.ceil(total / pageSize)) }, (_, id) => ({ id }));
+}
+
+/**
+ * Who a review invite was sent to, to greet them on the review form. Not
+ * cached: each token is personal and stops working once the review is in.
+ */
+export async function getReviewInvite(token: string): Promise<{ companySlug: string; name: string } | null> {
+  try {
+    return (await apiGet<{ invite: { companySlug: string; name: string } }>(`/v1/review-invites/${encodeURIComponent(token)}`)).invite;
+  } catch {
+    return null;
+  }
 }

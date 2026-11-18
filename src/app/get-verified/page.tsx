@@ -18,18 +18,18 @@ import { Reveal } from '@/components/motion/reveal';
 import { ButtonLink } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 import { withSeo } from '@/lib/seo';
-import { formatRupees, PLAN_COMPARISON, VERIFIED_PLAN, verifiedMonthlyWithGst } from '@/lib/verified-plan';
+import { formatPrice, PLAN_COMPARISON, VERIFIED_PLAN } from '@/lib/verified-plan';
 
 export async function generateMetadata(): Promise<Metadata> {
   return withSeo('getVerified', {
     title: 'Get Verified',
-    description: `Accelfied Verified: the Verified badge, a place above other companies, unlimited reviews and promotion by our team, for ${formatRupees(VERIFIED_PLAN.monthly)} a month plus GST.`,
+    description: `Accelfied Verified: the Verified badge, a place above other companies, unlimited reviews and promotion by our team, for ${formatPrice(VERIFIED_PLAN.monthly)} a month.`,
     alternates: { canonical: '/get-verified' },
   });
 }
 
 const START = '/dashboard/company/verified';
-const PRICE = formatRupees(VERIFIED_PLAN.monthly);
+const PRICE = formatPrice(VERIFIED_PLAN.monthly);
 
 export default function GetVerifiedPage() {
   return (
@@ -144,13 +144,13 @@ export default function GetVerifiedPage() {
                   </th>
                   <th scope="col" className="border-l border-line bg-paper p-4 text-center align-top sm:p-6">
                     <span className="block font-display text-lg font-semibold text-ink sm:text-xl">Free</span>
-                    <span className="mt-1 block text-sm font-normal text-ink-soft">₹0</span>
+                    <span className="mt-1 block text-sm font-normal text-ink-soft">{formatPrice(0)}</span>
                   </th>
                   <th scope="col" className="bg-night p-4 text-center align-top text-paper sm:p-6">
                     <span className="flex items-center justify-center gap-1.5 font-display text-lg font-semibold sm:text-xl">
                       Verified <BadgeCheck className="size-5 text-accent-soft" aria-hidden="true" />
                     </span>
-                    <span className="mt-1 block text-sm font-normal text-paper/75">{PRICE}/mo + GST</span>
+                    <span className="mt-1 block text-sm font-normal text-paper/75">{PRICE}/mo</span>
                   </th>
                 </tr>
               </thead>
@@ -179,8 +179,7 @@ export default function GetVerifiedPage() {
             </table>
             <div className="flex flex-col items-center justify-between gap-4 border-t border-line bg-surface p-6 sm:flex-row">
               <p className="text-ink-soft">
-                <span className="font-display text-2xl font-semibold text-ink">{PRICE}</span> per month + 18% GST ({formatRupees(verifiedMonthlyWithGst)}{' '}
-                in total)
+                <span className="font-display text-2xl font-semibold text-ink">{PRICE}</span> per month, GST included
               </p>
               <ButtonLink href={START}>
                 Verify your business <ArrowRight className="size-4" aria-hidden="true" />
@@ -223,7 +222,7 @@ export default function GetVerifiedPage() {
           </Reveal>
           <ol className="mt-12 grid gap-5 md:grid-cols-3">
             {[
-              { icon: Wallet, title: 'Join the plan', text: `Start ${VERIFIED_PLAN.name} for ${PRICE} a month plus GST from your company dashboard.` },
+              { icon: Wallet, title: 'Join the plan', text: `Start ${VERIFIED_PLAN.name} for ${PRICE} a month from your company dashboard.` },
               { icon: FileCheck2, title: 'Share your documents', text: 'Send your business documents, such as GST and registration, so our team can confirm your company.' },
               { icon: BadgeCheck, title: 'Get your badge', text: 'Once our team confirms your business, the Verified badge goes live and you move above other companies.' },
             ].map((step, index) => (
@@ -310,7 +309,7 @@ const FAQ = [
   { q: 'Who should join?', a: 'Any agency, studio or service firm listed on Accelfied that wants more clients to trust and find it.' },
   {
     q: 'What does it cost?',
-    a: `${PRICE} a month plus 18% GST, so ${formatRupees(verifiedMonthlyWithGst)} a month in total. You get a GST invoice every month.`,
+    a: `${PRICE} a month in total, with GST already included. You get an invoice for every payment, with the GST shown separately.`,
   },
   {
     q: 'How long does verification take?',

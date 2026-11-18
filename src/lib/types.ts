@@ -52,6 +52,8 @@ export interface CompanyProfile extends Omit<CompanySummary, 'rating'> {
   industries: string[];
   clients: string[];
   portfolio: Array<{ id: string; title: string; description: string; imageUrl: string; url: string; serviceSlug: string }>;
+  team: TeamMember[];
+  socials: Socials;
   rating: {
     average: number;
     count: number;
@@ -62,6 +64,22 @@ export interface CompanyProfile extends Omit<CompanySummary, 'rating'> {
     distribution: Record<'1' | '2' | '3' | '4' | '5', number>;
   };
   publishedAt: string | null;
+}
+
+export interface TeamMember {
+  id: string;
+  name: string;
+  role: string;
+  photoUrl: string;
+  linkedinUrl: string;
+}
+
+export interface Socials {
+  linkedin: string;
+  facebook: string;
+  instagram: string;
+  x: string;
+  youtube: string;
 }
 
 export interface Review {
@@ -111,6 +129,7 @@ export interface Account {
   firstName: string;
   lastName: string;
   accountType: AccountType;
+  emailVerified: boolean;
   createdAt: string;
 }
 
@@ -143,6 +162,7 @@ export interface Lead {
   preferredLocation: string;
   contact: { name: string; email: string; phone: string; companyName: string };
   status: string;
+  conversationId: string | null;
   createdAt: string;
 }
 
@@ -152,7 +172,7 @@ export interface SentLead extends Lead {
 
 export interface CompanyClaim {
   id: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'unconfirmed' | 'pending' | 'approved' | 'rejected';
   workEmail: string;
   jobTitle: string;
   reviewNote: string;
@@ -175,15 +195,15 @@ export interface VerificationDetails {
   decidedAt: string | null;
 }
 
-/** Amounts are in paise. */
+/** Amounts are in the currency's smallest unit (cents). */
 export interface Billing {
   enabled: boolean;
   keyId: string | null;
-  plan: { name: string; taxable: number; gst: number; total: number; currency: 'INR' };
+  plan: { name: string; taxable: number; gst: number; total: number; gstRate: number; currency: string };
   company: { id: string; name: string; status: CompanyStatus; verified: boolean } | null;
   subscription: { id: string; status: SubscriptionStatus; currentEnd: string | null; cancelAtCycleEnd: boolean } | null;
   verification: VerificationDetails | null;
-  invoices: Array<{ id: string; number: string; total: number; paidAt: string; periodStart: string | null; periodEnd: string | null }>;
+  invoices: Array<{ id: string; number: string; total: number; currency: string; paidAt: string; periodStart: string | null; periodEnd: string | null }>;
 }
 
 export interface Invoice {
@@ -195,6 +215,7 @@ export interface Invoice {
   sgst: number;
   igst: number;
   total: number;
+  currency: string;
   billedTo: { name: string; gstin?: string; address?: string };
   periodStart: string | null;
   periodEnd: string | null;
@@ -232,6 +253,7 @@ type SeoEntry = { title: string; description: string };
 export interface SiteSettings {
   announcement: { active: boolean; text: string; linkLabel: string; href: string };
   contact: { email: string; phone: string; address: string };
+  legal: { companyName: string; grievanceOfficer: string; grievanceEmail: string; jurisdictionCity: string; updatedOn: string };
   seo: Record<'home' | 'services' | 'agencies' | 'blog' | 'getVerified', SeoEntry>;
 }
 
@@ -247,4 +269,57 @@ export interface ServicePlace {
   reviews: number;
   /** Review-weighted rating, 0 when there are no reviews. */
   rating: number;
+}
+
+export type SenderRole = 'client' | 'company';
+
+export interface Conversation {
+  id: string;
+  role: SenderRole;
+  company: { slug: string; name: string; logoUrl: string };
+  client: { name: string };
+  subject: string;
+  lastMessageAt: string;
+  lastPreview: string;
+  lastSenderRole: SenderRole;
+  unread: number;
+  fromBrief: boolean;
+}
+
+export interface ChatMessage {
+  id: string;
+  senderRole: SenderRole;
+  mine: boolean;
+  body: string;
+  createdAt: string;
+}
+
+export interface Thread {
+  conversation: Conversation;
+  messages: ChatMessage[];
+  olderCursor: string | null;
+}
+
+export interface SavedCompany {
+  savedAt: string;
+  company: CompanySummary;
+}
+
+export interface CompanyAnalytics {
+  days: number;
+  from: string;
+  to: string;
+  totals: { impressions: number; views: number; websiteClicks: number; leads: number; shortlists: number };
+  series: Array<{ day: string; impressions: number; views: number; websiteClicks: number; leads: number }>;
+  pages: Array<{ page: string; impressions: number; avgPosition: number; views: number }>;
+}
+
+export interface ReviewInvite {
+  id: string;
+  name: string;
+  email: string;
+  status: 'sent' | 'reviewed';
+  sentAt: string;
+  sendCount: number;
+  canResendAt: string | null;
 }
