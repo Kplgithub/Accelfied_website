@@ -382,3 +382,80 @@ export interface ReviewInvite {
   sendCount: number;
   canResendAt: string | null;
 }
+
+export interface ClientFocus {
+  small: number;
+  midmarket: number;
+  enterprise: number;
+}
+
+export interface CompanyAward {
+  id: string;
+  title: string;
+  url: string;
+  year: number | null;
+}
+
+export interface CompanyPackage {
+  id: string;
+  title: string;
+  serviceSlug: string;
+  serviceName: string;
+  description: string;
+  tiers: Array<{ name: 'Small' | 'Medium' | 'Large'; price: number; duration: string; summary: string }>;
+  features: Array<{ label: string; values: string[] }>;
+  status: 'published' | 'hidden';
+}
+
+export interface CompanyDetails {
+  clientFocus: ClientFocus;
+  awards: CompanyAward[];
+  packages: CompanyPackage[];
+}
+
+export interface PublicCompanyDetails extends CompanyDetails {
+  pricing: { reviewBudgets: Array<{ budget: string; count: number }>; mostCommonBudget: string | null };
+}
+
+export type LocationPreference = 'any' | 'near' | 'countries';
+
+export interface ProjectBrief {
+  id: string;
+  serviceSlug: string;
+  serviceName: string;
+  goal: string;
+  locationPreference: LocationPreference;
+  countries: string[];
+  nearCity: string;
+  website: string;
+  companyName: string;
+  about: string;
+  employees: string;
+  budget: string;
+  timeline: string;
+  introduction: string;
+  objectives: string[];
+  deliverables: string[];
+  questions: string[];
+  additionalRequirements: string;
+  status: 'draft' | 'sent';
+  sentCount: number;
+  sentAt: string | null;
+  createdAt: string;
+}
+
+export interface BriefProvider {
+  company: CompanySummary;
+  budgetFit: 'fits' | 'above';
+  estimate: { from: number; to: number } | null;
+  reviewSnippet: { text: string; rating: number; projectTitle: string } | null;
+  serviceReviewCount: number;
+  conversationId: string | null;
+}
+
+export interface ReviewDraft {
+  companySlug: string;
+  step: number;
+  answers: Record<string, string | number | boolean>;
+  updatedAt: string;
+}

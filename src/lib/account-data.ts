@@ -6,6 +6,10 @@ import type {
   Billing,
   CompanyAnalytics,
   CompanyClaim,
+  CompanyDetails,
+  BriefProvider,
+  ProjectBrief,
+  ReviewDraft,
   Conversation,
   Invoice,
   OwnedCompany,
@@ -114,4 +118,39 @@ export async function getMyCompanyAnalytics(returnTo: string, days: number): Pro
 export async function getMyReviewInvites(returnTo: string, page = 1): Promise<Page<ReviewInvite>> {
   const { token } = await requireUser(returnTo);
   return apiPrivateGet<Page<ReviewInvite>>('/v1/me/company/review-invites', token, { page, limit: 20 });
+}
+
+/** The listing plus the Edit Profile extras (client focus, awards, packages). */
+export async function getMyCompanyDetails(returnTo: string): Promise<{ company: OwnedCompany; details: CompanyDetails } | null> {
+  const { token } = await requireUser(returnTo);
+  try {
+    return await apiPrivateGet<{ company: OwnedCompany; details: CompanyDetails }>('/v1/me/company/details', token);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return null;
+    throw error;
+  }
+}
+
+export async function getMyBriefs(returnTo: string): Promise<ProjectBrief[]> {
+  const { token } = await requireUser(returnTo);
+  return (await apiPrivateGet<{ items: ProjectBrief[] }>('/v1/me/briefs', token)).items;
+}
+
+export async function getMyBrief(
+  returnTo: string,
+  id: string,
+): Promise<{ brief: ProjectBrief; providers: BriefProvider[]; suggestions: BriefProvider[] } | null> {
+  if (!/^[a-f\d]{24}$/i.test(id)) return null;
+  const { token } = await requireUser(returnTo);
+  try {
+    return await apiPrivateGet<{ brief: ProjectBrief; providers: BriefProvider[]; suggestions: BriefProvider[] }>(`/v1/me/briefs/${id}`, token);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return null;
+    throw error;
+  }
+}
+
+export async function getMyReviewDraft(returnTo: string, slug: string): Promise<ReviewDraft | null> {
+  const { token } = await requireUser(returnTo);
+  return (await apiPrivateGet<{ draft: ReviewDraft | null }>(`/v1/me/review-drafts/${encodeURIComponent(slug)}`, token)).draft;
 }

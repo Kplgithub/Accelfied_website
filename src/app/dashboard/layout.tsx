@@ -48,7 +48,8 @@ async function Nav() {
     title: 'My company',
     links: company
       ? [
-          { href: '/dashboard/company', label: 'Company profile' },
+          { href: '/dashboard/company', label: 'Edit profile' },
+          { href: '/dashboard/company/packages', label: 'Packages' },
           { href: '/dashboard/company/requests', label: 'Project requests' },
           { href: '/dashboard/company/analytics', label: 'Analytics' },
           { href: '/dashboard/company/reviews', label: 'Client reviews' },
