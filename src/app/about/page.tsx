@@ -22,8 +22,8 @@ const PRINCIPLES = [
     text: 'Companies list for free and clients never pay to search, message or send a brief. Verified is an optional plan for companies that want to stand out.',
   },
   {
-    title: 'One city at a time',
-    text: 'We start where we can check companies properly, beginning with Jaipur, and grow city by city so every listing stays useful.',
+    title: 'Across India',
+    text: 'Find companies in every state and city, from large metros to growing towns, all held to the same review checks.',
   },
 ];
 
