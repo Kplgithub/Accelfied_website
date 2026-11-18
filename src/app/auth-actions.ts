@@ -8,6 +8,7 @@ import type { FormState } from '@/lib/form-state';
 import { safeNext, SESSION_COOKIE, sessionCookieOptions } from '@/lib/session';
 import { SITE_URL } from '@/lib/site';
 import { clientIp, echo, friendly, text } from '@/lib/submit';
+import { testOtpEnabled } from '@/lib/test-otp';
 import type { Account } from '@/lib/types';
 
 interface IssuedSession {
@@ -106,6 +107,8 @@ export async function forgotPassword(_prev: FormState, form: FormData): Promise<
   } catch (error) {
     return failure(error, form, 'Password reset request failed');
   }
+  // Test mode: no email arrives, so the code is typed on the next page instead.
+  if (await testOtpEnabled()) redirect(`/reset-password?email=${encodeURIComponent(text(form, 'email'))}`);
   return {
     status: 'success',
     message: `If an account exists for ${text(form, 'email')}, a reset link is on its way. It works for one hour.`,
