@@ -9,7 +9,7 @@ import { Container } from '@/components/ui/container';
 import { getService, getServiceGroups } from '@/lib/data';
 import { parseDirectoryParams } from '@/lib/directory';
 import { pagedCanonical } from '@/lib/page-param';
-import { listedServices, placeName, relatedPlaces } from '@/lib/places';
+import { getStatePlaces, listedServices, placeName, relatedPlaces } from '@/lib/places';
 import { SITE_URL } from '@/lib/site';
 
 export async function generateStaticParams() {
@@ -100,10 +100,15 @@ async function Results({ params, searchParams }: PageProps<'/agencies/[service]'
 async function Locations({ params }: Pick<PageProps<'/agencies/[service]'>, 'params'>) {
   const service = await getService((await params).service);
   if (!service) return null;
-  const { countries, cities } = await relatedPlaces(service.slug);
+  const [{ countries, cities }, states] = await Promise.all([relatedPlaces(service.slug), getStatePlaces()]);
   return (
     <>
       <PlaceLinks title={`${service.name} companies by country`} places={countries} label={(p) => `${service.name} in ${placeName(p)}`} />
+      <PlaceLinks
+        title={`${service.name} companies by state in India`}
+        places={states.filter((p) => p.service === service.slug).slice(0, 36)}
+        label={(p) => `${service.name} in ${p.city}`}
+      />
       <PlaceLinks title={`${service.name} companies by city`} places={cities} label={(p) => `${service.name} in ${p.city}`} />
     </>
   );
