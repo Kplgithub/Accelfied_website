@@ -1,9 +1,11 @@
 import type { MetadataRoute } from 'next';
 import { getSitemapPosts } from '@/lib/data';
+import { landingLinks } from '@/lib/landing';
 import { SITE_URL } from '@/lib/site';
 
 /**
- * Main pages and the blog. Directory pages live in /agencies/sitemap.xml and
+ * Main pages, the blog and the standalone guides (cost calculators, comparisons, industries). The guides are
+ * not linked from the site menus, so this sitemap is how search engines find them. Directory pages live in /agencies/sitemap.xml and
  * company profiles in /profile/sitemap/<n>.xml, all listed in robots.txt.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -22,6 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/terms`, changeFrequency: 'yearly', priority: 0.1 },
     { url: `${SITE_URL}/refund-policy`, changeFrequency: 'yearly', priority: 0.1 },
     { url: `${SITE_URL}/blog`, changeFrequency: 'daily', priority: 0.6 },
+    ...landingLinks().map((page) => ({ url: `${SITE_URL}${page.path}`, lastModified: page.reviewed, changeFrequency: 'monthly' as const, priority: 0.6 })),
     ...posts.map((post) => ({ url: `${SITE_URL}/blog/${post.slug}`, lastModified: post.updatedAt, changeFrequency: 'monthly' as const, priority: 0.5 })),
   ];
 }
