@@ -65,8 +65,9 @@ async function Nav() {
   const hiringGroup: NavGroup = {
     title: 'Hiring',
     links: [
+      { href: '/dashboard/briefs', label: 'Project briefs', prefix: true },
       { href: '/dashboard/shortlist', label: 'Shortlist' },
-      { href: '/dashboard/requests', label: 'My briefs' },
+      { href: '/dashboard/requests', label: 'Quotes sent' },
       { href: '/dashboard/reviews', label: 'My reviews' },
     ],
   };

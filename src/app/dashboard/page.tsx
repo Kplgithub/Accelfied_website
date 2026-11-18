@@ -1,4 +1,5 @@
-import { FileText, PenLine, Search } from 'lucide-react';
+import { ArrowRight, FileText, Search } from 'lucide-react';
+import { ClientProgress, type ClientStep } from '@/components/dashboard/client-progress';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { DashboardHeader, Panel, StatTile, StatusPill } from '@/components/dashboard/bits';
@@ -7,7 +8,7 @@ import { LeadCard } from '@/components/dashboard/lead-card';
 import { companySteps, OnboardingSteps } from '@/components/dashboard/onboarding-steps';
 import { ButtonLink } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { getMyClaims, getMyCompany, getMyCompanyAnalytics, getMyCompanyDetails, getMyCompanyLeads, getMyLeads, getMyReviews } from '@/lib/account-data';
+import { getMyClaims, getMyCompany, getMyCompanyAnalytics, getMyCompanyDetails, getMyCompanyLeads, getMyConversations, getMyLeads, getMyReviews, getMyBriefs, getMyShortlist } from '@/lib/account-data';
 import { CompanyHome } from '@/components/dashboard/company-home';
 import { profileHealth } from '@/lib/profile-health';
 import { formatDate, formatRating } from '@/lib/format';
@@ -139,48 +140,92 @@ async function CompanyOverview({ user, company }: { user: Account; company: Owne
 }
 
 async function ClientOverview({ user }: { user: Account }) {
-  const [leads, reviews] = await Promise.all([getMyLeads(HERE), getMyReviews(HERE)]);
-  const actions = [
-    { href: '/agencies', icon: Search, title: 'Find a company', text: 'Compare by rating, rate and location.' },
-    { href: '/get-a-quote', icon: FileText, title: 'Send a brief', text: 'Describe your project once.' },
-    { href: '/write-a-review', icon: PenLine, title: 'Write a review', text: 'Help the next client choose.' },
+  const [leads, reviews, briefs, shortlist, conversations] = await Promise.all([
+    getMyLeads(HERE),
+    getMyReviews(HERE),
+    getMyBriefs(HERE).catch(() => []),
+    getMyShortlist(HERE).catch(() => null),
+    getMyConversations(HERE, 'client').catch(() => null),
+  ]);
+  const steps: ClientStep[] = [
+    { title: 'Start your project by writing a brief', done: briefs.length > 0, href: '/project-brief', cta: 'Start' },
+    { title: 'Add companies to your shortlist', done: (shortlist?.total ?? 0) > 0, href: '/agencies', cta: 'Browse' },
+    { title: 'Send your brief to companies', done: briefs.some((brief) => brief.status === 'sent') || leads.total > 0, href: briefs[0] ? `/dashboard/briefs/${briefs[0].id}#more` : '/project-brief', cta: 'Send' },
+    { title: 'Talk to companies in Messages', done: (conversations?.total ?? 0) > 0, href: '/dashboard/messages', cta: 'Open' },
+    { title: 'Review the company you worked with', done: reviews.total > 0, href: '/write-a-review', cta: 'Write' },
   ];
   return (
     <>
-      <DashboardHeader eyebrow="Your account" title={`Hello, ${user.firstName}`} intro="Everything you have sent and shared on Accelfied, in one place." />
-      <ul className="mb-8 grid gap-4 sm:grid-cols-3">
-        {actions.map(({ href, icon: Icon, title, text }) => (
-          <li key={href}>
-            <Link href={href} className="group block h-full rounded-2xl border border-line bg-surface p-5 transition-[border-color,box-shadow] hover:border-accent hover:shadow-[var(--shadow-card)]">
-              <Icon className="size-5 text-accent" aria-hidden="true" />
-              <p className="mt-3 font-medium text-ink">{title}</p>
-              <p className="text-sm text-ink-soft">{text}</p>
-            </Link>
-          </li>
-        ))}
-      </ul>
-      <div className="mb-8 grid gap-4 sm:grid-cols-2">
-        <StatTile label="Briefs sent" value={leads.total} />
-        <StatTile label="Reviews written" value={reviews.total} />
+      <DashboardHeader eyebrow="Your account" title={`Welcome back, ${user.firstName}`} intro="Find, compare and hire the right company, all in one place." />
+      <section className="relative mb-8 overflow-hidden rounded-[var(--radius-card)] bg-night p-6 text-paper shadow-[var(--shadow-lift)] sm:p-8">
+        <div className="pointer-events-none absolute -right-16 -bottom-24 size-72 rounded-full bg-accent/30 blur-3xl" aria-hidden="true" />
+        <div className="relative grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] md:items-center">
+          <div>
+            <p className="text-xs font-semibold tracking-[0.16em] text-accent-soft uppercase">Get started</p>
+            <h2 className="mt-2 font-display text-3xl leading-tight font-semibold">Find the perfect partner for your project</h2>
+          </div>
+          <ul className="space-y-3">
+            {[
+              { href: '/project-brief', icon: FileText, title: 'Get matched with companies in 5 minutes or less', text: 'Answer seven questions, we write the brief.' },
+              { href: '/agencies', icon: Search, title: 'Explore verified companies on your own', text: 'Compare by rating, rate and location.' },
+            ].map(({ href, icon: Icon, title, text }) => (
+              <li key={href}>
+                <Link href={href} className="group flex items-center gap-4 rounded-2xl bg-white/8 p-4 ring-1 ring-white/10 transition-[background-color,transform] hover:-translate-y-0.5 hover:bg-white/14">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/10">
+                    <Icon className="size-5 text-accent-soft" aria-hidden="true" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-medium">{title}</span>
+                    <span className="block text-sm text-paper/65">{text}</span>
+                  </span>
+                  <ArrowRight className="size-4 shrink-0 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+      <div className="mb-8">
+        <ClientProgress steps={steps} />
       </div>
-      <Panel title="Recent briefs">
-        {leads.items.length ? (
+      <Panel title="My projects" className="mb-8">
+        {briefs.length ? (
+          <ul className="divide-y divide-line">
+            {briefs.slice(0, 3).map((brief) => (
+              <li key={brief.id}>
+                <Link href={`/dashboard/briefs/${brief.id}`} className="group flex items-center justify-between gap-4 py-3">
+                  <span>
+                    <span className="block font-medium text-ink group-hover:text-accent">{brief.serviceName}</span>
+                    <span className="block text-sm text-ink-soft">
+                      {formatDate(brief.createdAt)}
+                      {brief.sentCount > 0 ? ` · sent to ${brief.sentCount}` : ' · draft'}
+                    </span>
+                  </span>
+                  <StatusPill status={brief.status} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <EmptyState title="Build a project brief in minutes" action={<ButtonLink href="/project-brief">Start a project</ButtonLink>}>
+            Describe what you need once. We write a clear brief and send it to companies that fit.
+          </EmptyState>
+        )}
+      </Panel>
+      {leads.items.length > 0 && (
+        <Panel title="Quotes sent">
           <div className="space-y-4">
             {leads.items.slice(0, 3).map((lead) => (
               <LeadCard key={lead.id} lead={lead} view="client" />
             ))}
             {leads.total > 3 && (
               <Link href="/dashboard/requests" className="inline-block text-sm font-medium text-accent underline-offset-4 hover:underline">
-                See all {leads.total} briefs
+                See all {leads.total}
               </Link>
             )}
           </div>
-        ) : (
-          <EmptyState title="No briefs yet" action={<ButtonLink href="/get-a-quote">Send your first brief</ButtonLink>}>
-            Tell companies what you need and compare their replies.
-          </EmptyState>
-        )}
-      </Panel>
+        </Panel>
+      )}
     </>
   );
 }
