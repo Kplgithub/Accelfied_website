@@ -15,6 +15,8 @@ interface Props {
   company: { slug: string; name: string; services: Array<{ slug: string; name: string }> };
   groups: ServiceGroup[];
   account: { name: string; email: string };
+  /** Token from the company's invite email, so moderators know the company asked this person. */
+  invite?: string;
 }
 
 const STORY = [
@@ -32,7 +34,7 @@ const SCORES = [
   { name: 'ratings.willingToRefer', label: 'Likely to refer them' },
 ];
 
-export function ReviewForm({ company, groups, account }: Props) {
+export function ReviewForm({ company, groups, account, invite }: Props) {
   const [state, action] = useActionState(submitReview, initialFormState);
   const { value, error, checked } = formFields(state);
   const [ongoing, setOngoing] = useState(checked('project.ongoing'));
@@ -54,6 +56,7 @@ export function ReviewForm({ company, groups, account }: Props) {
     <form key={state.nonce} action={action} className="relative space-y-8" noValidate>
       <Honeypot />
       <input type="hidden" name="companySlug" value={company.slug} />
+      {invite && <input type="hidden" name="invite" value={invite} />}
       <FormAlert state={state} />
 
       <FormSection title="The project" description="Context helps other clients judge if the company fits them.">

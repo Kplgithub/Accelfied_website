@@ -49,8 +49,20 @@ export function LeadCard({ lead, view }: { lead: Lead | SentLead; view: 'client'
           <dd className="inline font-medium text-ink">{formatDate(lead.createdAt)}</dd>
         </div>
       </dl>
+      {view === 'client' && lead.conversationId && (
+        <div className="mt-4 border-t border-line pt-4 text-sm">
+          <Link href={`/dashboard/messages/${lead.conversationId}`} className="font-medium text-accent underline-offset-4 hover:underline">
+            Open the conversation
+          </Link>
+        </div>
+      )}
       {view === 'company' && (
         <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1 border-t border-line pt-4 text-sm">
+          {lead.conversationId && (
+            <Link href={`/dashboard/messages/${lead.conversationId}`} className="font-semibold text-brand underline-offset-4 hover:underline">
+              Reply in Messages
+            </Link>
+          )}
           <a href={`mailto:${lead.contact.email}`} className="font-medium text-accent underline-offset-4 hover:underline">
             {lead.contact.email}
           </a>

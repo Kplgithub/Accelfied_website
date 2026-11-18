@@ -17,7 +17,7 @@ export default async function MyBriefsPage({ searchParams }: PageProps<'/dashboa
       <DashboardHeader
         eyebrow="Hiring"
         title="My briefs"
-        intro="Every project brief you have sent. Companies reply to you by email."
+        intro="Every project brief you have sent. Companies reply in Messages, and we email you when they do."
         action={<ButtonLink href="/get-a-quote" size="sm">New brief</ButtonLink>}
       />
       {leads.items.length ? (

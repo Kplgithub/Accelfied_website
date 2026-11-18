@@ -39,7 +39,7 @@ async function QuoteContent({ searchParams }: Pick<PageProps<'/get-a-quote'>, 's
         </h1>
         <p className="mt-4 text-lg text-ink-soft">
           {company
-            ? `Your brief goes straight to ${company.name}. They will reply to you by email.`
+            ? `Your brief goes straight to ${company.name}. They reply in your Accelfied messages, and we email you when they do.`
             : 'Share your brief once. We will match it with companies that fit your budget, timeline and service.'}
         </p>
       </header>
