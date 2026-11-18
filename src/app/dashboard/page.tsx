@@ -1,6 +1,7 @@
 import { ArrowRight, FileText, Search } from 'lucide-react';
 import { ClientProgress, type ClientStep } from '@/components/dashboard/client-progress';
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { DashboardHeader, Panel, StatTile, StatusPill } from '@/components/dashboard/bits';
 import { VerifyEmailBanner } from '@/components/dashboard/verify-email-banner';
@@ -158,6 +159,10 @@ async function ClientOverview({ user }: { user: Account }) {
     <>
       <DashboardHeader eyebrow="Your account" title={`Welcome back, ${user.firstName}`} intro="Find, compare and hire the right company, all in one place." />
       <section className="relative mb-8 overflow-hidden rounded-[var(--radius-card)] bg-night p-6 text-paper shadow-[var(--shadow-lift)] sm:p-8">
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-full md:w-3/5" aria-hidden="true">
+          <Image src="/images/pages/client.webp" alt="" fill sizes="(min-width: 768px) 480px, 100vw" className="object-cover opacity-35" />
+          <div className="absolute inset-0 bg-gradient-to-r from-night/40 via-night/70 to-night" />
+        </div>
         <div className="pointer-events-none absolute -right-16 -bottom-24 size-72 rounded-full bg-accent/30 blur-3xl" aria-hidden="true" />
         <div className="relative grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] md:items-center">
           <div>
