@@ -48,6 +48,13 @@ jobs:
 
           cd "$APP_DIR"
           test -f .env || { echo "Missing $APP_DIR/.env on the server"; exit 1; }
+          # The site lives on www only. Canonicals, sitemaps, robots.txt and OG are built from this at build time.
+          SITE_URL=https://www.accelfied.com
+          if grep -q '^NEXT_PUBLIC_SITE_URL=' .env; then
+            sed -i "s#^NEXT_PUBLIC_SITE_URL=.*#NEXT_PUBLIC_SITE_URL=$SITE_URL#" .env
+          else
+            printf '\nNEXT_PUBLIC_SITE_URL=%s\n' "$SITE_URL" >> .env
+          fi
           npm ci --no-audit --no-fund
           npm run build
           if pm2 describe accelfied-web >/dev/null 2>&1; then
