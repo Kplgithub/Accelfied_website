@@ -33,6 +33,7 @@ export const PLAN_COMPARISON: Array<{ title: string; rows: Array<{ label: string
       { label: 'Company verification by our team', free: false, verified: true },
       { label: 'Verified badge on your profile and in listings', free: false, verified: true },
       { label: 'Listed above companies that are not verified', free: false, verified: true },
+      { label: 'Premier Verified badge once you have 10+ reviews averaging 4.5', free: false, verified: true },
       { label: 'Link to your website from directory pages', free: false, verified: true },
       { label: 'Featured client review', free: false, verified: 'Your choice' },
       { label: 'Number of reviews shown', free: 'Up to 5', verified: 'Unlimited' },

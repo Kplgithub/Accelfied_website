@@ -34,7 +34,7 @@ export function CompanyCard({ company, highlightService }: { company: CompanySum
                   {company.name}
                 </Link>
               </h3>
-              {company.verified && <VerifiedBadge />}
+              {company.verified && <VerifiedBadge premier={company.premier} />}
             </div>
             {company.tagline && <p className="mt-1 line-clamp-2 text-[15px] text-ink-soft">{company.tagline}</p>}
             <div className="mt-3">

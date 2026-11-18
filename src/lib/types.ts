@@ -36,6 +36,8 @@ export interface CompanySummary {
   logoUrl: string;
   website: string;
   verified: boolean;
+  /** Verified with 10+ published reviews averaging 4.5 or more. */
+  premier: boolean;
   teamSize: string;
   hourlyRate: string;
   minProjectSize: number;

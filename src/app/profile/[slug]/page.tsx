@@ -134,7 +134,7 @@ function ProfileHeader({ company }: { company: CompanyProfile }) {
             <div>
               <div className="flex flex-wrap items-center gap-3">
                 <h1 className="font-display text-4xl font-semibold tracking-tight text-ink sm:text-5xl">{company.name}</h1>
-                {company.verified && <VerifiedBadge />}
+                {company.verified && <VerifiedBadge premier={company.premier} />}
               </div>
               {company.tagline && <p className="mt-2 max-w-2xl text-lg text-ink-soft">{company.tagline}</p>}
               <div className="mt-3">
