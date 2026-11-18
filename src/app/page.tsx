@@ -35,6 +35,7 @@ import { formatDate, formatRating } from '@/lib/format';
 import { INDUSTRIES } from '@/lib/labels';
 import { SITE_URL } from '@/lib/site';
 import type { CompanySummary, ServiceGroup } from '@/lib/types';
+import { formatPrice, VERIFIED_PLAN } from '@/lib/verified-plan';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { seo } = await getSiteSettings();
@@ -557,7 +558,7 @@ const FAQ = [
   },
   {
     q: 'What does Accelfied Verified cost?',
-    a: '$59 a month, GST included. It adds the Verified badge, a place above other companies, unlimited reviews, promotion by our team, a blog about your company and a published interview.',
+    a: `${formatPrice(VERIFIED_PLAN.monthly)} a month or ${formatPrice(VERIFIED_PLAN.yearly)} a year by autopay, GST included. It adds the Verified badge, a place above other companies, unlimited reviews, promotion by our team, a blog about your company and a published interview.`,
   },
   { q: 'Can I sign in with Google or LinkedIn?', a: 'Yes. You can join or log in with Google, LinkedIn or your work email and a password.' },
 ];
