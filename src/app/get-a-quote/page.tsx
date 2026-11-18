@@ -7,8 +7,8 @@ import { getCompany, getServiceGroups } from '@/lib/data';
 import { getCurrentUser } from '@/lib/session';
 
 export const metadata: Metadata = {
-  title: 'Get a quote',
-  description: 'Describe your project once and hear back from companies that fit your budget and timeline.',
+  title: 'Get a Quote',
+  description: 'Describe your project once and hear back from agencies that fit your budget and timeline.',
   alternates: { canonical: '/get-a-quote' },
   robots: { index: false, follow: true },
 };
@@ -40,7 +40,7 @@ async function QuoteContent({ searchParams }: Pick<PageProps<'/get-a-quote'>, 's
         <p className="mt-4 text-lg text-ink-soft">
           {company
             ? `Your brief goes straight to ${company.name}. They reply in your Accelfied messages, and we email you when they do.`
-            : 'Share your brief once. We will match it with companies that fit your budget, timeline and service.'}
+            : 'Write your brief once. We pass it to companies that fit your service, budget and timeline, and their replies land in your inbox here.'}
         </p>
       </header>
       {user ? (

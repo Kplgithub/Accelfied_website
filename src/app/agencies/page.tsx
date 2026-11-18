@@ -9,11 +9,11 @@ import { withSeo } from '@/lib/seo';
 export async function generateMetadata({ searchParams }: PageProps<'/agencies'>): Promise<Metadata> {
   const { canonical, suffix } = await pagedCanonical('/agencies', searchParams);
   const metadata = await withSeo('agencies', {
-    title: 'All companies',
-    description: 'Search every company on Accelfied and compare them by client reviews, rates, team size and location.',
+    title: 'IT, Software & Marketing Companies in India',
+    description: 'Search every agency on Accelfied. Filter software, app, design and marketing companies in India by city, budget, hourly rate and checked client reviews.',
     alternates: { canonical },
   });
-  return suffix ? { ...metadata, title: `All companies${suffix}` } : metadata;
+  return suffix ? { ...metadata, title: `IT, Software & Marketing Companies in India${suffix}` } : metadata;
 }
 
 export default function AllAgenciesPage({ searchParams }: PageProps<'/agencies'>) {
@@ -23,10 +23,10 @@ export default function AllAgenciesPage({ searchParams }: PageProps<'/agencies'>
         <Container className="py-12 lg:py-16">
           <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">Directory</p>
           <h1 className="mt-3 font-display text-4xl leading-tight font-semibold tracking-tight text-ink sm:text-5xl">
-            Every company on Accelfied
+            Software, design and marketing companies in India
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-ink-soft">
-            Search by name or narrow down by location, budget and rate. Ratings come only from published client reviews.
+            Search by name, or narrow the list by city, budget and hourly rate. Every star rating here comes from client reviews our team has approved.
           </p>
         </Container>
       </section>

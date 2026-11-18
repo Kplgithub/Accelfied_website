@@ -10,8 +10,8 @@ import { getCurrentUser, safeNext } from '@/lib/session';
 import type { AccountType } from '@/lib/types';
 
 export const metadata: Metadata = {
-  title: 'Create an account',
-  description: 'Join Accelfied to hire a trusted company or to list your own company and collect client reviews.',
+  title: 'Join Free: Hire an Agency or List Your Company',
+  description: 'Create a free Accelfied account to find a trusted agency in India, or to list your own company and collect reviews from past clients.',
   alternates: { canonical: '/join' },
 };
 
@@ -19,14 +19,14 @@ const ROLES: Array<{ value: AccountType; icon: typeof Search; title: string; tex
   {
     value: 'client',
     icon: Search,
-    title: 'Hire a business partner',
-    text: 'Compare companies by real reviews, send your brief and review the people you worked with.',
+    title: 'I want to hire a company',
+    text: 'Compare agencies on approved reviews, send one brief to several of them, and rate the team you end up working with.',
   },
   {
     value: 'provider',
     icon: Building2,
-    title: 'Get my company listed',
-    text: 'Create a free profile, collect reviews from past clients and receive project requests.',
+    title: 'I run an agency or firm',
+    text: 'Set up a free profile, gather reviews from clients you have already delivered for, and receive project briefs.',
   },
 ];
 
@@ -57,7 +57,7 @@ async function JoinContent({ searchParams }: Pick<PageProps<'/join'>, 'searchPar
             What brings you <span className="scribble italic">here</span>?
           </>
         }
-        intro="Pick one to get started. You can always do both later from the same account."
+        intro="Pick the one that fits today. The same account can do both later."
       >
         <ul className="space-y-4">
           {ROLES.map(({ value, icon: Icon, title, text }) => (
@@ -97,8 +97,8 @@ async function JoinContent({ searchParams }: Pick<PageProps<'/join'>, 'searchPar
       title={isProvider ? 'Create your company account' : 'Create your account'}
       intro={
         isProvider
-          ? 'Next you will add your company details. Our team checks every new listing before it goes live.'
-          : 'Save time on every project: send briefs, track replies and share reviews from one place.'
+          ? 'After this you add your company details. Someone on our team checks every new listing before it goes live.'
+          : 'One account for every project: send briefs, keep track of replies and leave reviews, all in one place.'
       }
       aside={
         <Link href={withNext('/join')} className="text-sm font-medium text-accent underline-offset-4 hover:underline">

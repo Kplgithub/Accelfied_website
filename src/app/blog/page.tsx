@@ -19,10 +19,10 @@ const KINDS: Array<{ value: PostKind | ''; label: string }> = [
 
 export async function generateMetadata({ searchParams }: PageProps<'/blog'>): Promise<Metadata> {
   const [{ seo }, { canonical, suffix }] = await Promise.all([getSiteSettings(), pagedCanonical('/blog', searchParams)]);
-  const title = seo.blog.title || 'Blog: guides, company stories and founder interviews';
+  const title = seo.blog.title || 'Blog: Agency Cost Guides and Hiring Tips for India';
   return {
     title: seo.blog.title ? { absolute: `${title}${suffix}` } : `${title}${suffix}`,
-    description: seo.blog.description || 'Guides on hiring agencies, stories of the companies on Accelfied, and interviews with the people who run them.',
+    description: seo.blog.description || 'Real costs, hiring checklists and top company lists for Indian cities, plus stories and interviews from the agencies listed on Accelfied.',
     alternates: { canonical },
   };
 }
@@ -33,8 +33,8 @@ export default function BlogPage({ searchParams }: PageProps<'/blog'>) {
       <section className="grain border-b border-line">
         <Container className="pt-14 lg:pt-20">
           <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">Accelfied blog</p>
-          <h1 className="mt-3 max-w-3xl font-display text-5xl leading-tight font-semibold tracking-tight text-ink sm:text-6xl">The people and work behind the reviews</h1>
-          <p className="mt-5 max-w-2xl text-lg text-ink-soft">Guides on choosing a partner, stories of companies listed here, and interviews with the founders who run them.</p>
+          <h1 className="mt-3 max-w-3xl font-display text-5xl leading-tight font-semibold tracking-tight text-ink sm:text-6xl">Hire smarter, pay what the work is worth</h1>
+          <p className="mt-5 max-w-2xl text-lg text-ink-soft">What a website or app really costs in India, how to vet an agency before you sign, and the people building good companies in cities across the country.</p>
         </Container>
         <Suspense fallback={<Container className="h-[3.75rem] pb-14 lg:pb-20" />}>
           <KindNav searchParams={searchParams} />

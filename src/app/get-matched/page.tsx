@@ -15,8 +15,8 @@ import { BUDGETS, budgetLabel, TIMELINES, timelineLabel } from '@/lib/labels';
 import { getCurrentUser } from '@/lib/session';
 
 export const metadata: Metadata = {
-  title: 'Get matched with companies',
-  description: 'Answer a few quick questions about your project and see the companies that fit your service, budget and location.',
+  title: 'Get a Free Shortlist of Agencies in India',
+  description: 'Answer six short questions about your project and see the software, design and marketing companies in India that fit your budget, timeline and city.',
   alternates: { canonical: '/get-matched' },
 };
 
@@ -47,11 +47,11 @@ async function MatchedContent({ searchParams }: Pick<PageProps<'/get-matched'>, 
     return (
       <div className="mx-auto max-w-2xl">
         <header className="mb-8 text-center">
-          <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">Get matched</p>
+          <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">Free shortlist</p>
           <h1 className="mt-3 font-display text-4xl leading-tight font-semibold tracking-tight text-ink sm:text-5xl">
-            Six quick questions, then your shortlist
+            Six short questions, then your shortlist
           </h1>
-          <p className="mt-4 text-lg text-ink-soft">Tell us what you need. We show the companies that fit and send your brief when you are ready.</p>
+          <p className="mt-4 text-lg text-ink-soft">Tell us what you need. We line up the companies that fit, and your brief goes to them only when you are ready.</p>
         </header>
         <GetMatchedWizard groups={groups} tone="light" />
       </div>

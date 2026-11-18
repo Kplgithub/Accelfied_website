@@ -11,6 +11,8 @@ import { parseDirectoryParams } from '@/lib/directory';
 import { pagedCanonical } from '@/lib/page-param';
 import { getStatePlaces, listedServices, placeName, relatedPlaces } from '@/lib/places';
 import { SITE_URL } from '@/lib/site';
+import { MAX_DESCRIPTION } from '@/lib/seo-text';
+import { ServiceGuide } from '@/components/directory/service-guide';
 
 export async function generateStaticParams() {
   const groups = await getServiceGroups();
@@ -22,11 +24,19 @@ export async function generateMetadata({ params, searchParams }: PageProps<'/age
   if (!service) return { title: 'Service not found' };
   const { canonical, suffix } = await pagedCanonical(`/agencies/${service.slug}`, searchParams);
   return {
-    title: `Top ${service.name} Companies${suffix}`,
-    description: `Compare ${service.name.toLowerCase()} companies by verified client reviews, hourly rates, minimum project size and location.`,
+    title: `Best ${service.name} Companies in India${suffix}`,
+    description: fitDescription(`Shortlist ${service.name.toLowerCase()} companies in India by checked client reviews, hourly rates and minimum budget.`, [
+      ' Free to compare and free to send a brief.',
+      ' Free to compare.',
+    ]),
     alternates: { canonical },
     robots: listed.has(service.slug) ? undefined : { index: false, follow: true },
   };
+}
+
+/** Adds the longest ending that still fits in a search result description. */
+function fitDescription(base: string, endings: string[]): string {
+  return base + (endings.find((ending) => base.length + ending.length <= MAX_DESCRIPTION) ?? '');
 }
 
 export default function ServiceDirectoryPage({ params, searchParams }: PageProps<'/agencies/[service]'>) {
@@ -70,9 +80,12 @@ async function Header({ params }: Pick<PageProps<'/agencies/[service]'>, 'params
           </Link>
         </nav>
         <h1 className="mt-4 font-display text-4xl leading-tight font-semibold tracking-tight text-ink sm:text-5xl">
-          Top {service.name} companies
+          Best {service.name} companies in India
         </h1>
-        <p className="mt-4 max-w-2xl text-lg text-ink-soft">{service.description}</p>
+        <p className="mt-4 max-w-2xl text-lg text-ink-soft">
+          {service.description} Every rating below comes from client reviews our team read and approved, so you can compare on what past clients
+          actually experienced.
+        </p>
       </Container>
     </section>
   );
@@ -103,6 +116,7 @@ async function Locations({ params }: Pick<PageProps<'/agencies/[service]'>, 'par
   const [{ countries, cities }, states] = await Promise.all([relatedPlaces(service.slug), getStatePlaces()]);
   return (
     <>
+      <ServiceGuide service={service} where="India" />
       <PlaceLinks title={`${service.name} companies by country`} places={countries} label={(p) => `${service.name} in ${placeName(p)}`} />
       <PlaceLinks
         title={`${service.name} companies by state in India`}
