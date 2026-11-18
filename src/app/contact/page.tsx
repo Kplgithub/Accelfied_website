@@ -7,8 +7,8 @@ import { Container } from '@/components/ui/container';
 import { getSiteSettings } from '@/lib/data';
 
 export const metadata: Metadata = {
-  title: 'Contact us',
-  description: 'Questions about reviews, your company listing, Accelfied Verified or billing? Write to the Accelfied team.',
+  title: 'Contact the Accelfied Team',
+  description: 'Questions about a review, your listing, the Verified plan or an invoice? Write to the Accelfied team. A person replies within one working day.',
   alternates: { canonical: '/contact' },
 };
 
@@ -19,13 +19,13 @@ export default function ContactPage({ searchParams }: PageProps<'/contact'>) {
     <Container className="grid gap-12 py-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] lg:gap-16 lg:py-20">
       <div>
         <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">Contact</p>
-        <h1 className="mt-3 font-display text-4xl leading-tight font-semibold tracking-tight text-ink sm:text-5xl">Talk to our team</h1>
+        <h1 className="mt-3 font-display text-4xl leading-tight font-semibold tracking-tight text-ink sm:text-5xl">Talk to a real person</h1>
         <p className="mt-5 text-lg leading-relaxed text-ink-soft">
-          Questions about a review, your listing, the Verified plan or a bill? Send us a message and a person on our team will reply, usually within one working day.
+          Stuck on a review, your listing, the Verified plan or an invoice? Drop us a note. Someone on our team reads every message and usually replies within one working day.
         </p>
         <ul className="mt-8 space-y-3 text-[15px] text-ink-soft">
           <li>
-            Looking for a company? <Link href="/get-matched" className="font-medium text-accent underline-offset-4 hover:underline">Get matched</Link> instead.
+            Looking for a company? <Link href="/get-matched" className="font-medium text-accent underline-offset-4 hover:underline">Get a free shortlist</Link> instead.
           </li>
           <li>
             Want to review a company? <Link href="/write-a-review" className="font-medium text-accent underline-offset-4 hover:underline">Write a review</Link>.

@@ -58,7 +58,7 @@ export function MobileMenu({ links, account = null }: Props) {
               onClick={() => setOpen(false)}
               className="mt-6 inline-flex h-12 items-center justify-center rounded-full bg-accent font-medium text-white"
             >
-              Get matched with companies
+              Get a free shortlist
             </Link>
             {account ? (
               <div className="mt-6 flex items-center justify-between gap-4 rounded-2xl border border-line bg-surface px-4 py-3">

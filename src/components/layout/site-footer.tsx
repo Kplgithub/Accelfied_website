@@ -11,10 +11,10 @@ const COLUMNS = [
     links: [
       { href: '/services', label: 'Browse services' },
       { href: '/agencies', label: 'All companies' },
-      { href: '/get-matched', label: 'Get matched' },
+      { href: '/get-matched', label: 'Get a free shortlist' },
       { href: '/get-a-quote', label: 'Get a quote' },
       { href: '/write-a-review', label: 'Write a review' },
-      { href: '/blog', label: 'Blog and interviews' },
+      { href: '/blog', label: 'Guides and blog' },
     ],
   },
   {
@@ -63,13 +63,13 @@ export function SiteFooter() {
         <div className="max-w-xs">
           <Logo tone="light" />
           <p className="mt-5 text-[15px] leading-relaxed text-paper/65">
-            Find the right agency for your next project, judged by what their clients actually say.
+            India’s directory of software, design and marketing companies, rated only on what their clients actually say.
           </p>
           <Link
             href="/get-matched"
             className="mt-6 inline-flex h-11 items-center rounded-full bg-brand px-5 text-[15px] font-medium text-white transition-colors hover:bg-brand-strong"
           >
-            Get matched with companies
+            Get a free shortlist
           </Link>
           <FooterContact />
         </div>

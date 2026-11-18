@@ -166,7 +166,7 @@ export function QuoteCta({ service, text }: { service?: string; text: string }) 
       <p className="mt-3 max-w-2xl text-white/80">{text}</p>
       <div className="mt-6 flex flex-wrap gap-3">
         <ButtonLink href={service ? `/get-matched?service=${service}` : '/get-matched'} variant="primary" size="lg">
-          Get matched
+          Get a free shortlist
         </ButtonLink>
         <ButtonLink href="/agencies" variant="inverse" size="lg">
           Browse companies

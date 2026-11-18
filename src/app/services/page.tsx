@@ -7,8 +7,8 @@ import { withSeo } from '@/lib/seo';
 
 export async function generateMetadata(): Promise<Metadata> {
   return withSeo('services', {
-    title: 'All services',
-    description: 'Browse every service on Accelfied, from software development and design to marketing, IT and business services.',
+    title: 'All Services: Find the Right Agency in India',
+    description: 'Every service on Accelfied: software and app development, web design, branding, SEO, digital marketing, IT and business services across India.',
     alternates: { canonical: '/services' },
   });
 }
@@ -23,6 +23,9 @@ export default async function ServicesPage() {
           <h1 className="mt-3 max-w-3xl font-display text-5xl leading-tight font-semibold tracking-tight text-ink sm:text-6xl">
             What do you need help with?
           </h1>
+          <p className="mt-5 max-w-2xl text-lg text-ink-soft">
+            Pick the closest match. Each service opens a list of companies across India, with their rates, smallest project size and what their clients said.
+          </p>
           <nav aria-label="Service groups" className="mt-8 flex flex-wrap gap-2">
             {groups.map((group) => (
               <a

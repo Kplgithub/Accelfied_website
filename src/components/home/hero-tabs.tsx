@@ -6,11 +6,11 @@ import { GetMatchedWizard } from './get-matched-wizard';
 import { HeroSearch } from './hero-search';
 
 const TABS = [
-  { id: 'match', label: 'Get matched' },
+  { id: 'match', label: 'Get a shortlist' },
   { id: 'browse', label: 'Browse on your own' },
 ] as const;
 
-/** Hero switcher, like Clutch: a guided brief or a plain search. */
+/** Hero switcher: a guided brief or a plain search. */
 export function HeroTabs({ groups }: { groups: ServiceGroup[] }) {
   const [tab, setTab] = useState<(typeof TABS)[number]['id']>('match');
   return (

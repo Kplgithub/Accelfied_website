@@ -10,8 +10,8 @@ import { getServiceGroups } from '@/lib/data';
 import { getCurrentUser } from '@/lib/session';
 
 export const metadata: Metadata = {
-  title: 'List your company',
-  description: 'Create a free Accelfied profile, collect reviews from past clients and get found by people ready to hire.',
+  title: 'List Your Agency Free and Get Client Enquiries',
+  description: 'List your agency or IT company on Accelfied for free. Collect reviews from past clients and get found by businesses across India ready to hire.',
   alternates: { canonical: '/get-listed' },
 };
 
@@ -26,14 +26,14 @@ export default function GetListedPage() {
               Let your <span className="scribble italic">clients</span> do the selling.
             </h1>
             <p className="mt-5 max-w-xl text-lg text-ink-soft">
-              A free profile puts your work, rates and real client reviews in front of buyers comparing partners right now.
+              A free profile puts your work, your rates and what your clients say in front of businesses that are comparing agencies this week.
             </p>
           </div>
           <ul className="grid gap-4">
             {[
-              { icon: Search, title: 'Get found', text: 'Appear in every service and location you actually cover.' },
-              { icon: MessageSquareQuote, title: 'Collect reviews', text: 'Invite past clients to share detailed, verified feedback.' },
-              { icon: BadgeCheck, title: 'Win on trust', text: 'Your rating comes only from real clients, so it means something.' },
+              { icon: Search, title: 'Show up where buyers look', text: 'Appear on the service, city and state pages for the work you really do.' },
+              { icon: MessageSquareQuote, title: 'Let clients speak for you', text: 'Send past clients a link and they leave a detailed review in a few minutes.' },
+              { icon: BadgeCheck, title: 'Win on your record', text: 'Your rating comes only from real clients, so buyers take it seriously.' },
             ].map(({ icon: Icon, title, text }) => (
               <li key={title} className="flex gap-4 rounded-2xl border border-line bg-surface p-4">
                 <Icon className="mt-0.5 size-5 shrink-0 text-accent" aria-hidden="true" />

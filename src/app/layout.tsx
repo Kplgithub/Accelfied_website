@@ -19,11 +19,11 @@ const fraunces = Fraunces({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Accelfied: find agencies your peers trust',
+    default: 'Accelfied: Best IT, Software & Marketing Companies in India',
     template: '%s | Accelfied',
   },
   description:
-    'Compare development, design, marketing and IT companies by verified client reviews, rates and project size. Get quotes from the right partner.',
+    'Compare software, app, web design and digital marketing companies across India by checked client reviews, rates and budgets. Free for businesses.',
   openGraph: { siteName: 'Accelfied', type: 'website', locale: 'en_IN' },
   twitter: { card: 'summary_large_image' },
 };

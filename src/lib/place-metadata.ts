@@ -30,7 +30,7 @@ export async function placeMetadata(
   const title = `${placeHeading(service, place)}${suffix}`;
   const summary = placeSummary(service, place);
   // Search results cut descriptions at about 155 characters, so the longest call to action that fits is used.
-  const cta = [' Compare client reviews, hourly rates and project sizes, then request quotes.', ' Compare reviews and rates.', ''].find(
+  const cta = [' Compare checked client reviews, hourly rates and minimum budgets, then send one brief.', ' Compare reviews and rates for free.', ' Compare reviews and rates.', ''].find(
     (text) => summary.length + text.length <= MAX_DESCRIPTION,
   );
   const description = summary + (cta ?? '');
