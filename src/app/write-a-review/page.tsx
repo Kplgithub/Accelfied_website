@@ -3,12 +3,13 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { CompanyLogo } from '@/components/company/company-logo';
-import { ReviewForm } from '@/components/forms/review-form';
+import { ReviewWizard } from '@/components/forms/review-wizard';
 import { Container } from '@/components/ui/container';
 import { EmptyState } from '@/components/ui/empty-state';
 import { SignInPrompt } from '@/components/auth/sign-in-prompt';
 import { getCompanies, getCompany, getReviewInvite, getServiceGroups } from '@/lib/data';
 import { getCurrentUser } from '@/lib/session';
+import { getMyReviewDraft } from '@/lib/account-data';
 
 export const metadata: Metadata = {
   title: 'Write a review',
@@ -39,6 +40,7 @@ async function ReviewContent({ searchParams }: Pick<PageProps<'/write-a-review'>
 
   const inviteToken = typeof params.invite === 'string' && /^[\w-]{16,200}$/.test(params.invite) ? params.invite : '';
   const [groups, user, invite] = await Promise.all([getServiceGroups(), getCurrentUser(), inviteToken ? getReviewInvite(inviteToken) : null]);
+  const draft = user ? await getMyReviewDraft(`/write-a-review?company=${company.slug}`, company.slug).catch(() => null) : null;
   const here = `/write-a-review?company=${company.slug}${invite ? `&invite=${inviteToken}` : ''}`;
   return (
     <>
@@ -55,8 +57,9 @@ async function ReviewContent({ searchParams }: Pick<PageProps<'/write-a-review'>
         </div>
       </header>
       {user ? (
-        <div className="rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-[var(--shadow-card)] sm:p-10">
-          <ReviewForm
+        <div className="mx-auto max-w-3xl rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-[var(--shadow-card)] sm:p-10">
+          <ReviewWizard
+            draft={draft}
             company={{ slug: company.slug, name: company.name, services: company.services.map(({ slug, name }) => ({ slug, name })) }}
             groups={groups}
             account={{ name: `${user.firstName} ${user.lastName}`, email: user.email }}
