@@ -68,8 +68,8 @@ const POPULAR_SERVICES: FooterLink[] = [
 
 /** Sister businesses shown in the bottom line, as on their own sites. */
 const BUSINESSES = [
-  { name: 'MCS', href: 'https://www.mycareersolution.com/', logo: '/business-mcs.webp', width: 278 },
-  { name: 'PEID', href: 'https://peid.in/', logo: '/business-peid.webp', width: 453 },
+  { name: 'MCS', href: 'https://www.mycareersolution.com/', logo: '/business-mcs.webp', width: 278, height: 96 },
+  { name: 'PEID', href: 'https://peid.in/', logo: '/business-peid.svg', width: 109.78, height: 36 },
 ];
 
 const INDIA = 'IN';
@@ -139,7 +139,7 @@ export function SiteFooter() {
                   className="footer-business"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element -- tiny fixed logo, no resizing needed */}
-                  <img src={business.logo} alt={`${business.name} logo`} width={business.width} height={96} loading="lazy" decoding="async" />
+                  <img src={business.logo} alt={`${business.name} logo`} width={business.width} height={business.height} loading="lazy" decoding="async" />
                 </a>
               ))}
             </div>

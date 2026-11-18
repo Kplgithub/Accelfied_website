@@ -439,3 +439,8 @@ html {
     transform: scale(1);
   }
 }
+/* The PEID logo has a round mark beside the word, so it needs a little more height to match. */
+.footer-business img[src$=".svg"] { height: 32px; }
+@media (max-width: 639px) {
+  .footer-business img[src$=".svg"] { height: 28px; }
+}
