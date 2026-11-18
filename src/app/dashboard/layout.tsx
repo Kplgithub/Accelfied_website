@@ -48,7 +48,8 @@ async function Nav() {
     title: 'My company',
     links: company
       ? [
-          { href: '/dashboard/company', label: 'Company profile' },
+          { href: '/dashboard/company', label: 'Edit profile' },
+          { href: '/dashboard/company/packages', label: 'Packages' },
           { href: '/dashboard/company/requests', label: 'Project requests' },
           { href: '/dashboard/company/analytics', label: 'Analytics' },
           { href: '/dashboard/company/reviews', label: 'Client reviews' },
@@ -64,8 +65,9 @@ async function Nav() {
   const hiringGroup: NavGroup = {
     title: 'Hiring',
     links: [
+      { href: '/dashboard/briefs', label: 'Project briefs', prefix: true },
       { href: '/dashboard/shortlist', label: 'Shortlist' },
-      { href: '/dashboard/requests', label: 'My briefs' },
+      { href: '/dashboard/requests', label: 'Quotes sent' },
       { href: '/dashboard/reviews', label: 'My reviews' },
     ],
   };

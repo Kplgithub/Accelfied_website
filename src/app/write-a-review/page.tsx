@@ -1,14 +1,16 @@
 import { Search } from 'lucide-react';
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { CompanyLogo } from '@/components/company/company-logo';
-import { ReviewForm } from '@/components/forms/review-form';
+import { ReviewWizard } from '@/components/forms/review-wizard';
 import { Container } from '@/components/ui/container';
 import { EmptyState } from '@/components/ui/empty-state';
 import { SignInPrompt } from '@/components/auth/sign-in-prompt';
 import { getCompanies, getCompany, getReviewInvite, getServiceGroups } from '@/lib/data';
 import { getCurrentUser } from '@/lib/session';
+import { getMyReviewDraft } from '@/lib/account-data';
 
 export const metadata: Metadata = {
   title: 'Write a review',
@@ -39,6 +41,7 @@ async function ReviewContent({ searchParams }: Pick<PageProps<'/write-a-review'>
 
   const inviteToken = typeof params.invite === 'string' && /^[\w-]{16,200}$/.test(params.invite) ? params.invite : '';
   const [groups, user, invite] = await Promise.all([getServiceGroups(), getCurrentUser(), inviteToken ? getReviewInvite(inviteToken) : null]);
+  const draft = user ? await getMyReviewDraft(`/write-a-review?company=${company.slug}`, company.slug).catch(() => null) : null;
   const here = `/write-a-review?company=${company.slug}${invite ? `&invite=${inviteToken}` : ''}`;
   return (
     <>
@@ -55,8 +58,9 @@ async function ReviewContent({ searchParams }: Pick<PageProps<'/write-a-review'>
         </div>
       </header>
       {user ? (
-        <div className="rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-[var(--shadow-card)] sm:p-10">
-          <ReviewForm
+        <div className="mx-auto max-w-3xl rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-[var(--shadow-card)] sm:p-10">
+          <ReviewWizard
+            draft={draft}
             company={{ slug: company.slug, name: company.name, services: company.services.map(({ slug, name }) => ({ slug, name })) }}
             groups={groups}
             account={{ name: `${user.firstName} ${user.lastName}`, email: user.email }}
@@ -78,12 +82,23 @@ async function CompanyPicker({ find }: { find: string }) {
   const results = find.length >= 2 ? await getCompanies({ q: find, page: 1 }) : null;
   return (
     <>
-      <header className="mb-10 max-w-2xl">
-        <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">Write a review</p>
-        <h1 className="mt-3 font-display text-4xl leading-tight font-semibold tracking-tight text-ink sm:text-5xl">
-          Which company did you work with?
-        </h1>
-        <p className="mt-4 text-lg text-ink-soft">Your review helps the next client choose well. It takes about five minutes.</p>
+      <header className="mb-10 grid items-center gap-8 lg:grid-cols-[1.3fr_1fr]">
+        <div className="max-w-2xl">
+          <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">Write a review</p>
+          <h1 className="mt-3 font-display text-4xl leading-tight font-semibold tracking-tight text-ink sm:text-5xl">
+            Which company did you work with?
+          </h1>
+          <p className="mt-4 text-lg text-ink-soft">Your review helps the next client choose well. It takes about five minutes, and you can save and finish later.</p>
+        </div>
+        <Image
+          src="/images/pages/review.webp"
+          alt="A client smiling while writing a review on her laptop"
+          width={1200}
+          height={800}
+          priority
+          sizes="(min-width: 1024px) 380px, 100vw"
+          className="hidden aspect-[4/3] w-full animate-rise rounded-[1.75rem] object-cover shadow-[var(--shadow-lift)] lg:block"
+        />
       </header>
       <form method="get" role="search" className="flex max-w-2xl">
         <label htmlFor="find" className="sr-only">

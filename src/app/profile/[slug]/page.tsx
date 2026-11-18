@@ -1,4 +1,4 @@
-import { Building2, Calendar, DollarSign, ExternalLink, Globe, MapPin, MessageSquare, PenLine, Timer, Users } from 'lucide-react';
+import { Award, Building2, Calendar, DollarSign, ExternalLink, Globe, MapPin, MessageSquare, PenLine, Star, Timer, Users } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -14,18 +14,23 @@ import { ButtonLink, buttonClass } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 import { EmptyState } from '@/components/ui/empty-state';
 import { countryName } from '@/lib/countries';
-import { getCompany, getCompanyReviews, getPosts, getSitemapCompanies } from '@/lib/data';
+import { getCompany, getCompanyDetails, getCompanyReviews, getPosts, getSitemapCompanies } from '@/lib/data';
 import { formatRating, hostname, pluralize } from '@/lib/format';
-import { hourlyRateLabel, minProjectLabel, teamSizeLabel } from '@/lib/labels';
+import { budgetLabel, hourlyRateLabel, minProjectLabel, teamSizeLabel } from '@/lib/labels';
 import { JsonLd, breadcrumbLd } from '@/components/seo/json-ld';
 import { MAX_DESCRIPTION, OG_DEFAULTS } from '@/lib/seo-text';
 import { SITE_URL } from '@/lib/site';
-import type { CompanyProfile, Review } from '@/lib/types';
+import type { CompanyProfile, PublicCompanyDetails, Review } from '@/lib/types';
+import { Donut } from '@/components/charts/donut';
+import { PackagesSection } from '@/components/company/packages-section';
+import { Reveal } from '@/components/motion/reveal';
 import { PersonAvatar } from '@/components/company/person-avatar';
 import { SaveButton } from '@/components/company/save-button';
 import { ProfileView } from '@/components/tracking/profile-view';
 import { WebsiteLink } from '@/components/tracking/website-link';
 import { SocialLinks } from '@/components/ui/social-icon';
+import { OwnerTools } from '@/components/company/owner-tools';
+import { SimilarCompanies } from '@/components/company/similar-companies';
 
 /** Placeholder so the route can be validated at build time before any company is published. */
 const SHELL_SLUG = '__shell__';
@@ -59,6 +64,7 @@ async function Profile({ params, searchParams }: PageProps<'/profile/[slug]'>) {
   const { slug } = await params;
   const company = await getCompany(slug);
   if (!company) notFound();
+  const details = await getCompanyDetails(slug);
 
   return (
     <>
@@ -66,11 +72,16 @@ async function Profile({ params, searchParams }: PageProps<'/profile/[slug]'>) {
         <ProfileLd company={company} />
       </Suspense>
       <ProfileView slug={company.slug} />
-      <ProfileHeader company={company} />
+      <Suspense fallback={null}>
+        <OwnerTools slug={company.slug} />
+      </Suspense>
+      <ProfileHeader company={company} details={details} />
       <Container className="grid gap-12 py-12 lg:grid-cols-[1fr_320px] lg:gap-14">
         <div className="min-w-0 space-y-16">
-          <Overview company={company} />
+          <Overview company={company} details={details} />
+          <Pricing company={company} details={details} />
           {company.portfolio.length > 0 && <Portfolio company={company} />}
+          {details && details.awards.length > 0 && <Awards details={details} />}
           {company.team.length > 0 && <Team company={company} />}
           <section id="reviews" className="scroll-mt-28 lg:scroll-mt-36">
             <div className="flex flex-wrap items-end justify-between gap-4">
@@ -105,13 +116,16 @@ async function Profile({ params, searchParams }: PageProps<'/profile/[slug]'>) {
         <aside className="space-y-4 lg:sticky lg:top-32 lg:self-start">
           <QuoteCard company={company} />
           <ClaimCard company={company} />
+          <Suspense fallback={null}>
+            <SimilarCompanies slug={company.slug} service={[...company.services].sort((a, b) => b.percent - a.percent)[0]} />
+          </Suspense>
         </aside>
       </Container>
     </>
   );
 }
 
-function ProfileHeader({ company }: { company: CompanyProfile }) {
+function ProfileHeader({ company, details }: { company: CompanyProfile; details: PublicCompanyDetails | null }) {
   return (
     <section className="grain border-b border-line">
       <Container className="py-10 lg:py-14">
@@ -157,7 +171,9 @@ function ProfileHeader({ company }: { company: CompanyProfile }) {
           {[
             { href: '#overview', label: 'Overview' },
             { href: '#services', label: 'Services' },
+            { href: '#pricing', label: details?.packages.length ? 'Pricing & packages' : 'Pricing' },
             ...(company.portfolio.length ? [{ href: '#portfolio', label: 'Portfolio' }] : []),
+            ...(details?.awards.length ? [{ href: '#awards', label: 'Awards' }] : []),
             ...(company.team.length ? [{ href: '#team', label: 'Team' }] : []),
             { href: '#reviews', label: 'Reviews' },
           ].map((item) => (
@@ -171,7 +187,7 @@ function ProfileHeader({ company }: { company: CompanyProfile }) {
   );
 }
 
-function Overview({ company }: { company: CompanyProfile }) {
+function Overview({ company, details }: { company: CompanyProfile; details: PublicCompanyDetails | null }) {
   const facts = [
     { icon: DollarSign, label: 'Min. project size', value: minProjectLabel(company.minProjectSize) },
     { icon: Timer, label: 'Hourly rate', value: hourlyRateLabel(company.hourlyRate) },
@@ -231,24 +247,101 @@ function Overview({ company }: { company: CompanyProfile }) {
       </section>
 
       <section id="services" className="scroll-mt-28 lg:scroll-mt-36">
-        <h2 className="font-display text-3xl font-semibold text-ink">Service focus</h2>
-        <ul className="mt-6 space-y-4">
-          {company.services.map((service) => (
-            <li key={service.slug}>
-              <div className="flex items-baseline justify-between gap-4">
-                <Link href={`/agencies/${service.slug}`} className="font-medium text-ink hover:text-accent">
-                  {service.name}
-                </Link>
-                <span className="tabular-nums text-ink-soft">{service.percent}%</span>
-              </div>
-              <div className="mt-2 h-2 overflow-hidden rounded-full bg-paper-deep">
-                <div className="h-full rounded-full bg-brand" style={{ width: `${service.percent}%` }} />
-              </div>
-            </li>
-          ))}
-        </ul>
+        <h2 className="font-display text-3xl font-semibold text-ink">Where their work goes</h2>
+        <div className="mt-6 grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+          <Reveal>
+            <Donut caption="Service lines" slices={company.services.map((service) => ({ label: service.name, value: service.percent }))} size={150} />
+            <ul className="mt-5 flex flex-wrap gap-2">
+              {company.services.map((service) => (
+                <li key={service.slug}>
+                  <Link href={`/agencies/${service.slug}`} className="inline-block rounded-full border border-line px-3 py-1 text-sm text-ink-soft transition-colors hover:border-accent hover:text-accent">
+                    {service.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+          {details && details.clientFocus.small + details.clientFocus.midmarket + details.clientFocus.enterprise === 100 && (
+            <Reveal delay={100}>
+              <Donut
+                caption="Client size"
+                size={150}
+                slices={[
+                  { label: 'Small business', value: details.clientFocus.small },
+                  { label: 'Mid-market', value: details.clientFocus.midmarket },
+                  { label: 'Enterprise', value: details.clientFocus.enterprise },
+                ]}
+              />
+            </Reveal>
+          )}
+        </div>
       </section>
     </>
+  );
+}
+
+function Pricing({ company, details }: { company: CompanyProfile; details: PublicCompanyDetails | null }) {
+  const common = details?.pricing.mostCommonBudget ? details.pricing.reviewBudgets.find((row) => row.budget === details.pricing.mostCommonBudget) : undefined;
+  const tiles = [
+    { icon: DollarSign, label: 'Min. project size', value: minProjectLabel(company.minProjectSize), note: 'Set by the company' },
+    { icon: Timer, label: 'Avg. hourly rate', value: hourlyRateLabel(company.hourlyRate), note: 'Set by the company' },
+    ...(company.rating.count > 0
+      ? [{ icon: Star, label: 'Rating for cost', value: `${formatRating(company.rating.cost)} / 5`, note: `From ${pluralize(company.rating.count, 'review')}` }]
+      : []),
+    ...(common
+      ? [{ icon: Building2, label: 'Most common project size', value: budgetLabel(common.budget), note: `Named in ${pluralize(common.count, 'review')}` }]
+      : []),
+  ];
+  return (
+    <section id="pricing" className="scroll-mt-28 lg:scroll-mt-36">
+      <h2 className="font-display text-3xl font-semibold text-ink">Pricing at a glance</h2>
+      <dl className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {tiles.map(({ icon: Icon, label, value, note }, index) => (
+          <Reveal key={label} delay={index * 70} className="rounded-2xl border border-line bg-surface p-4">
+            <dt className="flex items-center gap-1.5 text-xs text-ink-faint">
+              <Icon className="size-3.5" aria-hidden="true" />
+              {label}
+            </dt>
+            <dd className="mt-1 font-display text-xl font-semibold text-ink">{value}</dd>
+            <dd className="text-xs text-ink-faint">{note}</dd>
+          </Reveal>
+        ))}
+      </dl>
+      {details && details.packages.length > 0 && (
+        <div className="mt-10">
+          <h3 className="mb-4 font-display text-2xl font-semibold text-ink">Packages</h3>
+          <PackagesSection packages={details.packages} companySlug={company.slug} />
+        </div>
+      )}
+    </section>
+  );
+}
+
+function Awards({ details }: { details: PublicCompanyDetails }) {
+  return (
+    <section id="awards" className="scroll-mt-28 lg:scroll-mt-36">
+      <h2 className="font-display text-3xl font-semibold text-ink">Awards and recognition</h2>
+      <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+        {details.awards.map((award, index) => (
+          <Reveal as="li" key={award.id} delay={index * 60} className="flex items-start gap-3 rounded-2xl border border-line bg-surface p-4">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-saffron-tint text-saffron-ink">
+              <Award className="size-5" aria-hidden="true" />
+            </span>
+            <div className="min-w-0">
+              <p className="font-medium text-ink">{award.title}</p>
+              <p className="text-sm text-ink-soft">
+                {award.year ?? ''}
+                {award.url && (
+                  <a href={award.url} target="_blank" rel="noopener noreferrer nofollow" className="ml-2 inline-flex items-center gap-1 text-accent hover:underline">
+                    See award <ExternalLink className="size-3" aria-hidden="true" />
+                  </a>
+                )}
+              </p>
+            </div>
+          </Reveal>
+        ))}
+      </ul>
+    </section>
   );
 }
 

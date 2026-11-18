@@ -43,6 +43,8 @@ const STATUS_STYLES: Record<string, { label: string; className: string }> = {
   contacted: { label: 'Replied', className: 'bg-accent-tint text-accent' },
   closed: { label: 'Closed', className: 'bg-paper-deep text-ink-soft' },
   unconfirmed: { label: 'Check your work email', className: 'bg-saffron-tint text-saffron-ink' },
+  draft: { label: 'Draft', className: 'bg-paper-deep text-ink-soft' },
+  sent: { label: 'Sent', className: 'bg-accent-tint text-accent' },
 };
 
 /** Pending means something different to each kind of record. */
