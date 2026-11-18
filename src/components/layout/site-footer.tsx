@@ -36,6 +36,16 @@ const COLUMNS = [
     ],
   },
   {
+    title: 'Company',
+    links: [
+      { href: '/about', label: 'About us' },
+      { href: '/contact', label: 'Contact' },
+      { href: '/privacy', label: 'Privacy policy' },
+      { href: '/terms', label: 'Terms of use' },
+      { href: '/refund-policy', label: 'Refund policy' },
+    ],
+  },
+  {
     title: 'Popular services',
     links: [
       { href: '/agencies/web-development', label: 'Web development' },
@@ -49,7 +59,7 @@ const COLUMNS = [
 export function SiteFooter() {
   return (
     <footer className="grain mt-auto bg-night print:hidden text-paper/80">
-      <Container className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
+      <Container className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-[1.4fr_repeat(5,1fr)]">
         <div className="max-w-xs">
           <Logo tone="light" />
           <p className="mt-5 text-[15px] leading-relaxed text-paper/65">

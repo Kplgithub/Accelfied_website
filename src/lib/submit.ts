@@ -24,14 +24,15 @@ export async function submit(
   path: string,
   payload: unknown,
   form: FormData,
-  success: string,
+  /** The confirmation shown, or a function that words it from the API's answer. */
+  success: string | ((data: unknown) => string),
   method: 'POST' | 'PATCH' = 'POST',
 ): Promise<FormState> {
   const token = await getSessionToken();
   if (!token) return { status: 'error', message: 'Please log in again to continue.', values: echo(form), nonce: Date.now() };
   try {
-    await apiSend(method, path, payload, { token, clientIp: await clientIp() });
-    return { status: 'success', message: success, nonce: Date.now() };
+    const data = await apiSend<unknown>(method, path, payload, { token, clientIp: await clientIp() });
+    return { status: 'success', message: typeof success === 'function' ? success(data) : success, nonce: Date.now() };
   } catch (error) {
     if (error instanceof ApiError) {
       const errors: Record<string, string> = {};

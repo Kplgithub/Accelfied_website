@@ -7,7 +7,7 @@ import { ReviewForm } from '@/components/forms/review-form';
 import { Container } from '@/components/ui/container';
 import { EmptyState } from '@/components/ui/empty-state';
 import { SignInPrompt } from '@/components/auth/sign-in-prompt';
-import { getCompanies, getCompany, getServiceGroups } from '@/lib/data';
+import { getCompanies, getCompany, getReviewInvite, getServiceGroups } from '@/lib/data';
 import { getCurrentUser } from '@/lib/session';
 
 export const metadata: Metadata = {
@@ -37,7 +37,9 @@ async function ReviewContent({ searchParams }: Pick<PageProps<'/write-a-review'>
     return <CompanyPicker find={find} />;
   }
 
-  const [groups, user] = await Promise.all([getServiceGroups(), getCurrentUser()]);
+  const inviteToken = typeof params.invite === 'string' && /^[\w-]{16,200}$/.test(params.invite) ? params.invite : '';
+  const [groups, user, invite] = await Promise.all([getServiceGroups(), getCurrentUser(), inviteToken ? getReviewInvite(inviteToken) : null]);
+  const here = `/write-a-review?company=${company.slug}${invite ? `&invite=${inviteToken}` : ''}`;
   return (
     <>
       <header className="mb-10 flex items-center gap-5">
@@ -47,6 +49,9 @@ async function ReviewContent({ searchParams }: Pick<PageProps<'/write-a-review'>
           <h1 className="mt-2 font-display text-4xl leading-tight font-semibold tracking-tight text-ink sm:text-5xl">
             How was working with {company.name}?
           </h1>
+          {invite && invite.companySlug === company.slug && (
+            <p className="mt-3 text-ink-soft">Hi {invite.name}, {company.name} asked for your honest review. Thank you for taking a few minutes.</p>
+          )}
         </div>
       </header>
       {user ? (
@@ -55,13 +60,14 @@ async function ReviewContent({ searchParams }: Pick<PageProps<'/write-a-review'>
             company={{ slug: company.slug, name: company.name, services: company.services.map(({ slug, name }) => ({ slug, name })) }}
             groups={groups}
             account={{ name: `${user.firstName} ${user.lastName}`, email: user.email }}
+            invite={invite && invite.companySlug === company.slug ? inviteToken : undefined}
           />
         </div>
       ) : (
         <SignInPrompt
           title="Log in to write your review"
           text="Reviews are tied to a real account so clients can trust them. Your email is never shown."
-          returnTo={`/write-a-review?company=${company.slug}`}
+          returnTo={here}
         />
       )}
     </>

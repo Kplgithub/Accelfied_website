@@ -1,8 +1,9 @@
 'use server';
 
+import { ApiError, apiSend } from '@/lib/api';
 import { countryName } from '@/lib/countries';
 import type { FormState } from '@/lib/form-state';
-import { optional, submit, text } from '@/lib/submit';
+import { clientIp, echo, friendly, optional, submit, text } from '@/lib/submit';
 
 export async function requestQuote(_prev: FormState, form: FormData): Promise<FormState> {
   const payload = {
@@ -27,6 +28,7 @@ export async function submitReview(_prev: FormState, form: FormData): Promise<Fo
   const score = (key: string) => Number.parseInt(text(form, key), 10) || undefined;
   const payload = {
     companySlug: text(form, 'companySlug'),
+    invite: optional(form, 'invite'),
     reviewer: {
       name: text(form, 'reviewer.name'),
       jobTitle: text(form, 'reviewer.jobTitle'),
@@ -118,6 +120,35 @@ export async function submitClaim(_prev: FormState, form: FormData): Promise<For
     `/v1/companies/${encodeURIComponent(slug)}/claims`,
     payload,
     form,
-    'Our team is verifying your request, usually within two working days. Once approved, the listing moves to your account and you can manage it from your dashboard.',
+    (data) =>
+      (data as { claim?: { status?: string } } | null)?.claim?.status === 'unconfirmed'
+        ? `We sent a link to ${payload.workEmail}. Open it to confirm the claim is yours, then our team verifies it, usually within two working days.`
+        : 'Our team is verifying your request, usually within two working days. Once approved, the listing moves to your account and you can manage it from your dashboard.',
   );
+}
+
+/** The public contact form. Works signed out, so it does not go through `submit`. */
+export async function sendContactMessage(_prev: FormState, form: FormData): Promise<FormState> {
+  const payload = {
+    name: text(form, 'name'),
+    email: text(form, 'email'),
+    phone: text(form, 'phone'),
+    company: text(form, 'company'),
+    topic: text(form, 'topic'),
+    message: text(form, 'message'),
+    companyFax: text(form, 'companyFax'),
+  };
+  try {
+    await apiSend('POST', '/v1/contact', payload, { clientIp: await clientIp() });
+    return { status: 'success', message: 'Thanks for writing. We usually reply within one working day.', nonce: Date.now() };
+  } catch (error) {
+    if (error instanceof ApiError) {
+      const errors: Record<string, string> = {};
+      for (const issue of error.issues) if (!errors[issue.path]) errors[issue.path] = friendly(issue.message);
+      const message = error.status === 429 ? 'You have sent a few messages already. Please try again a little later.' : error.issues.length ? 'Some fields need a second look.' : error.message;
+      return { status: 'error', message, errors, values: echo(form), nonce: Date.now() };
+    }
+    console.error('Contact form failed', error);
+    return { status: 'error', message: 'We could not send this right now. Please try again in a moment.', values: echo(form), nonce: Date.now() };
+  }
 }

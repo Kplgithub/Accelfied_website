@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { DashboardNav, type NavGroup } from '@/components/dashboard/dashboard-nav';
 import { Container } from '@/components/ui/container';
+import { getUnreadCounts } from '@/lib/account-data';
 import { apiPrivateGet } from '@/lib/api';
 import { getCurrentUser, getSessionToken } from '@/lib/session';
 import type { OwnedCompany } from '@/lib/types';
@@ -30,16 +31,29 @@ async function Nav() {
   // Each page sends signed-out visitors to log in with its own address, so the nav only renders.
   const [user, token] = await Promise.all([getCurrentUser(), getSessionToken()]);
   if (!user || !token) return null;
-  const { company } = await apiPrivateGet<{ company: OwnedCompany | null }>('/v1/me/company', token);
-  const groups: NavGroup[] = [{ title: 'Account', links: [{ href: '/dashboard', label: 'Overview' }] }];
+  const [{ company }, unread] = await Promise.all([
+    apiPrivateGet<{ company: OwnedCompany | null }>('/v1/me/company', token),
+    getUnreadCounts(token),
+  ]);
+  const groups: NavGroup[] = [
+    {
+      title: 'Account',
+      links: [
+        { href: '/dashboard', label: 'Overview' },
+        { href: '/dashboard/messages', label: 'Messages', count: unread.client + unread.company, prefix: true },
+      ],
+    },
+  ];
   const companyGroup: NavGroup = {
     title: 'My company',
     links: company
       ? [
           { href: '/dashboard/company', label: 'Company profile' },
           { href: '/dashboard/company/requests', label: 'Project requests' },
+          { href: '/dashboard/company/analytics', label: 'Analytics' },
           { href: '/dashboard/company/reviews', label: 'Client reviews' },
           { href: '/dashboard/company/portfolio', label: 'Portfolio' },
+          { href: '/dashboard/company/team', label: 'Team' },
           { href: '/dashboard/company/badge', label: 'Website badge' },
           { href: '/dashboard/company/verified', label: company.verified ? 'Verified plan' : 'Get Verified' },
           { href: '/dashboard/company/billing', label: 'Billing' },
@@ -49,6 +63,7 @@ async function Nav() {
   const hiringGroup: NavGroup = {
     title: 'Hiring',
     links: [
+      { href: '/dashboard/shortlist', label: 'Shortlist' },
       { href: '/dashboard/requests', label: 'My briefs' },
       { href: '/dashboard/reviews', label: 'My reviews' },
     ],

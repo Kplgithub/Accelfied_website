@@ -50,7 +50,7 @@ export async function apiPost<T>(path: string, body: unknown, options: SendOptio
 }
 
 export async function apiSend<T>(
-  method: 'POST' | 'PATCH' | 'DELETE',
+  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',
   path: string,
   body: unknown,
   { token, clientIp }: SendOptions = {},
@@ -67,6 +67,11 @@ export async function apiSend<T>(
     signal: AbortSignal.timeout(10_000),
   });
   return parse<T>(res);
+}
+
+/** The API's address, for server code that must stream a request through (uploads). */
+export function apiUrl(path: string): string {
+  return `${API_URL}${path}`;
 }
 
 /** Reads data that belongs to one signed-in visitor. Never cached. */

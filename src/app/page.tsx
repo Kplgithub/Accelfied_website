@@ -557,7 +557,7 @@ const FAQ = [
   },
   {
     q: 'What does Accelfied Verified cost?',
-    a: '₹599 a month plus GST. It adds the Verified badge, a place above other companies, unlimited reviews, promotion by our team, a blog about your company and a published interview.',
+    a: '$59 a month, GST included. It adds the Verified badge, a place above other companies, unlimited reviews, promotion by our team, a blog about your company and a published interview.',
   },
   { q: 'Can I sign in with Google or LinkedIn?', a: 'Yes. You can join or log in with Google, LinkedIn or your work email and a password.' },
 ];

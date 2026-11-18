@@ -7,6 +7,7 @@ import { VerifiedBadge } from '../ui/badge';
 import { ButtonLink } from '../ui/button';
 import { CompanyLogo } from './company-logo';
 import { RatingInline } from './rating-inline';
+import { SaveButton } from './save-button';
 
 export function CompanyCard({ company, highlightService }: { company: CompanySummary; highlightService?: string }) {
   const hq = company.headquarters;
@@ -56,13 +57,16 @@ export function CompanyCard({ company, highlightService }: { company: CompanySum
         </dl>
       </div>
 
-      <div className="relative z-10 mt-5 flex flex-wrap gap-2 border-t border-line pt-4">
+      <div className="relative z-10 mt-5 flex flex-wrap items-center gap-2 border-t border-line pt-4">
         <ButtonLink href={`/profile/${company.slug}`} variant="secondary" size="sm">
           View profile
         </ButtonLink>
         <ButtonLink href={`/get-a-quote?company=${company.slug}`} size="sm">
           Get a quote
         </ButtonLink>
+        <span className="ml-auto">
+          <SaveButton slug={company.slug} name={company.name} />
+        </span>
       </div>
     </article>
   );

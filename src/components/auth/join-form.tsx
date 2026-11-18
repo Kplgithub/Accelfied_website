@@ -40,7 +40,17 @@ export function JoinForm({ accountType, next }: { accountType: AccountType; next
       <div>
         <label className="flex cursor-pointer items-start gap-3 text-sm text-ink-soft">
           <input type="checkbox" name="terms" defaultChecked={checked('terms')} className="mt-0.5 size-4 accent-accent" aria-invalid={Boolean(error('terms'))} />
-          <span>I agree to the Accelfied terms of use and privacy policy.</span>
+          <span>
+            I agree to the Accelfied{' '}
+            <a href="/terms" target="_blank" className="font-medium text-accent underline-offset-4 hover:underline">
+              terms of use
+            </a>{' '}
+            and{' '}
+            <a href="/privacy" target="_blank" className="font-medium text-accent underline-offset-4 hover:underline">
+              privacy policy
+            </a>
+            .
+          </span>
         </label>
         {error('terms') && (
           <p className="mt-1.5 text-[13px] font-medium text-danger" role="alert">
