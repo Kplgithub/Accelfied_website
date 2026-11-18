@@ -247,4 +247,26 @@ export interface ServicePlace {
   reviews: number;
   /** Review-weighted rating, 0 when there are no reviews. */
   rating: number;
+  /**
+   * Website only: 'state' when this entry is an Indian state page built from /v1/seo/states.
+   * `city` then holds the state's name and `citySlug` its slug, so state pages share the city URL level.
+   */
+  kind?: 'state';
+}
+
+/** One service in one Indian state, from /v1/seo/states. */
+export interface StatePlace {
+  service: string;
+  serviceName: string;
+  state: string;
+  stateSlug: string;
+  companies: number;
+  reviews: number;
+  rating: number;
+}
+
+export interface IndianStateInfo {
+  slug: string;
+  name: string;
+  cities: string[];
 }

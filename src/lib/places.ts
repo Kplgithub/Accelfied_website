@@ -1,8 +1,8 @@
 import 'server-only';
 import { countryName } from './countries';
-import { getServicePlaces } from './data';
+import { getServicePlaces, getStateData } from './data';
 import { SITE_URL } from './site';
-import type { ServicePlace } from './types';
+import type { IndianStateInfo, ServicePlace, StatePlace } from './types';
 
 /**
  * Location pages with fewer companies than this stay reachable for visitors
@@ -90,4 +90,64 @@ export async function relatedPlaces(service: string, near?: ServicePlace, limit 
     .filter((p) => p.service !== service && p.countryCode === near.countryCode && p.citySlug === near.citySlug)
     .slice(0, limit);
   return { countries: countries.filter((p) => p.countryCode !== near.countryCode), cities, services };
+}
+
+/** URL level of India's state pages: /agencies/<service>/india/<state>, next to the city pages. */
+const INDIA = 'IN';
+
+/** A state entry in the shape location pages use: the state's name and slug fill `city` and `citySlug`. */
+function asPlace(state: StatePlace): ServicePlace {
+  return {
+    service: state.service,
+    serviceName: state.serviceName,
+    countryCode: INDIA,
+    country: countryName(INDIA),
+    city: state.state,
+    citySlug: state.stateSlug,
+    companies: state.companies,
+    reviews: state.reviews,
+    rating: state.rating,
+    kind: 'state',
+  };
+}
+
+/**
+ * State pages of every service. A state whose slug is also a city slug for that service (Delhi,
+ * Chandigarh, Puducherry) is left out: the city page already covers it at that address.
+ */
+export async function getStatePlaces(): Promise<ServicePlace[]> {
+  const [{ items }, places] = await Promise.all([getStateData(), getServicePlaces()]);
+  const cityKeys = new Set(places.filter((p) => p.countryCode === INDIA && p.city).map((p) => `${p.service}/${p.citySlug}`));
+  return items.map(asPlace).filter((p) => !cityKeys.has(`${p.service}/${p.citySlug}`));
+}
+
+export async function findStatePlace(service: string, country: string, slug: string): Promise<ServicePlace | null> {
+  if (country !== countrySlug(INDIA)) return null;
+  return (await getStatePlaces()).find((p) => p.service === service && p.citySlug === slug) ?? null;
+}
+
+/** The state a city of India belongs to, by the API's state list (case-insensitive). */
+export async function stateOfCity(city: string): Promise<IndianStateInfo | null> {
+  const key = city.trim().toLowerCase();
+  const { states } = await getStateData();
+  return states.find((state) => state.cities.some((name) => name.toLowerCase() === key)) ?? null;
+}
+
+/** For a state page: its cities with a page for the service. For a city page: the state page it belongs to, when one exists. */
+export async function stateLinks(service: string, place: ServicePlace): Promise<{ state: ServicePlace | null; cities: ServicePlace[]; otherServices: ServicePlace[]; otherStates: ServicePlace[] }> {
+  const [states, places, { states: info }] = await Promise.all([getStatePlaces(), getServicePlaces(), getStateData()]);
+  const none = { state: null, cities: [], otherServices: [], otherStates: [] };
+  if (place.countryCode !== INDIA) return none;
+  if (place.kind === 'state') {
+    const names = new Set(info.find((s) => s.slug === place.citySlug)?.cities.map((c) => c.toLowerCase()) ?? []);
+    return {
+      state: null,
+      cities: places.filter((p) => p.service === service && p.countryCode === INDIA && p.city && names.has(p.city.toLowerCase())).slice(0, 24),
+      otherServices: states.filter((p) => p.service !== service && p.citySlug === place.citySlug).slice(0, 24),
+      otherStates: states.filter((p) => p.service === service && p.citySlug !== place.citySlug).slice(0, 36),
+    };
+  }
+  if (!place.city) return { ...none, otherStates: states.filter((p) => p.service === service).slice(0, 36) };
+  const home = await stateOfCity(place.city);
+  return { ...none, state: home ? (states.find((p) => p.service === service && p.citySlug === home.slug) ?? null) : null };
 }

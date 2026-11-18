@@ -1,5 +1,5 @@
 import { JsonLd } from '@/components/seo/json-ld';
-import { getPlaceCompanies } from '@/lib/data';
+import { getPlaceCompanies, getStateCompanies } from '@/lib/data';
 import { formatRating, pluralize } from '@/lib/format';
 import { HOURLY_RATES, MIN_PROJECT_SIZES, TEAM_SIZES } from '@/lib/labels';
 import { placeName } from '@/lib/places';
@@ -12,7 +12,10 @@ import type { CompanySummary, Service, ServicePlace } from '@/lib/types';
  * and answers the questions people search for ("web development cost in Jaipur").
  */
 export async function PlaceFacts({ service, place }: { service: Service; place: ServicePlace }) {
-  const page = await getPlaceCompanies({ service: service.slug, country: place.countryCode, city: place.city || undefined });
+  const page =
+    place.kind === 'state'
+      ? await getStateCompanies({ state: place.citySlug, service: service.slug, sort: 'rating', limit: 50 })
+      : await getPlaceCompanies({ service: service.slug, country: place.countryCode, city: place.city || undefined });
   const companies = page.items;
   if (!companies.length) return null;
 
