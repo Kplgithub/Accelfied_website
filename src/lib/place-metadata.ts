@@ -4,7 +4,7 @@ import { placeHeading, placeSummary, resolvePlace, type PlaceParams } from '@/co
 import { getServicePlaces } from './data';
 import { pagedCanonical } from './page-param';
 import { MAX_DESCRIPTION } from './seo-text';
-import { countrySlug, isIndexable, placePath } from './places';
+import { countrySlug, getStatePlaces, isIndexable, placePath } from './places';
 
 /** Placeholder so the routes validate at build time before any company is published. */
 export const SHELL = '__shell__';
@@ -13,7 +13,8 @@ export const SHELL = '__shell__';
 const PRERENDER_LIMIT = 500;
 
 export async function placeStaticParams(level: 'country' | 'city'): Promise<PlaceParams[]> {
-  const places = (await getServicePlaces()).filter((p) => (level === 'city' ? p.city : !p.city) && isIndexable(p)).slice(0, PRERENDER_LIMIT);
+  const all = level === 'city' ? [...(await getServicePlaces()), ...(await getStatePlaces())] : await getServicePlaces();
+  const places = all.filter((p) => (level === 'city' ? p.city : !p.city) && isIndexable(p)).slice(0, PRERENDER_LIMIT);
   if (!places.length) return [level === 'city' ? { service: SHELL, country: SHELL, city: SHELL } : { service: SHELL, country: SHELL }];
   return places.map((p) => ({ service: p.service, country: countrySlug(p.countryCode), ...(level === 'city' ? { city: p.citySlug } : {}) }));
 }

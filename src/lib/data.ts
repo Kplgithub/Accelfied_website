@@ -1,7 +1,22 @@
 import 'server-only';
 import { cacheLife, cacheTag } from 'next/cache';
 import { ApiError, apiGet } from './api';
-import type { CompanyProfile, CompanySummary, CountryFacet, Page, Post, PostCard, PostKind, Review, Service, ServiceGroup, ServicePlace, SiteSettings } from './types';
+import type {
+  CompanyProfile,
+  CompanySummary,
+  CountryFacet,
+  IndianStateInfo,
+  Page,
+  Post,
+  PostCard,
+  PostKind,
+  Review,
+  Service,
+  ServiceGroup,
+  ServicePlace,
+  SiteSettings,
+  StatePlace,
+} from './types';
 
 /**
  * Cached reads from the API. Every function here is safe to call from any
@@ -188,6 +203,30 @@ export async function getServicePlaces(): Promise<ServicePlace[]> {
   cacheTag('companies');
   const { items } = await apiGet<{ items: ServicePlace[] }>('/v1/seo/places');
   return items;
+}
+
+/**
+ * Service x Indian state counts and the state list. Empty while the API has no state endpoint yet
+ * (a website deployed before the API), so pages and sitemaps never fail because of it.
+ */
+export async function getStateData(): Promise<{ items: StatePlace[]; states: IndianStateInfo[] }> {
+  'use cache';
+  cacheLife({ stale: 600, revalidate: 1_800, expire: 86_400 });
+  cacheTag('companies');
+  try {
+    return await apiGet<{ items: StatePlace[]; states: IndianStateInfo[] }>('/v1/seo/states');
+  } catch (error) {
+    if (error instanceof ApiError) return { items: [], states: [] };
+    throw error;
+  }
+}
+
+/** Companies with an office in one Indian state that offer the service, in directory order. */
+export async function getStateCompanies(query: { state: string; service: string; page?: number; limit?: number; sort?: string }): Promise<Page<CompanySummary>> {
+  'use cache';
+  cacheLife({ stale: 30, revalidate: 60, expire: 3_600 });
+  cacheTag('companies');
+  return apiGet<Page<CompanySummary>>(`/v1/seo/states/${encodeURIComponent(query.state)}/companies`, { limit: 12, ...query, state: undefined });
 }
 
 export interface SitemapCompanies {
