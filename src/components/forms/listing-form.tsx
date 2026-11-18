@@ -8,6 +8,7 @@ import { initialFormState } from '@/lib/form-state';
 import { HOURLY_RATES, INDUSTRIES, MIN_PROJECT_SIZES, TEAM_SIZES } from '@/lib/labels';
 import type { ServiceGroup } from '@/lib/types';
 import { ButtonLink } from '../ui/button';
+import { ImageUpload } from './image-upload';
 import { Field, Input, Select, Textarea } from '../ui/field';
 import { FormAlert, FormSection, Honeypot, SubmitButton, SuccessPanel } from './form-bits';
 import { formFields } from './use-form-fields';
@@ -60,9 +61,7 @@ export function ListingForm({ groups, account }: { groups: ServiceGroup[]; accou
             {(ids) => <Textarea id={ids.id} name="description" rows={6} defaultValue={value('description')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
           </Field>
         </div>
-        <Field label="Logo URL" name="logoUrl" optional hint="A square PNG or SVG link works best." error={error('logoUrl')}>
-          {(ids) => <Input id={ids.id} type="url" name="logoUrl" placeholder="https://" defaultValue={value('logoUrl')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
-        </Field>
+        <ImageUpload name="logoUrl" label="Logo" kind="logo" optional hint="A square JPG, PNG or WebP works best." defaultValue={value('logoUrl')} error={error('logoUrl')} />
         <Field label="Year founded" name="foundedYear" optional error={error('foundedYear')}>
           {(ids) => <Input id={ids.id} type="number" inputMode="numeric" name="foundedYear" min={1800} defaultValue={value('foundedYear')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
         </Field>

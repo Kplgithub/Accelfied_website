@@ -4,6 +4,7 @@ import { useActionState } from 'react';
 import { addPortfolioItem } from '@/app/dashboard-actions';
 import { initialFormState } from '@/lib/form-state';
 import { Field, Input, Select, Textarea } from '../ui/field';
+import { ImageUpload } from '../forms/image-upload';
 import { FormAlert, FormSaved, SubmitButton } from '../forms/form-bits';
 import { formFields } from '../forms/use-form-fields';
 
@@ -36,9 +37,7 @@ export function PortfolioForm({ services }: { services: Array<{ slug: string; na
           {(ids) => <Textarea id={ids.id} name="description" rows={3} maxLength={1000} defaultValue={value('description')} aria-describedby={ids.describedBy} />}
         </Field>
       </div>
-      <Field label="Image address" name="imageUrl" optional hint="Starting with https://" error={error('imageUrl')}>
-        {(ids) => <Input id={ids.id} type="url" name="imageUrl" defaultValue={value('imageUrl')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
-      </Field>
+      <ImageUpload name="imageUrl" label="Project image" kind="portfolio" shape="wide" optional hint="A screenshot or photo, JPG, PNG or WebP." defaultValue={value('imageUrl')} error={error('imageUrl')} />
       <Field label="Live link" name="url" optional hint="Starting with https://" error={error('url')}>
         {(ids) => <Input id={ids.id} type="url" name="url" defaultValue={value('url')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
       </Field>
