@@ -8,7 +8,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { getMyBilling } from '@/lib/account-data';
 import { formatDay } from '@/lib/format';
 import type { SubscriptionStatus } from '@/lib/types';
-import { formatPaise } from '@/lib/verified-plan';
+import { formatMoney } from '@/lib/verified-plan';
 
 export const metadata: Metadata = { title: 'Billing' };
 
@@ -51,7 +51,7 @@ export default async function BillingPage() {
       <DashboardHeader eyebrow={company.name} title="Billing" intro="Your Verified plan and a GST invoice for every payment. Dates are in IST." />
       <div className="grid gap-4 sm:grid-cols-3">
         <StatTile label="Plan" value={<span className="text-2xl">{status}</span>} note={subscription ? plan.name : 'No monthly charge'} />
-        <StatTile label="Next payment" value={<span className="text-2xl">{renewal}</span>} note={renewal === 'None' ? undefined : formatPaise(plan.total)} />
+        <StatTile label="Next payment" value={<span className="text-2xl">{renewal}</span>} note={renewal === 'None' ? undefined : formatMoney(plan.total, plan.currency)} />
         <StatTile
           label="Verified badge"
           value={<span className="inline-flex items-center gap-2 text-2xl">{company.verified ? <><BadgeCheck className="size-6 text-brand" aria-hidden="true" /> On</> : 'Off'}</span>}
@@ -87,7 +87,7 @@ export default async function BillingPage() {
                       <td className="px-3 py-3 text-ink-soft">
                         {invoice.periodStart && invoice.periodEnd ? `${formatDay(invoice.periodStart)} to ${formatDay(invoice.periodEnd)}` : 'Monthly'}
                       </td>
-                      <td className="px-3 py-3 text-right font-medium text-ink tabular-nums">{formatPaise(invoice.total)}</td>
+                      <td className="px-3 py-3 text-right font-medium text-ink tabular-nums">{formatMoney(invoice.total, invoice.currency)}</td>
                       <td className="px-5 py-3 text-right sm:px-7">
                         <Link href={`${HERE}/${invoice.id}`} className="inline-flex items-center gap-0.5 text-sm font-medium text-accent hover:underline">
                           View <ChevronRight className="size-4" aria-hidden="true" />

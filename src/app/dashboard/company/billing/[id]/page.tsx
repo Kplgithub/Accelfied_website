@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import { PrintButton } from '@/components/dashboard/print-button';
 import { getMyInvoice } from '@/lib/account-data';
 import { formatDay } from '@/lib/format';
-import { formatPaise } from '@/lib/verified-plan';
+import { formatMoney } from '@/lib/verified-plan';
 
 export const metadata: Metadata = { title: 'Invoice' };
 
@@ -89,7 +89,7 @@ export default async function InvoicePage({ params }: PageProps<'/dashboard/comp
                 )}
               </td>
               <td className="py-3 pr-4 text-ink-soft">{SAC}</td>
-              <td className="py-3 text-right tabular-nums">{formatPaise(invoice.taxable)}</td>
+              <td className="py-3 text-right tabular-nums">{formatMoney(invoice.taxable, invoice.currency)}</td>
             </tr>
           </tbody>
         </table>
@@ -97,17 +97,17 @@ export default async function InvoicePage({ params }: PageProps<'/dashboard/comp
         <dl className="mt-4 ml-auto max-w-xs space-y-1.5 tabular-nums">
           <div className="flex justify-between gap-6 text-ink-soft">
             <dt>Taxable value</dt>
-            <dd>{formatPaise(invoice.taxable)}</dd>
+            <dd>{formatMoney(invoice.taxable, invoice.currency)}</dd>
           </div>
           {rows.map(([label, amount]) => (
             <div key={label} className="flex justify-between gap-6 text-ink-soft">
               <dt>{label}</dt>
-              <dd>{formatPaise(amount)}</dd>
+              <dd>{formatMoney(amount, invoice.currency)}</dd>
             </div>
           ))}
           <div className="flex justify-between gap-6 border-t border-line pt-2 text-lg font-semibold">
             <dt>Total paid</dt>
-            <dd>{formatPaise(invoice.total)}</dd>
+            <dd>{formatMoney(invoice.total, invoice.currency)}</dd>
           </div>
         </dl>
 

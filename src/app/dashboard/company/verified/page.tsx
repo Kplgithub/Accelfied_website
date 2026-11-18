@@ -12,7 +12,7 @@ import { getMyBilling } from '@/lib/account-data';
 import { formatDay } from '@/lib/format';
 import { requireUser } from '@/lib/session';
 import type { Billing } from '@/lib/types';
-import { formatPaise, PAYING_STATUSES, PLAN_COMPARISON } from '@/lib/verified-plan';
+import { formatMoney, PAYING_STATUSES, PLAN_COMPARISON } from '@/lib/verified-plan';
 
 export const metadata: Metadata = { title: 'Get Verified' };
 
@@ -132,10 +132,10 @@ function PlanPanel({ billing, user }: { billing: Billing; user: { firstName: str
         <div>
           <p className="font-display text-2xl font-semibold text-ink">{plan.name}</p>
           <p className="mt-1 text-ink-soft">
-            <span className="font-display text-3xl font-semibold text-ink">{formatPaise(plan.taxable).replace(/\.00$/, '')}</span> / month + 18% GST
+            <span className="font-display text-3xl font-semibold text-ink">{formatMoney(plan.total, plan.currency).replace(/\.00$/, '')}</span> / month, GST included
           </p>
           <p className="mt-1 text-sm text-ink-faint">
-            {formatPaise(plan.total)} charged each month, with a GST invoice for every payment.
+            Charged each month by card. Every payment gets an invoice with the GST shown separately.
           </p>
         </div>
         <div className="lg:max-w-xs lg:text-right">
@@ -145,7 +145,7 @@ function PlanPanel({ billing, user }: { billing: Billing; user: { firstName: str
             <PlanBlocked text="Online payment is being set up." />
           ) : (
             <VerifiedCheckout
-              label={`Pay ${formatPaise(plan.total)} and start`}
+              label={`Pay ${formatMoney(plan.total, plan.currency)} and start`}
               companyName={company.name}
               name={`${user.firstName} ${user.lastName}`}
               email={user.email}
@@ -193,8 +193,8 @@ function RenewalPanel({ billing }: { billing: Billing }) {
               ? `Cancelled. Your plan and badge stay on until ${formatDay(subscription.currentEnd)}.`
               : 'Cancelled. Your plan stays on until the end of this month.'
             : subscription.currentEnd
-              ? `Next payment of ${formatPaise(plan.total)} on ${formatDay(subscription.currentEnd)}.`
-              : `Renews every month at ${formatPaise(plan.total)}.`}
+              ? `Next payment of ${formatMoney(plan.total, plan.currency)} on ${formatDay(subscription.currentEnd)}.`
+              : `Renews every month at ${formatMoney(plan.total, plan.currency)}.`}
         </p>
         {!subscription.cancelAtCycleEnd && (
           <details className="group shrink-0">
