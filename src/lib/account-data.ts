@@ -14,6 +14,7 @@ import type {
   ReviewInvite,
   SavedCompany,
   SenderRole,
+  Sponsorships,
   SentLead,
   Lead,
   Thread,
@@ -56,6 +57,11 @@ export async function getMyClaims(returnTo: string): Promise<CompanyClaim[]> {
 export async function getMyBilling(returnTo: string): Promise<Billing> {
   const { token } = await requireUser(returnTo);
   return apiPrivateGet<Billing>('/v1/me/billing', token);
+}
+
+export async function getMySponsorships(returnTo: string): Promise<Sponsorships> {
+  const { token } = await requireUser(returnTo);
+  return apiPrivateGet<Sponsorships>('/v1/me/sponsorships', token);
 }
 
 /** Null when the invoice is not this account's. */

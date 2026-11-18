@@ -7,6 +7,7 @@ import { getSessionToken } from '@/lib/session';
 import { clientIp, submit, text } from '@/lib/submit';
 
 type Result<T> = ({ ok: true } & T) | { ok: false; message: string };
+export type StartResult = Result<{ subscriptionId: string; keyId: string }>;
 
 async function send<T>(path: string, body: unknown): Promise<Result<{ data: T }>> {
   const token = await getSessionToken();
@@ -25,9 +26,24 @@ async function send<T>(path: string, body: unknown): Promise<Result<{ data: T }>
 }
 
 /** Creates the Razorpay subscription that Checkout then charges. */
-export async function startVerifiedPlan(): Promise<Result<{ subscriptionId: string; keyId: string }>> {
-  const result = await send<{ subscriptionId: string; keyId: string }>('/v1/me/billing/subscribe', {});
+export async function startVerifiedPlan(interval: 'monthly' | 'yearly' = 'monthly'): Promise<StartResult> {
+  const result = await send<{ subscriptionId: string; keyId: string }>('/v1/me/billing/subscribe', { interval: interval === 'yearly' ? 'yearly' : 'monthly' });
   return result.ok ? { ok: true, ...result.data } : result;
+}
+
+/** Opens checkout for a sponsored place on one directory page. */
+export async function startSponsorship(page: { service: string; country?: string; city?: string }): Promise<StartResult> {
+  const result = await send<{ subscriptionId: string; keyId: string }>('/v1/me/sponsorships', {
+    service: String(page.service ?? ''),
+    ...(page.country ? { country: String(page.country) } : {}),
+    ...(page.city ? { city: String(page.city) } : {}),
+  });
+  return result.ok ? { ok: true, ...result.data } : result;
+}
+
+export async function cancelSponsorship(pageKey: string): Promise<void> {
+  const result = await send<void>('/v1/me/sponsorships/cancel', { pageKey: String(pageKey ?? '') });
+  if (result.ok) refresh();
 }
 
 /** Sends what Checkout returned; the API checks the signature before anything changes. */

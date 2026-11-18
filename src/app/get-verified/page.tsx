@@ -5,6 +5,7 @@ import {
   FileCheck2,
   Megaphone,
   Mic,
+  Sparkles,
   Newspaper,
   ShieldCheck,
   Star,
@@ -18,18 +19,21 @@ import { Reveal } from '@/components/motion/reveal';
 import { ButtonLink } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 import { withSeo } from '@/lib/seo';
-import { formatPrice, PLAN_COMPARISON, VERIFIED_PLAN } from '@/lib/verified-plan';
+import { formatPrice, PLAN_COMPARISON, SPONSORED_PLACE, VERIFIED_PLAN } from '@/lib/verified-plan';
 
 export async function generateMetadata(): Promise<Metadata> {
   return withSeo('getVerified', {
     title: 'Get Verified',
-    description: `Accelfied Verified: the Verified badge, a place above other companies, unlimited reviews and promotion by our team, for ${formatPrice(VERIFIED_PLAN.monthly)} a month.`,
+    description: `Accelfied Verified: the Verified badge, a place above other companies, unlimited reviews and promotion by our team, for ${formatPrice(VERIFIED_PLAN.monthly)} a month or ${formatPrice(VERIFIED_PLAN.yearly)} a year.`,
     alternates: { canonical: '/get-verified' },
   });
 }
 
 const START = '/dashboard/company/verified';
 const PRICE = formatPrice(VERIFIED_PLAN.monthly);
+const YEARLY = formatPrice(VERIFIED_PLAN.yearly);
+const FREE_MONTHS = 12 - VERIFIED_PLAN.yearly / VERIFIED_PLAN.monthly;
+const SPONSOR_PRICE = formatPrice(SPONSORED_PLACE.monthly);
 
 export default function GetVerifiedPage() {
   return (
@@ -59,7 +63,10 @@ export default function GetVerifiedPage() {
                 Verify your business <ArrowRight className="size-4" aria-hidden="true" />
               </ButtonLink>
               <p className="text-paper/70">
-                <span className="font-display text-2xl font-semibold text-paper">{PRICE}</span> / month + GST
+                <span className="font-display text-2xl font-semibold text-paper">{PRICE}</span> / month, GST included
+                <span className="block text-sm">
+                  or {YEARLY} / year, {FREE_MONTHS} months free
+                </span>
               </p>
             </div>
           </div>
@@ -150,7 +157,9 @@ export default function GetVerifiedPage() {
                     <span className="flex items-center justify-center gap-1.5 font-display text-lg font-semibold sm:text-xl">
                       Verified <BadgeCheck className="size-5 text-accent-soft" aria-hidden="true" />
                     </span>
-                    <span className="mt-1 block text-sm font-normal text-paper/75">{PRICE}/mo</span>
+                    <span className="mt-1 block text-sm font-normal text-paper/75">
+                      {PRICE}/mo or {YEARLY}/yr
+                    </span>
                   </th>
                 </tr>
               </thead>
@@ -179,7 +188,8 @@ export default function GetVerifiedPage() {
             </table>
             <div className="flex flex-col items-center justify-between gap-4 border-t border-line bg-surface p-6 sm:flex-row">
               <p className="text-ink-soft">
-                <span className="font-display text-2xl font-semibold text-ink">{PRICE}</span> per month, GST included
+                <span className="font-display text-2xl font-semibold text-ink">{PRICE}</span> per month, or {YEARLY} per year ({FREE_MONTHS} months free). GST
+                included.
               </p>
               <ButtonLink href={START}>
                 Verify your business <ArrowRight className="size-4" aria-hidden="true" />
@@ -211,6 +221,46 @@ export default function GetVerifiedPage() {
               </Reveal>
             ))}
           </div>
+        </Container>
+      </section>
+
+      {/* Sponsored places */}
+      <section id="sponsored" className="scroll-mt-24 pb-20 lg:pb-28" aria-labelledby="sponsored-heading">
+        <Container>
+          <Reveal className="grid items-center gap-10 overflow-hidden rounded-[2rem] border border-saffron/30 bg-saffron-tint/50 p-8 sm:p-12 lg:grid-cols-[1.2fr_0.8fr]">
+            <div>
+              <p className="inline-flex items-center gap-2 text-sm font-semibold tracking-[0.16em] text-saffron-ink uppercase">
+                <Sparkles className="size-4" aria-hidden="true" /> Add-on
+              </p>
+              <h2 id="sponsored-heading" className="mt-3 font-display text-4xl leading-tight font-semibold tracking-tight text-ink sm:text-5xl">
+                Sponsored places
+              </h2>
+              <p className="mt-4 max-w-xl text-lg leading-relaxed text-ink-soft">
+                Show your company at the top of a directory page, such as web development in Pune, above every other listing. Each page has only{' '}
+                {SPONSORED_PLACE.perPage} places, and sponsored companies are always marked &ldquo;Sponsored&rdquo; so clients know.
+              </p>
+              <p className="mt-6 text-ink-soft">
+                <span className="font-display text-3xl font-semibold text-ink">{SPONSOR_PRICE}</span> / month per page, GST included. Works with or without
+                Verified.
+              </p>
+              <ButtonLink href="/dashboard/company/sponsored" className="mt-6">
+                Choose a page <ArrowRight className="size-4" aria-hidden="true" />
+              </ButtonLink>
+            </div>
+            <ul className="space-y-3" aria-label="How sponsored places work">
+              {[
+                'Pick any service, country or city page your company is listed on',
+                `First come, first served: at most ${SPONSORED_PLACE.perPage} companies per page`,
+                'Cancel any time; your place stays until the paid month ends',
+                'A GST invoice for every payment',
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-3 rounded-2xl bg-surface px-4 py-3 text-[15px] text-ink shadow-[var(--shadow-card)]">
+                  <Check className="mt-0.5 size-4.5 shrink-0 text-success" aria-hidden="true" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
         </Container>
       </section>
 
@@ -309,7 +359,15 @@ const FAQ = [
   { q: 'Who should join?', a: 'Any agency, studio or service firm listed on Accelfied that wants more clients to trust and find it.' },
   {
     q: 'What does it cost?',
-    a: `${PRICE} a month in total, with GST already included. You get an invoice for every payment, with the GST shown separately.`,
+    a: `${PRICE} a month, or ${YEARLY} a year (${FREE_MONTHS} months free), with GST already included. You get an invoice for every payment, with the GST shown separately.`,
+  },
+  {
+    q: 'What is Premier Verified?',
+    a: 'A Verified company with at least 10 published client reviews and an average rating of 4.5 or more gets the Premier Verified badge on its own. It comes from real reviews, so it cannot be bought.',
+  },
+  {
+    q: 'What is a sponsored place?',
+    a: `An add-on that shows your company at the top of one directory page for ${SPONSOR_PRICE} a month, GST included. Each page has ${SPONSORED_PLACE.perPage} places and sponsored companies are always labelled.`,
   },
   {
     q: 'How long does verification take?',

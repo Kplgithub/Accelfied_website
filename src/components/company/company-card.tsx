@@ -9,7 +9,8 @@ import { CompanyLogo } from './company-logo';
 import { RatingInline } from './rating-inline';
 import { SaveButton } from './save-button';
 
-export function CompanyCard({ company, highlightService }: { company: CompanySummary; highlightService?: string }) {
+/** `sponsored` marks a paid place at the top of a directory page, labelled so clients always know. */
+export function CompanyCard({ company, highlightService, sponsored = false }: { company: CompanySummary; highlightService?: string; sponsored?: boolean }) {
   const hq = company.headquarters;
   const facts = [
     { icon: DollarSign, label: 'Min. project', value: minProjectLabel(company.minProjectSize) },
@@ -23,7 +24,9 @@ export function CompanyCard({ company, highlightService }: { company: CompanySum
   ];
 
   return (
-    <article className="group relative rounded-[var(--radius-card)] border border-line bg-surface p-5 shadow-[var(--shadow-card)] transition-shadow duration-300 hover:shadow-[var(--shadow-lift)] sm:p-6">
+    <article
+      className={`group relative rounded-[var(--radius-card)] border bg-surface p-5 ${sponsored ? 'border-saffron/50 ring-1 ring-saffron/20' : 'border-line'} shadow-[var(--shadow-card)] transition-shadow duration-300 hover:shadow-[var(--shadow-lift)] sm:p-6`}
+    >
       <div className="flex flex-col gap-6 md:flex-row md:items-start">
         <div className="flex flex-1 gap-4">
           <CompanyLogo name={company.name} logoUrl={company.logoUrl} size={64} />
@@ -35,6 +38,7 @@ export function CompanyCard({ company, highlightService }: { company: CompanySum
                 </Link>
               </h3>
               {company.verified && <VerifiedBadge premier={company.premier} />}
+              {sponsored && <span className="rounded-full bg-saffron-tint px-2 py-0.5 text-xs font-medium text-saffron-ink">Sponsored</span>}
             </div>
             {company.tagline && <p className="mt-1 line-clamp-2 text-[15px] text-ink-soft">{company.tagline}</p>}
             <div className="mt-3">

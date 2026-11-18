@@ -6,7 +6,7 @@ import { cancelVerifiedPlan } from '@/app/billing-actions';
 import { DashboardHeader, Panel } from '@/components/dashboard/bits';
 import { NoCompany } from '@/components/dashboard/no-company';
 import { VerificationForm } from '@/components/dashboard/verification-form';
-import { VerifiedCheckout } from '@/components/dashboard/verified-checkout';
+import { VerifiedPlanChooser } from '@/components/dashboard/verified-plan-chooser';
 import { Button, ButtonLink } from '@/components/ui/button';
 import { getMyBilling } from '@/lib/account-data';
 import { formatDay } from '@/lib/format';
@@ -109,15 +109,16 @@ export default async function VerifiedPlanPage() {
 }
 
 function PlanPanel({ billing, user }: { billing: Billing; user: { firstName: string; lastName: string; email: string } }) {
-  const { company, subscription, plan } = billing;
+  const { company, subscription, plan, plans } = billing;
   if (!company) return null;
   const live = company.status === 'published';
+  const yearlySaving = plans.monthly.total * 12 - plans.yearly.total;
   return (
     <Panel>
       {subscription?.status === 'halted' && (
         <div className="mb-6">
           <Notice tone="danger" icon={<AlertTriangle className="size-5" aria-hidden="true" />}>
-            Your last monthly payment did not go through, so the Verified badge is off. Start the plan again to bring it back.
+            Your last payment did not go through, so the Verified badge is off. Start the plan again to bring it back.
           </Notice>
         </div>
       )}
@@ -132,24 +133,20 @@ function PlanPanel({ billing, user }: { billing: Billing; user: { firstName: str
         <div>
           <p className="font-display text-2xl font-semibold text-ink">{plan.name}</p>
           <p className="mt-1 text-ink-soft">
-            <span className="font-display text-3xl font-semibold text-ink">{formatMoney(plan.total, plan.currency).replace(/\.00$/, '')}</span> / month, GST included
+            <span className="font-display text-3xl font-semibold text-ink">{formatMoney(plan.total, plan.currency).replace(/\.00$/, '')}</span> / month, or{' '}
+            {formatMoney(plans.yearly.total, plans.yearly.currency).replace(/\.00$/, '')} / year. GST included.
           </p>
           <p className="mt-1 text-sm text-ink-faint">
-            Charged each month by card. Every payment gets an invoice with the GST shown separately.
+            Paying yearly saves {formatMoney(yearlySaving, plan.currency).replace(/\.00$/, '')}. Every payment gets an invoice with the GST shown separately.
           </p>
         </div>
-        <div className="lg:max-w-xs lg:text-right">
+        <div className="lg:w-[26rem] lg:shrink-0 lg:text-right">
           {!live ? (
             <PlanBlocked text="Your listing goes live after our team approves it. You can join Verified right after that." />
           ) : !billing.enabled ? (
             <PlanBlocked text="Online payment is being set up." />
           ) : (
-            <VerifiedCheckout
-              label={`Pay ${formatMoney(plan.total, plan.currency)} and start`}
-              companyName={company.name}
-              name={`${user.firstName} ${user.lastName}`}
-              email={user.email}
-            />
+            <VerifiedPlanChooser plans={plans} companyName={company.name} name={`${user.firstName} ${user.lastName}`} email={user.email} />
           )}
         </div>
       </div>
@@ -182,8 +179,10 @@ function PlanBlocked({ text }: { text: string }) {
 }
 
 function RenewalPanel({ billing }: { billing: Billing }) {
-  const { subscription, plan } = billing;
+  const { subscription } = billing;
   if (!subscription) return null;
+  const plan = billing.plans[subscription.interval ?? 'monthly'];
+  const period = plan.interval === 'yearly' ? 'year' : 'month';
   return (
     <Panel title="Your plan">
       <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
@@ -191,18 +190,18 @@ function RenewalPanel({ billing }: { billing: Billing }) {
           {subscription.cancelAtCycleEnd
             ? subscription.currentEnd
               ? `Cancelled. Your plan and badge stay on until ${formatDay(subscription.currentEnd)}.`
-              : 'Cancelled. Your plan stays on until the end of this month.'
+              : `Cancelled. Your plan stays on until the end of this ${period}.`
             : subscription.currentEnd
               ? `Next payment of ${formatMoney(plan.total, plan.currency)} on ${formatDay(subscription.currentEnd)}.`
-              : `Renews every month at ${formatMoney(plan.total, plan.currency)}.`}
+              : `Renews every ${period} at ${formatMoney(plan.total, plan.currency)}.`}
         </p>
         {!subscription.cancelAtCycleEnd && (
           <details className="group shrink-0">
             <summary className="cursor-pointer list-none text-sm font-medium text-ink-soft underline-offset-4 hover:text-danger hover:underline">Cancel plan</summary>
             <form action={cancelVerifiedPlan} className="mt-3 rounded-xl border border-line bg-paper p-4 text-sm sm:max-w-xs">
-              <p className="text-ink-soft">The badge stays until the paid month ends, then it is removed and no more payments are taken.</p>
+              <p className="text-ink-soft">The badge stays until the paid {period} ends, then it is removed and no more payments are taken.</p>
               <Button type="submit" variant="secondary" size="sm" className="mt-3">
-                Yes, cancel at month end
+                Yes, cancel at {period} end
               </Button>
             </form>
           </details>

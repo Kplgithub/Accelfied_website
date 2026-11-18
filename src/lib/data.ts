@@ -56,6 +56,20 @@ export async function getPlaceCompanies(query: Pick<DirectoryQuery, 'service' | 
   return apiGet<Page<CompanySummary>>('/v1/companies', { ...query, sort: 'rating', limit: 50 });
 }
 
+/** Companies paying for the top of this directory page. An outage shows the page without them. */
+export async function getSponsored(service: string, country?: string, city?: string): Promise<CompanySummary[]> {
+  'use cache';
+  cacheLife({ stale: 60, revalidate: 300, expire: 3_600 });
+  cacheTag('sponsored', 'companies');
+  try {
+    const { items } = await apiGet<{ items: CompanySummary[] }>('/v1/sponsored', { service, country, city });
+    return items;
+  } catch (error) {
+    console.error('Loading sponsored companies failed', error);
+    return [];
+  }
+}
+
 export async function getCountryFacets(service?: string): Promise<CountryFacet[]> {
   'use cache';
   cacheLife({ stale: 300, revalidate: 600, expire: 86_400 });
