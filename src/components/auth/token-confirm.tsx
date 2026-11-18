@@ -3,11 +3,11 @@
 import { CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { useActionState } from 'react';
-import { confirmClaim, confirmEmail } from '@/app/token-actions';
+import { confirmClaim, confirmEmail, unsubscribeInvite } from '@/app/token-actions';
 import { initialFormState } from '@/lib/form-state';
 import { FormAlert, SubmitButton } from '../forms/form-bits';
 
-const ACTIONS = { email: confirmEmail, claim: confirmClaim };
+const ACTIONS = { email: confirmEmail, claim: confirmClaim, unsubscribe: unsubscribeInvite };
 
 /**
  * One button that confirms the link from an email. A button, not an automatic
