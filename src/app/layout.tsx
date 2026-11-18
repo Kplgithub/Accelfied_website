@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Fraunces, Geist } from 'next/font/google';
+import { GoogleTagManager, GoogleTagManagerNoScript } from '@/components/analytics/google-tag-manager';
 import { AnnouncementBar } from '@/components/layout/announcement-bar';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" className={`${geist.variable} ${fraunces.variable} antialiased`}>
       <body className="flex min-h-dvh flex-col">
+        <GoogleTagManagerNoScript />
         <a
           href="#main"
           className="sr-only z-50 rounded-full bg-brand px-4 py-2 text-white focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
@@ -46,6 +48,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
           {children}
         </main>
         <SiteFooter />
+        <GoogleTagManager />
       </body>
     </html>
   );
