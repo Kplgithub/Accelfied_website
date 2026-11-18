@@ -2,6 +2,7 @@ import 'server-only';
 import type { Metadata } from 'next';
 import { placeHeading, placeSummary, resolvePlace, type PlaceParams } from '@/components/directory/location-landing';
 import { getServicePlaces } from './data';
+import { MAX_DESCRIPTION } from './seo-text';
 import { countrySlug, isIndexable, placePath } from './places';
 
 /** Placeholder so the routes validate at build time before any company is published. */
@@ -21,7 +22,12 @@ export async function placeMetadata(params: PlaceParams): Promise<Metadata> {
   if (!resolved) return { title: 'Page not found', robots: { index: false } };
   const { service, place } = resolved;
   const title = placeHeading(service, place);
-  const description = `${placeSummary(service, place)} Compare client reviews, hourly rates and project sizes, then request quotes.`;
+  const summary = placeSummary(service, place);
+  // Search results cut descriptions at about 155 characters, so the longest call to action that fits is used.
+  const cta = [' Compare client reviews, hourly rates and project sizes, then request quotes.', ' Compare reviews and rates.', ''].find(
+    (text) => summary.length + text.length <= MAX_DESCRIPTION,
+  );
+  const description = summary + (cta ?? '');
   return {
     title,
     description,

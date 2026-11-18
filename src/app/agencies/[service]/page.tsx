@@ -8,7 +8,7 @@ import { JsonLd, breadcrumbLd } from '@/components/seo/json-ld';
 import { Container } from '@/components/ui/container';
 import { getService, getServiceGroups } from '@/lib/data';
 import { parseDirectoryParams } from '@/lib/directory';
-import { placeName, relatedPlaces } from '@/lib/places';
+import { listedServices, placeName, relatedPlaces } from '@/lib/places';
 import { SITE_URL } from '@/lib/site';
 
 export async function generateStaticParams() {
@@ -17,12 +17,13 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps<'/agencies/[service]'>): Promise<Metadata> {
-  const service = await getService((await params).service);
+  const [service, listed] = await Promise.all([getService((await params).service), listedServices()]);
   if (!service) return { title: 'Service not found' };
   return {
     title: `Top ${service.name} Companies`,
     description: `Compare ${service.name.toLowerCase()} companies by verified client reviews, hourly rates, minimum project size and location.`,
     alternates: { canonical: `/agencies/${service.slug}` },
+    robots: listed.has(service.slug) ? undefined : { index: false, follow: true },
   };
 }
 

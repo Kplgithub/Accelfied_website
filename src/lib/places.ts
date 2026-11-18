@@ -45,6 +45,14 @@ export function isIndexable(place: ServicePlace): boolean {
   return place.companies >= MIN_COMPANIES_TO_INDEX;
 }
 
+/**
+ * Services that at least one published company offers. Service pages for the rest have no listings yet, so they
+ * stay out of search results and the sitemap until a company joins, like thin location pages.
+ */
+export async function listedServices(): Promise<Set<string>> {
+  return new Set((await getServicePlaces()).map((place) => place.service));
+}
+
 export async function findPlace(service: string, country: string, city?: string): Promise<ServicePlace | null> {
   const places = await getServicePlaces();
   return (
