@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 import { COUNTRIES } from '@/lib/countries';
 import type { ServiceGroup } from '@/lib/types';
+import { startNavigationProgress } from '../layout/navigation-progress';
 
 export function HeroSearch({ groups }: { groups: ServiceGroup[] }) {
   const router = useRouter();
@@ -18,6 +19,7 @@ export function HeroSearch({ groups }: { groups: ServiceGroup[] }) {
       setError(true);
       return;
     }
+    startNavigationProgress();
     router.push(`/agencies/${service}${country ? `?country=${country}` : ''}`);
   }
 

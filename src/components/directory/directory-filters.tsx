@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useState, useTransition, type FormEvent } from 'react';
 import { BUDGETS, HOURLY_RATES, INDUSTRIES, SORTS, TEAM_SIZES } from '@/lib/labels';
 import type { CountryFacet } from '@/lib/types';
+import { startNavigationProgress } from '../layout/navigation-progress';
 
 const FILTER_KEYS = ['country', 'budget', 'hourlyRate', 'teamSize', 'industry', 'minRating', 'verified', 'q'] as const;
 
@@ -30,6 +31,7 @@ export function DirectoryFilters({
     if (value) next.set(key, value);
     else next.delete(key);
     next.delete('page');
+    startNavigationProgress();
     startTransition(() => router.push(`${pathname}${next.size ? `?${next}` : ''}`, { scroll: false }));
   }
 
@@ -38,6 +40,7 @@ export function DirectoryFilters({
     FILTER_KEYS.forEach((key) => next.delete(key));
     next.delete('page');
     setQ('');
+    startNavigationProgress();
     startTransition(() => router.push(`${pathname}${next.size ? `?${next}` : ''}`, { scroll: false }));
   }
 

@@ -3,6 +3,7 @@
 import { Heart } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState, useSyncExternalStore } from 'react';
+import { startNavigationProgress } from '../layout/navigation-progress';
 
 /**
  * One shared copy of the visitor's saved companies, loaded once per page and
@@ -48,6 +49,7 @@ export function SaveButton({ slug, name, variant = 'icon' }: { slug: string; nam
 
   async function toggle() {
     if (current.signedIn === false) {
+      startNavigationProgress();
       router.push(`/login?next=${encodeURIComponent(pathname)}`);
       return;
     }
@@ -64,6 +66,7 @@ export function SaveButton({ slug, name, variant = 'icon' }: { slug: string; nam
     }).catch(() => null);
     setBusy(false);
     if (res?.status === 401) {
+      startNavigationProgress();
       router.push(`/login?next=${encodeURIComponent(pathname)}`);
       return;
     }

@@ -160,11 +160,20 @@ body {
   position: absolute;
   border-radius: 9999px;
   filter: blur(70px);
-  animation: drift 16s ease-in-out infinite;
   pointer-events: none;
-  /* Own compositor layer: the blur is drawn once and only moved, not redrawn each frame. */
-  will-change: transform;
   contain: strict;
+}
+/*
+ * The glow drifts only on larger screens with a mouse. On phones and tablets a
+ * big moving blur keeps the GPU busy and makes scrolling and taps feel slow, so
+ * there it stays still (it looks the same at rest).
+ */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .orb {
+    animation: drift 16s ease-in-out infinite;
+    /* Own compositor layer: the blur is drawn once and only moved, not redrawn each frame. */
+    will-change: transform;
+  }
 }
 
 @keyframes float-y {
@@ -176,8 +185,10 @@ body {
     transform: translateY(-10px);
   }
 }
-.float-y {
-  animation: float-y 6s ease-in-out infinite;
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .float-y {
+    animation: float-y 6s ease-in-out infinite;
+  }
 }
 
 @keyframes marquee {
@@ -190,6 +201,53 @@ body {
 }
 .marquee:hover {
   animation-play-state: paused;
+}
+
+/*
+ * Page loading bar (NavigationProgress). Starts the moment a link is clicked:
+ * it races to about 70% and then creeps, and fills and fades once the page is in.
+ */
+.nav-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 60;
+  height: 3px;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+  box-shadow: 0 0 10px rgb(199 54 47 / 0.45);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  opacity: 0;
+}
+.nav-progress[data-state='loading'] {
+  opacity: 1;
+  animation: nav-progress 8s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
+}
+.nav-progress[data-state='done'] {
+  transform: scaleX(1);
+  opacity: 0;
+  transition:
+    transform 200ms ease-out,
+    opacity 300ms 150ms ease-out;
+}
+@keyframes nav-progress {
+  0% {
+    transform: scaleX(0);
+  }
+  10% {
+    transform: scaleX(0.45);
+  }
+  40% {
+    transform: scaleX(0.75);
+  }
+  100% {
+    transform: scaleX(0.95);
+  }
+}
+
+/* Jumping to a section (#development) lands below the sticky header, not under it. */
+html {
+  scroll-padding-top: 7.5rem;
 }
 
 /* Lifts a card a little on hover. */

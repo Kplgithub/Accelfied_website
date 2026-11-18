@@ -7,6 +7,7 @@ import { COUNTRIES, countryName } from '@/lib/countries';
 import { type Brief, matchedHref } from '@/lib/brief';
 import { BUDGETS, budgetLabel, TIMELINES, timelineLabel } from '@/lib/labels';
 import type { Service, ServiceGroup } from '@/lib/types';
+import { startNavigationProgress } from '../layout/navigation-progress';
 
 const STEPS = ['Service', 'Location', 'Budget', 'Timeline', 'Project', 'Review'] as const;
 const MIN_BRIEF = 30;
@@ -260,7 +261,10 @@ export function GetMatchedWizard({ groups, tone = 'dark' }: { groups: ServiceGro
             </dl>
             <button
               type="button"
-              onClick={() => router.push(matchedHref({ ...data, brief: data.brief.trim() }))}
+              onClick={() => {
+                startNavigationProgress();
+                router.push(matchedHref({ ...data, brief: data.brief.trim() }));
+              }}
               className="mt-5 inline-flex h-13 w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-brand font-medium text-white transition-colors hover:bg-brand-strong"
             >
               See matching companies <ArrowRight className="size-4" aria-hidden="true" />
