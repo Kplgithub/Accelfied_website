@@ -25,6 +25,7 @@ const COLUMNS = [
       { href: '/agencies', label: 'Claim your company' },
       { href: '/how-reviews-work', label: 'How reviews work' },
       { href: '/dashboard', label: 'Company dashboard' },
+      { href: '/company-faq', label: 'Help for companies' },
     ],
   },
   {

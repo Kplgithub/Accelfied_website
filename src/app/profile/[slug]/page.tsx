@@ -29,6 +29,8 @@ import { SaveButton } from '@/components/company/save-button';
 import { ProfileView } from '@/components/tracking/profile-view';
 import { WebsiteLink } from '@/components/tracking/website-link';
 import { SocialLinks } from '@/components/ui/social-icon';
+import { OwnerTools } from '@/components/company/owner-tools';
+import { SimilarCompanies } from '@/components/company/similar-companies';
 
 /** Placeholder so the route can be validated at build time before any company is published. */
 const SHELL_SLUG = '__shell__';
@@ -70,6 +72,9 @@ async function Profile({ params, searchParams }: PageProps<'/profile/[slug]'>) {
         <ProfileLd company={company} />
       </Suspense>
       <ProfileView slug={company.slug} />
+      <Suspense fallback={null}>
+        <OwnerTools slug={company.slug} />
+      </Suspense>
       <ProfileHeader company={company} details={details} />
       <Container className="grid gap-12 py-12 lg:grid-cols-[1fr_320px] lg:gap-14">
         <div className="min-w-0 space-y-16">
@@ -111,6 +116,9 @@ async function Profile({ params, searchParams }: PageProps<'/profile/[slug]'>) {
         <aside className="space-y-4 lg:sticky lg:top-32 lg:self-start">
           <QuoteCard company={company} />
           <ClaimCard company={company} />
+          <Suspense fallback={null}>
+            <SimilarCompanies slug={company.slug} service={[...company.services].sort((a, b) => b.percent - a.percent)[0]} />
+          </Suspense>
         </aside>
       </Container>
     </>
