@@ -68,7 +68,7 @@ async function buildLlmsTxt(): Promise<string> {
     '## Key pages',
     link('All companies', '/agencies', 'search and filter every listed company'),
     link('Browse services', '/services', 'every service category'),
-    link('Get matched', '/get-matched', 'describe a project once and get matched with companies'),
+    link('Get a free shortlist', '/get-matched', 'describe a project once and get matched with companies'),
     link('How reviews work', '/how-reviews-work', 'how reviews are collected, checked and scored'),
     link('About Accelfied', '/about'),
     link('Get Verified', '/get-verified', 'the paid plan for companies'),

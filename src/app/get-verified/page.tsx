@@ -19,7 +19,7 @@ import { Reveal } from '@/components/motion/reveal';
 import { ButtonLink } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 import { withSeo } from '@/lib/seo';
-import { formatPrice, PLAN_COMPARISON, SPONSORED_PLACE, VERIFIED_PLAN } from '@/lib/verified-plan';
+import { formatPrice, PLAN_COMPARISON, SPONSORED_PLACE, VERIFIED_PLAN, YEARLY_SAVING } from '@/lib/verified-plan';
 
 export async function generateMetadata(): Promise<Metadata> {
   return withSeo('getVerified', {
@@ -32,7 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
 const START = '/dashboard/company/verified';
 const PRICE = formatPrice(VERIFIED_PLAN.monthly);
 const YEARLY = formatPrice(VERIFIED_PLAN.yearly);
-const FREE_MONTHS = 12 - VERIFIED_PLAN.yearly / VERIFIED_PLAN.monthly;
+const SAVING = formatPrice(YEARLY_SAVING);
 const SPONSOR_PRICE = formatPrice(SPONSORED_PLACE.monthly);
 
 export default function GetVerifiedPage() {
@@ -52,11 +52,11 @@ export default function GetVerifiedPage() {
               className="mt-6 animate-rise font-display text-[2.5rem] leading-[1.05] font-semibold tracking-[-0.02em] sm:text-6xl"
               style={{ animationDelay: '80ms' }}
             >
-              Earn more trust. <span className="scribble italic">Win</span> more clients.
+              Get checked once. <span className="scribble italic">Win</span> trust every day.
             </h1>
             <p className="mt-6 max-w-xl animate-rise text-lg leading-relaxed text-paper/72" style={{ animationDelay: '160ms' }}>
-              Clients want proof before they hire. Accelfied Verified checks your business, puts a Verified badge on your profile, lists you
-              above companies that are not verified, and has our team promote you.
+              Businesses want proof before they hand over a project. With Accelfied Verified, our team checks your company papers, adds the Verified badge to
+              your profile, places you above unchecked listings and puts your name in front of more buyers.
             </p>
             <div className="mt-9 flex animate-rise flex-col gap-3 sm:flex-row sm:items-center" style={{ animationDelay: '240ms' }}>
               <ButtonLink href={START} size="lg">
@@ -65,7 +65,7 @@ export default function GetVerifiedPage() {
               <p className="text-paper/70">
                 <span className="font-display text-2xl font-semibold text-paper">{PRICE}</span> / month, GST included
                 <span className="block text-sm">
-                  or {YEARLY} / year, {FREE_MONTHS} months free
+                  or {YEARLY} / year (save {SAVING}). Autopay, cancel anytime
                 </span>
               </p>
             </div>
@@ -112,9 +112,9 @@ export default function GetVerifiedPage() {
       <section className="py-20 lg:py-24">
         <Container className="grid gap-5 md:grid-cols-3">
           {[
-            { icon: ShieldCheck, title: 'Earn buyer trust', text: 'Show serious buyers that an independent team has checked your business.' },
-            { icon: Trophy, title: 'Stand out from competitors', text: 'The Verified badge sets you apart from companies that have not been checked.' },
-            { icon: TrendingUp, title: 'Be seen first', text: 'Verified companies are listed above the rest on every directory page.' },
+            { icon: ShieldCheck, title: 'Proof, not promises', text: 'Show serious buyers that an independent team has looked at your registration and GST papers.' },
+            { icon: Trophy, title: 'Stand apart in your city', text: 'The badge separates you from the agencies down the road that nobody has checked.' },
+            { icon: TrendingUp, title: 'Be seen first', text: 'Verified companies sit above the rest on every service, city and state page they appear on.' },
           ].map((item, index) => (
             <Reveal key={item.title} delay={index * 100} className="lift rounded-[var(--radius-card)] border border-line bg-surface p-7">
               <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-accent-tint text-accent">
@@ -188,7 +188,7 @@ export default function GetVerifiedPage() {
             </table>
             <div className="flex flex-col items-center justify-between gap-4 border-t border-line bg-surface p-6 sm:flex-row">
               <p className="text-ink-soft">
-                <span className="font-display text-2xl font-semibold text-ink">{PRICE}</span> per month, or {YEARLY} per year ({FREE_MONTHS} months free). GST
+                <span className="font-display text-2xl font-semibold text-ink">{PRICE}</span> per month, or {YEARLY} per year (save {SAVING}), paid by autopay. GST
                 included.
               </p>
               <ButtonLink href={START}>
@@ -320,8 +320,8 @@ export default function GetVerifiedPage() {
           <span className="orb -top-24 right-10 size-72 bg-white/25" aria-hidden="true" />
           <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h2 className="font-display text-3xl leading-tight font-semibold sm:text-5xl">Get Verified today</h2>
-              <p className="mt-3 max-w-xl text-lg text-white/80">Show clients your business is real, checked and ready to deliver.</p>
+              <h2 className="font-display text-3xl leading-tight font-semibold sm:text-5xl">Ready to get Verified?</h2>
+              <p className="mt-3 max-w-xl text-lg text-white/80">Show buyers your business is real, checked and ready to take on their project.</p>
             </div>
             <ButtonLink href={START} size="lg" variant="inverse" className="shrink-0">
               Verify your business <ArrowRight className="size-4" aria-hidden="true" />
@@ -359,7 +359,7 @@ const FAQ = [
   { q: 'Who should join?', a: 'Any agency, studio or service firm listed on Accelfied that wants more clients to trust and find it.' },
   {
     q: 'What does it cost?',
-    a: `${PRICE} a month, or ${YEARLY} a year (${FREE_MONTHS} months free), with GST already included. You get an invoice for every payment, with the GST shown separately.`,
+    a: `${PRICE} a month, or ${YEARLY} a year (save ${SAVING}), with GST already included. Payment is by autopay: Razorpay charges your card at the start of each month or year until you cancel. You get an invoice for every payment, with the GST shown separately.`,
   },
   {
     q: 'What is Premier Verified?',

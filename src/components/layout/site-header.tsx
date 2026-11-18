@@ -131,7 +131,7 @@ async function ServiceBar() {
           className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-accent transition-colors hover:bg-accent-tint"
         >
           <Target className="size-4" aria-hidden="true" />
-          Get matched with companies
+          Get a free shortlist
         </Link>
       </Container>
     </div>

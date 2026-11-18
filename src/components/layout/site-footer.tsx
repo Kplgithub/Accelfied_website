@@ -20,10 +20,10 @@ const COLUMNS: Array<{ title: string; links: FooterLink[] }> = [
     links: [
       { href: '/services', label: 'Browse services' },
       { href: '/agencies', label: 'All companies' },
-      { href: '/get-matched', label: 'Get matched' },
+      { href: '/get-matched', label: 'Get a free shortlist' },
       { href: '/get-a-quote', label: 'Get a quote' },
       { href: '/write-a-review', label: 'Write a review' },
-      { href: '/blog', label: 'Blog and interviews' },
+      { href: '/blog', label: 'Guides and blog' },
     ],
   },
   {
@@ -34,6 +34,7 @@ const COLUMNS: Array<{ title: string; links: FooterLink[] }> = [
       { href: '/agencies', label: 'Claim your company' },
       { href: '/how-reviews-work', label: 'How reviews work' },
       { href: '/dashboard', label: 'Company dashboard' },
+      { href: '/company-faq', label: 'Help for companies' },
     ],
   },
   {
@@ -89,7 +90,7 @@ export function SiteFooter() {
             <Reveal className="col-span-2 max-w-sm lg:col-span-1">
               <Logo tone="light" />
               <p className="mt-5 text-[15px] leading-relaxed text-paper/65">
-                Find the right agency for your next project, judged by what their clients actually say.
+                India’s directory of software, design and marketing companies, rated only on what their clients actually say.
               </p>
               <FooterContact />
             </Reveal>
@@ -164,7 +165,7 @@ function FooterPromise() {
             href="/get-matched"
             className="group inline-flex h-12 items-center gap-2 rounded-full bg-brand px-6 text-[15px] font-medium text-white shadow-[0_10px_30px_-10px_rgb(199_54_47/0.8)] transition-colors hover:bg-brand-strong"
           >
-            Get matched with companies
+            Get a free shortlist
             <ArrowRight className="size-4 transition-transform duration-300 ease-out group-hover:translate-x-1 motion-reduce:transition-none" aria-hidden="true" />
           </Link>
           <Link

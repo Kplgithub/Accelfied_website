@@ -444,3 +444,29 @@ html {
 @media (max-width: 639px) {
   .footer-business img[src$=".svg"] { height: 28px; }
 }
+/* Project brief: each question slides in from the side it came from. */
+@keyframes brief-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes brief-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [style*='brief-in-'] {
+    animation: none !important;
+  }
+}

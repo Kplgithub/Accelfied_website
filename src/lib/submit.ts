@@ -26,7 +26,7 @@ export async function submit(
   form: FormData,
   /** The confirmation shown, or a function that words it from the API's answer. */
   success: string | ((data: unknown) => string),
-  method: 'POST' | 'PATCH' = 'POST',
+  method: 'POST' | 'PATCH' | 'PUT' = 'POST',
 ): Promise<FormState> {
   const token = await getSessionToken();
   if (!token) return { status: 'error', message: 'Please log in again to continue.', values: echo(form), nonce: Date.now() };

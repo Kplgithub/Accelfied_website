@@ -15,6 +15,7 @@ import { SITE_URL } from '@/lib/site';
 import type { Service, ServicePlace } from '@/lib/types';
 import { DirectoryResults, DirectorySkeleton } from './directory-results';
 import { PlaceFacts } from './place-facts';
+import { ServiceGuide } from './service-guide';
 import { Pagination } from './pagination';
 import { PlaceLinks } from './place-links';
 
@@ -35,7 +36,7 @@ export async function resolvePlace(params: PlaceParams): Promise<{ service: Serv
 }
 
 export function placeHeading(service: Service, place: ServicePlace): string {
-  return `Top ${service.name} Companies in ${placeName(place)}`;
+  return `Best ${service.name} Companies in ${placeName(place)}`;
 }
 
 /** One sentence of real numbers about the place, used in the page intro and description. */
@@ -109,6 +110,7 @@ async function Landing({ params, searchParams }: { params: Promise<PlaceParams>;
         <Suspense fallback={null}>
           <PlaceFacts service={service} place={place} />
         </Suspense>
+        <ServiceGuide service={service} where={placeName(place)} />
         <Related service={service} place={place} />
       </Container>
     </>

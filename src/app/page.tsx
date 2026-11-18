@@ -22,6 +22,7 @@ import { PostCard } from '@/components/blog/post-card';
 import { CompanyCard } from '@/components/company/company-card';
 import { GroupIcon } from '@/components/home/group-icon';
 import { HeroTabs } from '@/components/home/hero-tabs';
+import { IndiaSearches } from '@/components/home/india-searches';
 import { TabbedPanels } from '@/components/home/tabbed-panels';
 import { CountUp } from '@/components/motion/count-up';
 import { Reveal } from '@/components/motion/reveal';
@@ -35,6 +36,7 @@ import { formatDate, formatRating } from '@/lib/format';
 import { INDUSTRIES } from '@/lib/labels';
 import { SITE_URL } from '@/lib/site';
 import type { CompanySummary, ServiceGroup } from '@/lib/types';
+import { formatPrice, VERIFIED_PLAN } from '@/lib/verified-plan';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { seo } = await getSiteSettings();
@@ -95,20 +97,20 @@ export default async function HomePage() {
           <div className="lg:pt-6">
             <p className="inline-flex animate-rise items-center gap-2 rounded-full bg-white/8 px-3.5 py-1.5 text-sm font-medium text-accent-soft ring-1 ring-white/12">
               <BadgeCheck className="size-4" aria-hidden="true" />
-              Every listing and every review is checked by our team
+              A real person reads every listing and review before it goes live
             </p>
             <h1
               className="mt-6 animate-rise font-display text-[2.6rem] leading-[1.04] font-semibold tracking-[-0.025em] sm:text-6xl lg:text-[4.2rem]"
               style={{ animationDelay: '80ms' }}
             >
-              Hire a company you can <span className="scribble italic">trust</span> with your project.
+              Find an agency in India that actually <span className="scribble italic">delivers</span>.
             </h1>
             <p className="mt-6 max-w-xl animate-rise text-lg leading-relaxed text-paper/72" style={{ animationDelay: '160ms' }}>
-              Compare agencies, studios and service firms by verified client reviews, real rates and the work they have done.
-              Then send one brief to the ones that fit.
+              Compare software developers, app builders, designers and marketing agencies from Jaipur to Bengaluru on what their past clients
+              say, what they charge and what they have shipped. Then send one brief to the few that fit.
             </p>
             <ul className="mt-8 hidden animate-rise gap-3 text-[15px] text-paper/85 sm:grid sm:grid-cols-2" style={{ animationDelay: '240ms' }}>
-              {['Ratings from published reviews only', 'Free for clients', 'Verified companies marked clearly', 'One brief, many quotes'].map((item) => (
+              {['Ratings built only from approved reviews', 'Always free for businesses hiring', 'Checked companies clearly marked', 'One brief, replies from several firms'].map((item) => (
                 <li key={item} className="flex items-center gap-2.5">
                   <CheckCircle2 className="size-4.5 shrink-0 text-accent-soft" aria-hidden="true" />
                   {item}
@@ -170,7 +172,7 @@ export default async function HomePage() {
         <Container>
           <SectionHeading
             eyebrow="Browse by service"
-            title="Every kind of partner, in one place"
+            title="Software, design, marketing and everything in between"
             action={<ArrowLink href="/services">All {services.length} services</ArrowLink>}
           />
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -186,12 +188,12 @@ export default async function HomePage() {
       {/* 5. How it works */}
       <section className="grain border-y border-line bg-paper-deep py-20 lg:py-28">
         <Container>
-          <SectionHeading eyebrow="How it works" title="From brief to signed partner in three steps" />
+          <SectionHeading eyebrow="How it works" title="From a rough idea to a signed partner" />
           <ol className="relative mt-14 grid gap-10 md:grid-cols-3 md:gap-8">
             {[
-              { icon: ClipboardList, title: 'Tell us what you need', text: 'Answer six quick questions about the service, budget, timeline and project. It takes about two minutes.' },
-              { icon: Scale, title: 'Compare the fits', text: 'See matching companies side by side: verified reviews, hourly rates, team size and minimum project size.' },
-              { icon: Handshake, title: 'Hire with confidence', text: 'Send your brief, follow every reply in your dashboard and review the company when the work is done.' },
+              { icon: ClipboardList, title: 'Say what you need', text: 'Six short questions on the service, your budget, the timeline and what you are building. About two minutes, and no sales call.' },
+              { icon: Scale, title: 'Line them up', text: 'See the companies that fit side by side: approved client reviews, hourly rates, team size and the smallest project each one takes.' },
+              { icon: Handshake, title: 'Pick and get going', text: 'Send your brief, keep every reply in one inbox, and leave an honest review once the work is done.' },
             ].map((step, index) => (
               <Reveal as="li" key={step.title} delay={index * 120} className="relative">
                 <span className="flex size-14 items-center justify-center rounded-2xl bg-surface text-brand shadow-[var(--shadow-card)]">
@@ -215,7 +217,7 @@ export default async function HomePage() {
       {picks.length > 0 && (
         <section className="pt-20 lg:pt-28">
           <Container>
-            <SectionHeading eyebrow="Featured companies" title="Picked by the Accelfied team" action={<ArrowLink href="/agencies">See all companies</ArrowLink>} />
+            <SectionHeading eyebrow="Featured companies" title="Handpicked by our team" action={<ArrowLink href="/agencies">See all companies</ArrowLink>} />
             <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {picks.slice(0, 6).map((company, index) => (
                 <Reveal key={company.id} delay={(index % 3) * 90} className="h-full">
@@ -231,8 +233,8 @@ export default async function HomePage() {
       <section className="py-20 lg:py-28">
         <Container>
           <SectionHeading
-            eyebrow="Top rated"
-            title="Companies clients keep recommending"
+            eyebrow="Highest rated"
+            title="Firms their clients would hire again"
             action={<ArrowLink href="/agencies?sort=rating">See all companies</ArrowLink>}
           />
           <div className="mt-10">
@@ -241,9 +243,9 @@ export default async function HomePage() {
             ) : (
               <Reveal className="rounded-[var(--radius-card)] border border-dashed border-line-strong bg-surface p-8 text-center sm:p-12">
                 <Star className="mx-auto size-8 text-saffron" aria-hidden="true" />
-                <h3 className="mt-4 font-display text-2xl font-semibold text-ink">Ratings appear as clients publish reviews</h3>
+                <h3 className="mt-4 font-display text-2xl font-semibold text-ink">Ratings show up as clients publish reviews</h3>
                 <p className="mx-auto mt-2 max-w-md text-ink-soft">
-                  We only rank companies on real, verified client reviews. Worked with an agency recently? Your review helps others choose.
+                  We rank companies only on client reviews our team has approved. Worked with an agency recently? A few honest lines from you help the next business choose.
                 </p>
                 <ButtonLink href="/write-a-review" className="mt-6">
                   Write a review
@@ -261,14 +263,14 @@ export default async function HomePage() {
           <div className="relative grid items-center gap-8 lg:grid-cols-[1.3fr_1fr]">
             <div>
               <p className="text-sm font-semibold tracking-[0.16em] text-white/75 uppercase">Not sure where to start?</p>
-              <h2 className="mt-3 font-display text-3xl leading-tight font-semibold sm:text-5xl">Answer six questions. Get a shortlist.</h2>
+              <h2 className="mt-3 font-display text-3xl leading-tight font-semibold sm:text-5xl">Six questions. A shortlist in two minutes.</h2>
               <p className="mt-4 max-w-xl text-lg text-white/80">
-                Tell us the service, budget and timeline. We show the companies that fit and pass your brief to them when you say so.
+                Tell us the service, budget and timeline. We line up the companies that fit, and your brief goes to them only when you say so.
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
               <ButtonLink href="/get-matched" size="lg" variant="inverse">
-                Get matched <ArrowRight className="size-4" aria-hidden="true" />
+                Get my shortlist <ArrowRight className="size-4" aria-hidden="true" />
               </ButtonLink>
               <ButtonLink href="/agencies" size="lg" className="bg-white/10 ring-1 ring-white/40 hover:bg-white/20">
                 Browse on your own
@@ -287,8 +289,8 @@ export default async function HomePage() {
               A rating is only worth the reviews behind it.
             </h2>
             <p className="mt-5 text-lg leading-relaxed text-ink-soft">
-              Every score on Accelfied is calculated from published client reviews and nothing else. No paid placements in ratings, no
-              numbers typed in by hand.
+              Every score on Accelfied is worked out from approved client reviews and nothing else. Money cannot move a rating, and nobody types
+              one in by hand.
             </p>
             <ArrowLink href="/how-reviews-work" className="mt-6">
               How reviews work
@@ -296,10 +298,10 @@ export default async function HomePage() {
           </Reveal>
           <ol className="relative space-y-4 before:absolute before:top-6 before:bottom-6 before:left-[27px] before:w-px before:bg-line-strong">
             {[
-              { icon: PenLine, title: 'A client writes a review', text: 'Signed-in clients share the brief, the work, the results and scores for quality, schedule and cost.' },
-              { icon: FileSearch, title: 'Waiting for review to be published', text: 'Our team checks every review before it goes live. One client can review a company only once.' },
-              { icon: BadgeCheck, title: 'Published and marked verified', text: 'Approved reviews appear on the company profile with project budget, timeline and service.' },
-              { icon: Star, title: 'The rating updates', text: 'Rankings weigh both the score and how many clients stand behind it, so a single review cannot top the list.' },
+              { icon: PenLine, title: 'A client writes it', text: 'A signed-in client describes the brief, the work and the outcome, and scores quality, timelines and value for money.' },
+              { icon: FileSearch, title: 'Our team reads it', text: 'Nothing goes live until a person on our team has checked it. Each client can review a company only once.' },
+              { icon: BadgeCheck, title: 'It goes on the profile', text: 'Approved reviews appear on the company page with the project budget, timeline and service.' },
+              { icon: Star, title: 'The rating moves', text: 'Rankings weigh the score and how many clients stand behind it, so one glowing review cannot top the list.' },
             ].map((step, index) => (
               <Reveal as="li" key={step.title} delay={index * 100} className="relative flex gap-5 rounded-[var(--radius-card)] border border-line bg-surface p-5">
                 <span className="relative z-10 flex size-14 shrink-0 items-center justify-center rounded-full bg-accent-tint text-accent ring-4 ring-paper">
@@ -319,7 +321,7 @@ export default async function HomePage() {
       {reviews.length > 0 && (
         <section className="grain border-y border-line bg-paper-deep py-20 lg:py-28">
           <Container>
-            <SectionHeading eyebrow="Latest reviews" title="What clients are saying right now" />
+            <SectionHeading eyebrow="Latest reviews" title="Straight from the people who hired them" />
             <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {reviews.map((review, index) => (
                 <Reveal key={review.id} delay={(index % 3) * 90} className="h-full">
@@ -331,11 +333,14 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 10. Browse by location */}
+      {/* 10a. City and state pages in India */}
+      <IndiaSearches />
+
+      {/* 10b. Browse by country */}
       {countries.length > 0 && (
         <section className="py-20 lg:py-28">
           <Container>
-            <SectionHeading eyebrow="Browse by location" title="Find a partner near you, or anywhere" action={<ArrowLink href="/agencies">All locations</ArrowLink>} />
+            <SectionHeading eyebrow="Browse by country" title="Open to working across borders?" action={<ArrowLink href="/agencies">All locations</ArrowLink>} />
             <ul className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {countries.slice(0, 12).map((country, index) => (
                 <Reveal as="li" key={country.countryCode} delay={(index % 4) * 60}>
@@ -359,7 +364,7 @@ export default async function HomePage() {
       {/* 11. Browse by industry */}
       <section className={`py-20 lg:py-28 ${countries.length > 0 ? 'pt-0 lg:pt-0' : ''}`}>
         <Container>
-          <SectionHeading eyebrow="Browse by industry" title="Partners who know your market" />
+          <SectionHeading eyebrow="Browse by industry" title="Teams that already know your industry" />
           <Reveal className="mt-10 flex flex-wrap gap-2.5">
             {INDUSTRIES.filter((industry) => industry !== 'Other').map((industry) => (
               <Link
@@ -381,8 +386,8 @@ export default async function HomePage() {
             <AudienceCard
               tone="dark"
               eyebrow="For clients"
-              title="Hire with the full picture"
-              points={['Compare verified reviews, rates and team size', 'Send one brief to several companies', 'Track every reply in your dashboard', 'Review the company when the work is done']}
+              title="Hire knowing what you are getting"
+              points={['See approved reviews, rates and team size before you call', 'Send one brief to several companies at once', 'Keep every reply and quote in one dashboard', 'Rate the company once the work is done']}
               cta={{ href: '/get-matched', label: 'Find a company' }}
             />
           </Reveal>
@@ -390,8 +395,8 @@ export default async function HomePage() {
             <AudienceCard
               tone="light"
               eyebrow="For companies"
-              title="Win work on your reputation"
-              points={['Free listing, checked and marked verified', 'Collect reviews from past clients', 'Receive briefs that match your services', 'Show your portfolio and rates']}
+              title="Let your past work bring the next client"
+              points={['A free profile, checked by our team', 'Reviews from clients you have already delivered for', 'Briefs that match the services you offer', 'Your portfolio, rates and team in one place']}
               cta={{ href: '/join?as=provider', label: 'List your company' }}
             />
           </Reveal>
@@ -404,9 +409,9 @@ export default async function HomePage() {
           <SectionHeading eyebrow="The Verified badge" title="What “Verified” means on Accelfied" />
           <div className="mt-12 grid gap-5 md:grid-cols-3">
             {[
-              { icon: Building2, title: 'Verified companies', text: 'Companies on Accelfied Verified pass a document check by our team. They carry the badge and are listed above other companies.' },
-              { icon: UserCheck, title: 'Verified reviews', text: 'Reviews come from signed-in clients and wait for our team. Only approved reviews are published and counted in ratings.' },
-              { icon: MailCheck, title: 'Verified owners', text: 'If someone else listed your company, you claim it with your work email. We confirm the request before handing it over.' },
+              { icon: Building2, title: 'Verified companies', text: 'These firms sent us their GST or registration papers and our team checked them. They carry the badge and sit above unchecked listings.' },
+              { icon: UserCheck, title: 'Verified reviews', text: 'Reviews come from signed-in clients and wait in a queue for our team. Only approved ones are shown and counted in a rating.' },
+              { icon: MailCheck, title: 'Verified owners', text: 'If someone else listed your company, you claim it with your work email. We confirm you before the listing changes hands.' },
             ].map((item, index) => (
               <Reveal key={item.title} delay={index * 100} className="lift rounded-[var(--radius-card)] border border-line bg-paper p-7">
                 <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-accent text-white">
@@ -427,8 +432,8 @@ export default async function HomePage() {
             <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">Already listed?</p>
             <h2 className="mt-3 font-display text-4xl leading-tight font-semibold tracking-tight text-ink sm:text-5xl">Claim your company profile</h2>
             <p className="mt-5 text-lg leading-relaxed text-ink-soft">
-              Found your company on Accelfied but did not list it yourself? Open its profile, choose “Claim this company” and confirm with
-              your work email. Once our team verifies you, it is yours to manage.
+              Spotted your company here but never listed it? Open the profile, choose “Claim this company” and confirm with your work email.
+              Once our team has checked, the listing is yours to run.
             </p>
             <ButtonLink href="/agencies" variant="secondary" size="lg" className="mt-8">
               Find your company <ArrowRight className="size-4" aria-hidden="true" />
@@ -462,7 +467,7 @@ export default async function HomePage() {
               <div>
                 <h2 className="font-display text-3xl leading-tight font-semibold sm:text-4xl">Worked with an agency lately?</h2>
                 <p className="mt-3 max-w-xl text-lg text-white/80">
-                  Your honest review helps the next client choose well, and helps good companies get the credit they earned.
+                  Five minutes from you saves the next business from a bad hire, and gives a good team the credit it worked for.
                 </p>
               </div>
             </div>
@@ -477,7 +482,7 @@ export default async function HomePage() {
       {posts.items.length > 0 && (
         <section className="pt-20 lg:pt-28">
           <Container>
-            <SectionHeading eyebrow="From the blog" title="Stories and interviews from the people behind the work" action={<ArrowLink href="/blog">All posts</ArrowLink>} />
+            <SectionHeading eyebrow="From the blog" title="Cost guides, hiring tips and founder stories" action={<ArrowLink href="/blog">All posts</ArrowLink>} />
             <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {posts.items.map((post, index) => (
                 <Reveal key={post.slug} delay={index * 90} className="h-full">
@@ -495,7 +500,7 @@ export default async function HomePage() {
           <Reveal>
             <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">Questions</p>
             <h2 className="mt-3 font-display text-4xl leading-tight font-semibold tracking-tight text-ink sm:text-5xl">Good to know</h2>
-            <p className="mt-5 text-lg text-ink-soft">The short answers to what people ask us most.</p>
+            <p className="mt-5 text-lg text-ink-soft">Quick answers to what businesses and agencies ask us most.</p>
           </Reveal>
           <Reveal className="divide-y divide-line rounded-[var(--radius-card)] border border-line bg-surface">
             {FAQ.map((item) => (
@@ -520,14 +525,14 @@ export default async function HomePage() {
         <span className="orb -bottom-32 right-1/4 size-96 bg-brand/30 [animation-delay:-8s]" aria-hidden="true" />
         <Container className="relative text-center">
           <Reveal>
-            <h2 className="mx-auto max-w-3xl font-display text-4xl leading-tight font-semibold sm:text-6xl">Your next great partner is already here.</h2>
-            <p className="mx-auto mt-5 max-w-xl text-lg text-paper/70">Join free as a client or as a company. It takes less than a minute.</p>
+            <h2 className="mx-auto max-w-3xl font-display text-4xl leading-tight font-semibold sm:text-6xl">The team for your next project is a search away.</h2>
+            <p className="mx-auto mt-5 max-w-xl text-lg text-paper/70">Join free, whether you are hiring or getting hired. Sign-up takes under a minute.</p>
             <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
               <ButtonLink href="/join" size="lg">
                 Join Accelfied <ArrowRight className="size-4" aria-hidden="true" />
               </ButtonLink>
               <ButtonLink href="/get-matched" size="lg" variant="inverse">
-                Get matched
+                Get a free shortlist
               </ButtonLink>
             </div>
           </Reveal>
@@ -538,14 +543,22 @@ export default async function HomePage() {
 }
 
 const FAQ = [
-  { q: 'Is Accelfied free for clients?', a: 'Yes. Browsing companies, sending briefs and writing reviews are free for clients.' },
+  { q: 'Is Accelfied free for businesses that want to hire?', a: 'Yes, completely. Searching, comparing, sending briefs and writing reviews cost nothing.' },
+  {
+    q: 'Which cities and states in India do you cover?',
+    a: 'All of them. Any company in India can list for free, and every city and state with listed companies gets its own page, such as web development in Jaipur or SEO in Pune.',
+  },
+  {
+    q: 'How much does it cost to hire an agency in India?',
+    a: 'It depends on the work, the size of the team and the city. Each profile shows the company’s hourly rate band and the smallest project it takes, and our free calculators give a rough budget for websites, apps, software, online stores and marketing.',
+  },
   {
     q: 'How do you check reviews?',
-    a: 'Reviews come from signed-in accounts and wait for our team before they are published. A client can review each company once, and companies cannot review themselves.',
+    a: 'Reviews come from signed-in accounts and wait for our team before they go live. A client can review each company once, and companies cannot review themselves.',
   },
   {
     q: 'How are companies ranked?',
-    a: 'Verified companies are listed first. Within each group, companies are ranked by their published client reviews, weighing both the average score and how many clients stand behind it. Nobody can pay to change a rating.',
+    a: 'Verified companies come first. Within each group, companies are ranked by their approved client reviews, weighing both the average score and how many clients stand behind it. Nobody can pay to change a rating.',
   },
   {
     q: 'What happens after I list my company?',
@@ -557,7 +570,7 @@ const FAQ = [
   },
   {
     q: 'What does Accelfied Verified cost?',
-    a: '$59 a month, GST included. It adds the Verified badge, a place above other companies, unlimited reviews, promotion by our team, a blog about your company and a published interview.',
+    a: `${formatPrice(VERIFIED_PLAN.monthly)} a month or ${formatPrice(VERIFIED_PLAN.yearly)} a year by autopay, GST included. It adds the Verified badge, a place above other companies, unlimited reviews, promotion by our team, a blog about your company and a published interview.`,
   },
   { q: 'Can I sign in with Google or LinkedIn?', a: 'Yes. You can join or log in with Google, LinkedIn or your work email and a password.' },
 ];

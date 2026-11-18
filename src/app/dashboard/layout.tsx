@@ -48,7 +48,8 @@ async function Nav() {
     title: 'My company',
     links: company
       ? [
-          { href: '/dashboard/company', label: 'Company profile' },
+          { href: '/dashboard/company', label: 'Edit profile' },
+          { href: '/dashboard/company/packages', label: 'Packages' },
           { href: '/dashboard/company/requests', label: 'Project requests' },
           { href: '/dashboard/company/analytics', label: 'Analytics' },
           { href: '/dashboard/company/reviews', label: 'Client reviews' },
@@ -57,6 +58,7 @@ async function Nav() {
           { href: '/dashboard/company/badge', label: 'Website badge' },
           { href: '/dashboard/company/verified', label: company.verified ? 'Verified plan' : 'Get Verified' },
           { href: '/dashboard/company/sponsored', label: 'Sponsored places' },
+          { href: '/dashboard/company/blog', label: 'Write a blog', prefix: true },
           { href: '/dashboard/company/billing', label: 'Billing' },
         ]
       : [{ href: '/dashboard/company', label: 'List your company' }],
@@ -64,8 +66,9 @@ async function Nav() {
   const hiringGroup: NavGroup = {
     title: 'Hiring',
     links: [
+      { href: '/dashboard/briefs', label: 'Project briefs', prefix: true },
       { href: '/dashboard/shortlist', label: 'Shortlist' },
-      { href: '/dashboard/requests', label: 'My briefs' },
+      { href: '/dashboard/requests', label: 'Quotes sent' },
       { href: '/dashboard/reviews', label: 'My reviews' },
     ],
   };

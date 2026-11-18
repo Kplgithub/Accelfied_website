@@ -8,6 +8,7 @@ import type {
   IndianStateInfo,
   Page,
   Post,
+  PublicCompanyDetails,
   PostCard,
   PostKind,
   Review,
@@ -101,6 +102,20 @@ export async function getCompany(slug: string): Promise<CompanyProfile | null> {
     return await apiGet<CompanyProfile>(`/v1/companies/${encodeURIComponent(slug)}`);
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) return null;
+    throw error;
+  }
+}
+
+/** Client focus, awards, packages and the pricing snapshot from reviews. Null when the API has none yet. */
+export async function getCompanyDetails(slug: string): Promise<PublicCompanyDetails | null> {
+  'use cache';
+  cacheLife({ stale: 60, revalidate: 300, expire: 86_400 });
+  cacheTag('companies', `company:${slug}`);
+  try {
+    return await apiGet<PublicCompanyDetails>(`/v1/companies/${encodeURIComponent(slug)}/details`);
+  } catch (error) {
+    // An older API without this route must not break the profile page.
+    if (error instanceof ApiError && (error.status === 404 || error.status === 400)) return null;
     throw error;
   }
 }
