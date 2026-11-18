@@ -1,7 +1,8 @@
+import Link from 'next/link';
 import { CompanyCard } from '@/components/company/company-card';
 import { ButtonLink } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { getCompanies, getCountryFacets, type DirectoryQuery } from '@/lib/data';
+import { getCompanies, getCountryFacets, getSponsored, type DirectoryQuery } from '@/lib/data';
 import { hasActiveFilters } from '@/lib/directory';
 import { pluralize } from '@/lib/format';
 import { SITE_URL } from '@/lib/site';
@@ -23,8 +24,14 @@ export async function DirectoryResults({
   fixed?: FixedKey[];
 }) {
   const placeFixed = fixed.includes('country');
-  const [page, countries] = await Promise.all([getCompanies(query), placeFixed ? Promise.resolve([]) : getCountryFacets(query.service)]);
   const filtered = hasActiveFilters(placeFixed ? { ...query, country: undefined, city: undefined } : query);
+  // Sponsored places sit on top of a page as it first opens: first page, no filters.
+  const showSponsored = Boolean(query.service) && !filtered && (query.page ?? 1) === 1;
+  const [page, countries, sponsored] = await Promise.all([
+    getCompanies(query),
+    placeFixed ? Promise.resolve([]) : getCountryFacets(query.service),
+    showSponsored ? getSponsored(query.service!, placeFixed ? query.country : undefined, placeFixed ? query.city : undefined) : Promise.resolve([]),
+  ]);
 
   const hrefFor = (target: number) => {
     const params = new URLSearchParams();
@@ -43,6 +50,21 @@ export async function DirectoryResults({
       <p className="mt-6 text-sm text-ink-soft" aria-live="polite">
         {page.total === 0 ? 'No companies match yet' : `${pluralize(page.total, 'company', 'companies')} found`}
       </p>
+      {sponsored.length > 0 && (
+        <section aria-labelledby="sponsored-heading" className="mt-4">
+          <h2 id="sponsored-heading" className="mb-3 flex items-center gap-2 text-sm font-semibold tracking-[0.12em] text-ink-soft uppercase">
+            Sponsored
+            <Link href="/get-verified#sponsored" className="text-xs font-normal tracking-normal text-ink-faint normal-case hover:text-accent hover:underline">
+              What is this?
+            </Link>
+          </h2>
+          <div className="grid gap-5">
+            {sponsored.map((company) => (
+              <CompanyCard key={company.id} company={company} highlightService={query.service} sponsored />
+            ))}
+          </div>
+        </section>
+      )}
       {page.items.length > 0 ? (
         <>
           <div className="mt-4 grid gap-5">

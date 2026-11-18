@@ -36,6 +36,8 @@ export interface CompanySummary {
   logoUrl: string;
   website: string;
   verified: boolean;
+  /** Verified with 10+ published reviews averaging 4.5 or more. */
+  premier: boolean;
   teamSize: string;
   hourlyRate: string;
   minProjectSize: number;
@@ -196,14 +198,49 @@ export interface VerificationDetails {
 }
 
 /** Amounts are in the currency's smallest unit (cents). */
+export type BillingInterval = 'monthly' | 'yearly';
+
+/** Prices are in cents, GST included. */
+export interface PlanPrice {
+  name: string;
+  taxable: number;
+  gst: number;
+  total: number;
+  gstRate: number;
+  currency: string;
+  interval: BillingInterval;
+}
+
+export interface SponsorOption {
+  pageKey: string;
+  label: string;
+  service: { slug: string; name: string };
+  countryCode: string | null;
+  country: string | null;
+  city: string | null;
+  taken: number;
+  mine: { status: SubscriptionStatus; currentEnd: string | null; cancelAtCycleEnd: boolean } | null;
+}
+
+export interface Sponsorships {
+  enabled: boolean;
+  keyId: string | null;
+  plan: PlanPrice;
+  maxPerPage: number;
+  company: { name: string; status: CompanyStatus } | null;
+  options: SponsorOption[];
+}
+
 export interface Billing {
   enabled: boolean;
   keyId: string | null;
-  plan: { name: string; taxable: number; gst: number; total: number; gstRate: number; currency: string };
+  /** The monthly plan; `plans` has both billing periods. */
+  plan: PlanPrice;
+  plans: Record<BillingInterval, PlanPrice>;
   company: { id: string; name: string; status: CompanyStatus; verified: boolean } | null;
-  subscription: { id: string; status: SubscriptionStatus; currentEnd: string | null; cancelAtCycleEnd: boolean } | null;
+  subscription: { id: string; status: SubscriptionStatus; interval: BillingInterval; currentEnd: string | null; cancelAtCycleEnd: boolean } | null;
   verification: VerificationDetails | null;
-  invoices: Array<{ id: string; number: string; total: number; currency: string; paidAt: string; periodStart: string | null; periodEnd: string | null }>;
+  invoices: Array<{ id: string; number: string; description: string; total: number; currency: string; paidAt: string; periodStart: string | null; periodEnd: string | null }>;
 }
 
 export interface Invoice {

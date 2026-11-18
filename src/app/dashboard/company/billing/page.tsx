@@ -28,7 +28,8 @@ const PLAN_STATUS: Record<SubscriptionStatus, string> = {
 
 export default async function BillingPage() {
   const billing = await getMyBilling(HERE);
-  const { company, subscription, invoices, plan } = billing;
+  const { company, subscription, invoices } = billing;
+  const plan = billing.plans[subscription?.interval ?? 'monthly'];
   if (!company) {
     return (
       <>
@@ -48,9 +49,9 @@ export default async function BillingPage() {
 
   return (
     <>
-      <DashboardHeader eyebrow={company.name} title="Billing" intro="Your Verified plan and a GST invoice for every payment. Dates are in IST." />
+      <DashboardHeader eyebrow={company.name} title="Billing" intro="Your Verified plan, sponsored places and a GST invoice for every payment. Dates are in IST." />
       <div className="grid gap-4 sm:grid-cols-3">
-        <StatTile label="Plan" value={<span className="text-2xl">{status}</span>} note={subscription ? plan.name : 'No monthly charge'} />
+        <StatTile label="Plan" value={<span className="text-2xl">{status}</span>} note={subscription ? `${plan.name}, ${plan.interval}` : 'No monthly charge'} />
         <StatTile label="Next payment" value={<span className="text-2xl">{renewal}</span>} note={renewal === 'None' ? undefined : formatMoney(plan.total, plan.currency)} />
         <StatTile
           label="Verified badge"
@@ -62,7 +63,7 @@ export default async function BillingPage() {
       <div className="mt-6">
         {invoices.length === 0 ? (
           <EmptyState title="No invoices yet" action={<ButtonLink href="/dashboard/company/verified">Get Verified</ButtonLink>}>
-            Your free listing has no charges. Each Verified plan payment gets its own GST invoice here.
+            Your free listing has no charges. Each payment, for the Verified plan or a sponsored place, gets its own GST invoice here.
           </EmptyState>
         ) : (
           <Panel title="Invoices">
@@ -82,10 +83,11 @@ export default async function BillingPage() {
                     <tr key={invoice.id} className="transition-colors hover:bg-paper">
                       <td className="px-5 py-3 font-medium text-ink sm:px-7">
                         <Link href={`${HERE}/${invoice.id}`} className="hover:text-accent">{invoice.number}</Link>
+                        <span className="block text-sm font-normal text-ink-faint">{invoice.description}</span>
                       </td>
                       <td className="px-3 py-3 text-ink-soft">{formatDay(invoice.paidAt)}</td>
                       <td className="px-3 py-3 text-ink-soft">
-                        {invoice.periodStart && invoice.periodEnd ? `${formatDay(invoice.periodStart)} to ${formatDay(invoice.periodEnd)}` : 'Monthly'}
+                        {invoice.periodStart && invoice.periodEnd ? `${formatDay(invoice.periodStart)} to ${formatDay(invoice.periodEnd)}` : '—'}
                       </td>
                       <td className="px-3 py-3 text-right font-medium text-ink tabular-nums">{formatMoney(invoice.total, invoice.currency)}</td>
                       <td className="px-5 py-3 text-right sm:px-7">

@@ -1,9 +1,13 @@
-/** Accelfied Verified: the paid plan for companies. $59 a month, GST included. */
+/** Accelfied Verified: the paid plan for companies. $59 a month or $590 a year, GST included. */
 export const VERIFIED_PLAN = {
   name: 'Accelfied Verified',
   monthly: 59,
+  yearly: 590,
   currency: 'USD',
 } as const;
+
+/** A paid place at the top of one directory page, GST included. */
+export const SPONSORED_PLACE = { monthly: 29, perPage: 3 } as const;
 
 /** A whole price for marketing copy, such as "$59". */
 export const formatPrice = (value: number, currency: string = VERIFIED_PLAN.currency) =>
@@ -33,6 +37,7 @@ export const PLAN_COMPARISON: Array<{ title: string; rows: Array<{ label: string
       { label: 'Company verification by our team', free: false, verified: true },
       { label: 'Verified badge on your profile and in listings', free: false, verified: true },
       { label: 'Listed above companies that are not verified', free: false, verified: true },
+      { label: 'Premier Verified badge once you have 10+ reviews averaging 4.5', free: false, verified: true },
       { label: 'Link to your website from directory pages', free: false, verified: true },
       { label: 'Featured client review', free: false, verified: 'Your choice' },
       { label: 'Number of reviews shown', free: 'Up to 5', verified: 'Unlimited' },

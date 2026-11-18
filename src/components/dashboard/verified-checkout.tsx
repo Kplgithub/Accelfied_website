@@ -2,7 +2,7 @@
 
 import { Lock } from 'lucide-react';
 import { useState, useTransition } from 'react';
-import { confirmVerifiedPayment, startVerifiedPlan } from '@/app/billing-actions';
+import { confirmVerifiedPayment, type StartResult } from '@/app/billing-actions';
 import { Button } from '../ui/button';
 
 const CHECKOUT_SRC = 'https://checkout.razorpay.com/v1/checkout.js';
@@ -45,10 +45,26 @@ function loadCheckout(): Promise<void> {
 }
 
 /**
- * Starts the monthly plan: the server creates a Razorpay subscription,
+ * Starts a subscription: `start` has the server create it on Razorpay,
  * Checkout takes the first payment, and the server checks its signature.
+ * Used for the Verified plan and for sponsored places.
  */
-export function VerifiedCheckout({ label, companyName, email, name }: { label: string; companyName: string; email: string; name: string }) {
+export function VerifiedCheckout({
+  label,
+  description,
+  email,
+  name,
+  start: startSubscription,
+  size = 'lg',
+}: {
+  label: string;
+  /** Shown in the Razorpay window, such as "Verified plan for Acme". */
+  description: string;
+  email: string;
+  name: string;
+  start: () => Promise<StartResult>;
+  size?: 'lg' | 'md';
+}) {
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
   const [confirming, startConfirm] = useTransition();
@@ -57,7 +73,7 @@ export function VerifiedCheckout({ label, companyName, email, name }: { label: s
     setMessage('');
     setBusy(true);
     try {
-      const [plan] = await Promise.all([startVerifiedPlan(), loadCheckout()]);
+      const [plan] = await Promise.all([startSubscription(), loadCheckout()]);
       if (!plan.ok) {
         setMessage(plan.message);
         setBusy(false);
@@ -68,7 +84,7 @@ export function VerifiedCheckout({ label, companyName, email, name }: { label: s
         key: plan.keyId,
         subscription_id: plan.subscriptionId,
         name: 'Accelfied',
-        description: `Verified plan for ${companyName}`,
+        description,
         prefill: { name, email },
         theme: { color: '#C7362F' },
         modal: { ondismiss: () => setBusy(false) },
@@ -92,7 +108,7 @@ export function VerifiedCheckout({ label, companyName, email, name }: { label: s
   const working = busy || confirming;
   return (
     <div>
-      <Button type="button" size="lg" onClick={start} disabled={working} className="w-full sm:w-auto">
+      <Button type="button" size={size} onClick={start} disabled={working} className="w-full sm:w-auto">
         {working && <span className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />}
         {confirming ? 'Confirming payment…' : busy ? 'Opening payment…' : label}
       </Button>
