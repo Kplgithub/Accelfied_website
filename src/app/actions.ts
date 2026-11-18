@@ -4,6 +4,7 @@ import { ApiError, apiSend } from '@/lib/api';
 import { countryName } from '@/lib/countries';
 import type { FormState } from '@/lib/form-state';
 import { clientIp, echo, friendly, optional, submit, text } from '@/lib/submit';
+import { testOtpEnabled } from '@/lib/test-otp';
 
 export async function requestQuote(_prev: FormState, form: FormData): Promise<FormState> {
   const payload = {
@@ -116,13 +117,16 @@ export async function submitClaim(_prev: FormState, form: FormData): Promise<For
     message: text(form, 'message'),
     confirm: form.get('confirm') === 'on' ? true : undefined,
   };
+  const codeEntry = await testOtpEnabled();
   return submit(
     `/v1/companies/${encodeURIComponent(slug)}/claims`,
     payload,
     form,
     (data) =>
       (data as { claim?: { status?: string } } | null)?.claim?.status === 'unconfirmed'
-        ? `We sent a link to ${payload.workEmail}. Open it to confirm the claim is yours, then our team verifies it, usually within two working days.`
+        ? codeEntry
+          ? `Enter the 6-digit code for ${payload.workEmail} on your dashboard to confirm the claim is yours, then our team verifies it, usually within two working days.`
+          : `We sent a link to ${payload.workEmail}. Open it to confirm the claim is yours, then our team verifies it, usually within two working days.`
         : 'Our team is verifying your request, usually within two working days. Once approved, the listing moves to your account and you can manage it from your dashboard.',
   );
 }

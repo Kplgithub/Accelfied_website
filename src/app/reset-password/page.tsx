@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { AuthShell } from '@/components/auth/auth-shell';
+import { ResetWithCodeForm } from '@/components/auth/code-forms';
 import { ResetPasswordForm } from '@/components/auth/password-forms';
+import { testOtpEnabled } from '@/lib/test-otp';
 
 export const metadata: Metadata = {
   title: 'Set a new password',
@@ -20,7 +22,11 @@ export default function ResetPasswordPage({ searchParams }: PageProps<'/reset-pa
 }
 
 async function ResetContent({ searchParams }: Pick<PageProps<'/reset-password'>, 'searchParams'>) {
-  const { token } = await searchParams;
+  const { token, email } = await searchParams;
+  // Test mode: forgot password sends people here with their email, to type the code.
+  if (typeof email === 'string' && email.includes('@') && email.length <= 200 && (await testOtpEnabled())) {
+    return <ResetWithCodeForm email={email} />;
+  }
   if (typeof token !== 'string' || token.length < 20) {
     return (
       <div className="space-y-4">

@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { DashboardHeader, Panel, StatTile, StatusPill } from '@/components/dashboard/bits';
 import { VerifyEmailBanner } from '@/components/dashboard/verify-email-banner';
+import { ClaimCodeForm } from '@/components/auth/code-forms';
 import { LeadCard } from '@/components/dashboard/lead-card';
 import { companySteps, OnboardingSteps } from '@/components/dashboard/onboarding-steps';
 import { ButtonLink } from '@/components/ui/button';
@@ -10,6 +11,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { getMyClaims, getMyCompany, getMyCompanyLeads, getMyLeads, getMyReviews } from '@/lib/account-data';
 import { formatDate, formatRating } from '@/lib/format';
 import { requireUser } from '@/lib/session';
+import { testOtpEnabled } from '@/lib/test-otp';
 import type { Account, CompanyClaim, OwnedCompany } from '@/lib/types';
 
 export const metadata: Metadata = { title: 'Overview' };
@@ -20,16 +22,18 @@ export default async function DashboardPage() {
   const { user } = await requireUser(HERE);
   const company = await getMyCompany(HERE);
   const claims = await getMyClaims(HERE);
+  // Test mode: confirmation codes are typed here, since no email arrives.
+  const codeEntry = (!user.emailVerified || claims.some((claim) => claim.status === 'unconfirmed')) && (await testOtpEnabled());
   return (
     <>
-      {!user.emailVerified && <VerifyEmailBanner email={user.email} />}
+      {!user.emailVerified && <VerifyEmailBanner email={user.email} codeEntry={codeEntry} />}
       {user.accountType === 'provider' || company ? <CompanyOverview user={user} company={company} /> : <ClientOverview user={user} />}
-      {claims.length > 0 && <ClaimsPanel claims={claims} />}
+      {claims.length > 0 && <ClaimsPanel claims={claims} codeEntry={codeEntry} />}
     </>
   );
 }
 
-function ClaimsPanel({ claims }: { claims: CompanyClaim[] }) {
+function ClaimsPanel({ claims, codeEntry }: { claims: CompanyClaim[]; codeEntry: boolean }) {
   return (
     <Panel title="Company claims" className="mt-8">
       <ul className="divide-y divide-line">
@@ -50,7 +54,10 @@ function ClaimsPanel({ claims }: { claims: CompanyClaim[] }) {
                 {claim.status === 'rejected' && claim.reviewNote ? `. ${claim.reviewNote}` : ''}
               </p>
             </div>
-            <StatusPill status={claim.status} kind="claim" />
+            <div className="flex flex-wrap items-center gap-3">
+              {codeEntry && claim.status === 'unconfirmed' && <ClaimCodeForm claimId={claim.id} />}
+              <StatusPill status={claim.status} kind="claim" />
+            </div>
           </li>
         ))}
       </ul>
