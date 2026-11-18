@@ -2,7 +2,7 @@ import { Fragment, type ReactNode } from 'react';
 
 /**
  * A small, safe Markdown renderer for blog posts: headings (## and ###), paragraphs,
- * lists, quotes, bold, italic and links. It builds React elements, never raw HTML,
+ * lists, quotes, bold, italic, links and images (`![Alt](src "Caption")` on its own line). It builds React elements, never raw HTML,
  * so nothing typed in a post can run as code.
  */
 export function Markdown({ source, className = '' }: { source: string; className?: string }) {
@@ -17,6 +17,20 @@ function blocks(source: string): ReactNode[] {
     const line = lines[index]!;
     const key = out.length;
     if (!line.trim()) {
+      index += 1;
+      continue;
+    }
+    const image = IMAGE.exec(line.trim());
+    if (image) {
+      const [, alt, src, caption] = image;
+      if (safeImage(src!)) {
+        out.push(
+          <figure key={key}>
+            <img src={src} alt={alt} loading="lazy" decoding="async" width={1200} height={630} />
+            {caption && <figcaption>{inline(caption)}</figcaption>}
+          </figure>,
+        );
+      }
       index += 1;
       continue;
     }
@@ -42,10 +56,18 @@ function blocks(source: string): ReactNode[] {
       continue;
     }
     const paragraph: string[] = [];
-    while (index < lines.length && lines[index]!.trim() && !/^(#{2,3}\s|>|[-*]\s|\d+[.)]\s)/.test(lines[index]!)) paragraph.push(lines[index++]!);
+    while (index < lines.length && lines[index]!.trim() && !/^(#{2,3}\s|>|[-*]\s|\d+[.)]\s|!\[)/.test(lines[index]!)) paragraph.push(lines[index++]!);
     out.push(<p key={key}>{inline(paragraph.join(' '))}</p>);
   }
   return out;
+}
+
+/** An image alone on its line: ![Alt text](https://... "Optional caption"). */
+const IMAGE = /^!\[([^\]]*)\]\((\S+?)(?:\s+"([^"]*)")?\)$/;
+
+/** Only https images and the site's own /blog-images/ files, never data: or javascript: sources. */
+function safeImage(src: string): boolean {
+  return /^https:\/\/[^\s"'<>]+$/i.test(src) || /^\/blog-images\/[a-z0-9-]+\.(png|jpg|webp)$/.test(src);
 }
 
 const TOKEN = /\[([^\]]+)\]\(([^)\s]+)\)|\*\*([^*]+)\*\*|\*([^*]+)\*/g;
