@@ -28,3 +28,7 @@ export async function confirmEmail(_prev: FormState, form: FormData): Promise<Fo
 export async function confirmClaim(_prev: FormState, form: FormData): Promise<FormState> {
   return confirm('/v1/claims/confirm', form, 'Thank you. Your claim is confirmed, and our team will now check it. We email you with the result, usually within two working days.');
 }
+
+export async function unsubscribeInvite(_prev: FormState, form: FormData): Promise<FormState> {
+  return confirm('/v1/company-invites/unsubscribe', form, 'Done. We will not send you any more invitation emails.');
+}
