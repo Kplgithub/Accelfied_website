@@ -2,11 +2,10 @@ import { ArrowRight, ArrowUpRight, Mail, MapPin, Phone, ShieldCheck } from 'luci
 import { cacheLife } from 'next/cache';
 import Link from 'next/link';
 import { Reveal } from '@/components/motion/reveal';
-import { getServicePlaces, getSiteSettings, getStats } from '@/lib/data';
+import { getServicePlaces, getSiteSettings } from '@/lib/data';
 import { getStatePlaces, isIndexable, placePath } from '@/lib/places';
 import type { ServicePlace } from '@/lib/types';
 import { Container } from '../ui/container';
-import { BackToTop } from './back-to-top';
 import { WORDMARK_DOT, WORDMARK_PATH } from './brand-mark';
 import { Logo } from './logo';
 
@@ -67,6 +66,12 @@ const POPULAR_SERVICES: FooterLink[] = [
   { href: '/agencies/digital-marketing', label: 'Digital marketing' },
 ];
 
+/** Sister businesses shown in the bottom line, as on their own sites. */
+const BUSINESSES = [
+  { name: 'MCS', href: 'https://www.mycareersolution.com/', logo: '/business-mcs.webp', width: 278 },
+  { name: 'PEID', href: 'https://peid.in/', logo: '/business-peid.webp', width: 453 },
+];
+
 const INDIA = 'IN';
 const EXPLORE_LIMIT = 10;
 
@@ -112,16 +117,31 @@ export function SiteFooter() {
         <FooterWordmark />
 
         <div className="border-t border-white/10">
-          <Container className="flex flex-col gap-4 py-6 text-sm text-paper/55 sm:flex-row sm:items-center sm:justify-between">
-            <p>
-              © <CopyrightYear /> Accelfied. All rights reserved.
-            </p>
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
-              <span className="inline-flex items-center gap-2">
-                <span className="footer-pulse" aria-hidden="true" />
-                Made in India · All times shown in IST
-              </span>
-              <BackToTop />
+          <Container className="flex flex-col gap-6 py-7 text-[13px] text-paper/55 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
+              <Logo tone="light" />
+              <p className="flex flex-col gap-0.5 leading-relaxed">
+                <span>All trademarks are the property of their respective owners</span>
+                <span>
+                  All rights reserved © <CopyrightYear /> Accelfied
+                </span>
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+              <span className="w-full text-sm font-medium text-paper/80 sm:w-auto">Our businesses</span>
+              {BUSINESSES.map((business) => (
+                <a
+                  key={business.name}
+                  href={business.href}
+                  target="_blank"
+                  rel="noopener"
+                  aria-label={business.name}
+                  className="footer-business"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element -- tiny fixed logo, no resizing needed */}
+                  <img src={business.logo} alt={`${business.name} logo`} width={business.width} height={96} loading="lazy" decoding="async" />
+                </a>
+              ))}
             </div>
           </Container>
         </div>
@@ -130,14 +150,8 @@ export function SiteFooter() {
   );
 }
 
-/** Top band: one promise, the two main actions and live totals. */
-async function FooterPromise() {
-  const stats = await getStats().catch(() => null);
-  const tiles = [
-    stats && stats.companies > 0 ? { value: stats.companies.toLocaleString('en-IN'), label: stats.companies === 1 ? 'company listed' : 'companies listed' } : null,
-    stats && stats.reviews > 0 ? { value: stats.reviews.toLocaleString('en-IN'), label: stats.reviews === 1 ? 'client review' : 'client reviews' } : null,
-  ].filter((tile) => tile !== null);
-
+/** Top band: one promise and the two main actions. */
+function FooterPromise() {
   return (
     <div className="grid items-end gap-10 py-16 lg:grid-cols-[1.35fr_1fr] lg:py-20">
       <Reveal>
@@ -164,13 +178,7 @@ async function FooterPromise() {
       </Reveal>
 
       <Reveal delay={120} className="grid grid-cols-2 gap-3">
-        {tiles.map((tile) => (
-          <div key={tile.label} className="footer-tile">
-            <p className="font-display text-4xl font-semibold text-white tabular-nums">{tile.value}</p>
-            <p className="mt-1 text-sm text-paper/60">{tile.label}</p>
-          </div>
-        ))}
-        <div className={`footer-tile ${tiles.length % 2 === 0 ? 'col-span-2' : ''}`}>
+        <div className="footer-tile col-span-2">
           <ShieldCheck className="size-6 text-accent-soft" aria-hidden="true" />
           <p className="mt-3 text-[15px] leading-snug text-paper/80">
             Every review is read by our team before it goes live.{' '}
