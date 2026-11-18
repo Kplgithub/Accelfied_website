@@ -8,7 +8,7 @@ import { VerifiedCheckout } from './verified-checkout';
 
 const whole = (plan: PlanPrice) => formatMoney(plan.total, plan.currency).replace(/\.00$/, '');
 
-/** Monthly or yearly, then pay. Yearly costs ten months, so two months are free. */
+/** Monthly or yearly, then pay. Both renew by autopay; yearly costs less than twelve monthly payments. */
 export function VerifiedPlanChooser({
   plans,
   companyName,
@@ -21,14 +21,14 @@ export function VerifiedPlanChooser({
   email: string;
 }) {
   const [interval, setChoice] = useState<BillingInterval>('monthly');
-  const freeMonths = Math.round(12 - plans.yearly.total / plans.monthly.total);
+  const saving = plans.monthly.total * 12 - plans.yearly.total;
   const options: Array<{ value: BillingInterval; title: string; price: string; note: string }> = [
     { value: 'monthly', title: 'Monthly', price: `${whole(plans.monthly)} / month`, note: 'Charged each month' },
     {
       value: 'yearly',
       title: 'Yearly',
       price: `${whole(plans.yearly)} / year`,
-      note: freeMonths > 0 ? `${freeMonths} months free` : 'Charged once a year',
+      note: saving > 0 ? `Save ${formatMoney(saving, plans.yearly.currency).replace(/\.00$/, '')}` : 'Charged once a year',
     },
   ];
   const chosen = plans[interval];
@@ -55,12 +55,12 @@ export function VerifiedPlanChooser({
               />
               <span className="flex items-center justify-between gap-2 text-sm font-semibold text-ink">
                 {option.title}
-                {option.value === 'yearly' && freeMonths > 0 && (
+                {option.value === 'yearly' && saving > 0 && (
                   <span className="rounded-full bg-success px-2 py-0.5 text-xs font-medium text-white">{option.note}</span>
                 )}
               </span>
               <span className="mt-1 font-display text-xl font-semibold text-ink">{option.price}</span>
-              <span className="text-xs text-ink-faint">{option.value === 'yearly' ? 'Charged once a year' : option.note}, GST included</span>
+              <span className="text-xs text-ink-faint">{option.value === 'yearly' ? 'Charged once a year' : option.note} by autopay, GST included</span>
             </label>
           ))}
         </div>

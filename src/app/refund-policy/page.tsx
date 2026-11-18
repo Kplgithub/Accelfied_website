@@ -22,7 +22,7 @@ export default async function RefundPolicyPage() {
     >
       <h2>How billing works</h2>
       <p>
-        {VERIFIED_PLAN.name} costs {price} a month, GST included. Razorpay charges your card at the start of each monthly period, and you get an invoice for every payment
+        {VERIFIED_PLAN.name} costs {price} a month or {formatPrice(VERIFIED_PLAN.yearly)} a year, GST included. It is paid by autopay: Razorpay charges your card at the start of each monthly or yearly period until you cancel, and you get an invoice for every payment
         in your <Link href="/dashboard/company/billing">billing page</Link>.
       </p>
 

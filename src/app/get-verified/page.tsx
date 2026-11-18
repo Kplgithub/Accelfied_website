@@ -19,7 +19,7 @@ import { Reveal } from '@/components/motion/reveal';
 import { ButtonLink } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 import { withSeo } from '@/lib/seo';
-import { formatPrice, PLAN_COMPARISON, SPONSORED_PLACE, VERIFIED_PLAN } from '@/lib/verified-plan';
+import { formatPrice, PLAN_COMPARISON, SPONSORED_PLACE, VERIFIED_PLAN, YEARLY_SAVING } from '@/lib/verified-plan';
 
 export async function generateMetadata(): Promise<Metadata> {
   return withSeo('getVerified', {
@@ -32,7 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
 const START = '/dashboard/company/verified';
 const PRICE = formatPrice(VERIFIED_PLAN.monthly);
 const YEARLY = formatPrice(VERIFIED_PLAN.yearly);
-const FREE_MONTHS = 12 - VERIFIED_PLAN.yearly / VERIFIED_PLAN.monthly;
+const SAVING = formatPrice(YEARLY_SAVING);
 const SPONSOR_PRICE = formatPrice(SPONSORED_PLACE.monthly);
 
 export default function GetVerifiedPage() {
@@ -65,7 +65,7 @@ export default function GetVerifiedPage() {
               <p className="text-paper/70">
                 <span className="font-display text-2xl font-semibold text-paper">{PRICE}</span> / month, GST included
                 <span className="block text-sm">
-                  or {YEARLY} / year, {FREE_MONTHS} months free
+                  or {YEARLY} / year (save {SAVING}). Autopay, cancel anytime
                 </span>
               </p>
             </div>
@@ -188,7 +188,7 @@ export default function GetVerifiedPage() {
             </table>
             <div className="flex flex-col items-center justify-between gap-4 border-t border-line bg-surface p-6 sm:flex-row">
               <p className="text-ink-soft">
-                <span className="font-display text-2xl font-semibold text-ink">{PRICE}</span> per month, or {YEARLY} per year ({FREE_MONTHS} months free). GST
+                <span className="font-display text-2xl font-semibold text-ink">{PRICE}</span> per month, or {YEARLY} per year (save {SAVING}), paid by autopay. GST
                 included.
               </p>
               <ButtonLink href={START}>
@@ -359,7 +359,7 @@ const FAQ = [
   { q: 'Who should join?', a: 'Any agency, studio or service firm listed on Accelfied that wants more clients to trust and find it.' },
   {
     q: 'What does it cost?',
-    a: `${PRICE} a month, or ${YEARLY} a year (${FREE_MONTHS} months free), with GST already included. You get an invoice for every payment, with the GST shown separately.`,
+    a: `${PRICE} a month, or ${YEARLY} a year (save ${SAVING}), with GST already included. Payment is by autopay: Razorpay charges your card at the start of each month or year until you cancel. You get an invoice for every payment, with the GST shown separately.`,
   },
   {
     q: 'What is Premier Verified?',

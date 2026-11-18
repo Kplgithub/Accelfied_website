@@ -1,15 +1,18 @@
-/** Accelfied Verified: the paid plan for companies. $59 a month or $590 a year, GST included. */
+/** Accelfied Verified: the paid plan for companies. $6 a month or $59 a year, GST included, paid by autopay. */
 export const VERIFIED_PLAN = {
   name: 'Accelfied Verified',
-  monthly: 59,
-  yearly: 590,
+  monthly: 6,
+  yearly: 59,
   currency: 'USD',
 } as const;
+
+/** What paying yearly saves against twelve monthly payments. */
+export const YEARLY_SAVING = VERIFIED_PLAN.monthly * 12 - VERIFIED_PLAN.yearly;
 
 /** A paid place at the top of one directory page, GST included. */
 export const SPONSORED_PLACE = { monthly: 29, perPage: 3 } as const;
 
-/** A whole price for marketing copy, such as "$59". */
+/** A whole price for marketing copy, such as "$6". */
 export const formatPrice = (value: number, currency: string = VERIFIED_PLAN.currency) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: Number.isInteger(value) ? 0 : 2 }).format(value);
 
