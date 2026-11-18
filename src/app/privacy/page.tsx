@@ -41,14 +41,15 @@ export default async function PrivacyPage() {
         </li>
         <li>
           <strong>Usage:</strong> page views, how far articles are read, and clicks to company profiles and websites. We use these to show companies how their profile
-          performs and to improve the site. We do not use advertising cookies.
+          performs and to improve the site.
         </li>
       </ul>
 
       <h2>Cookies and storage</h2>
       <p>
-        We set one cookie to keep you signed in. Your browser also remembers which articles and profiles you already opened, so the same visit is not counted twice. You
-        can clear these at any time in your browser settings.
+        We set one cookie to keep you signed in. Your browser also remembers which articles and profiles you already opened, so the same visit is not counted twice. We
+        also use Google Tag Manager to load Google&apos;s measurement tools, which may set their own cookies to count visits and see how people find us. You can clear or block
+        cookies at any time in your browser settings.
       </p>
 
       <h2>How we use your information</h2>
