@@ -62,7 +62,7 @@ export default async function BillingPage() {
 
       <div className="mt-6">
         {invoices.length === 0 ? (
-          <EmptyState title="No invoices yet" action={<ButtonLink href="/dashboard/company/verified">Get Verified</ButtonLink>}>
+          <EmptyState title="No invoices yet" action={<ButtonLink href="/dashboard/company/verified">Get Accelfied</ButtonLink>}>
             Your free listing has no charges. Each payment, for the Verified plan or a sponsored place, gets its own GST invoice here.
           </EmptyState>
         ) : (

@@ -562,14 +562,14 @@ const FAQ = [
   },
   {
     q: 'What happens after I list my company?',
-    a: 'You will see “Verifying your details” while our team checks the listing, usually within two working days. Once approved, your free profile goes live. To earn the Verified badge and a place above other companies, join Accelfied Verified.',
+    a: 'You will see “Verifying your details” while our team checks the listing, usually within two working days. Once approved, your free profile goes live. To earn the Verified badge and a place above other companies, join the Verified plan.',
   },
   {
     q: 'Someone else listed my company. What can I do?',
     a: 'Open the profile and choose “Claim this company”. Confirm with your work email on the company domain, and our team will move the listing to your account after checking.',
   },
   {
-    q: 'What does Accelfied Verified cost?',
+    q: 'What does the Verified plan cost?',
     a: `${formatPrice(VERIFIED_PLAN.monthly)} a month or ${formatPrice(VERIFIED_PLAN.yearly)} a year by autopay, GST included. It adds the Verified badge, a place above other companies, unlimited reviews, promotion by our team, a blog about your company and a published interview.`,
   },
   { q: 'Can I sign in with Google or LinkedIn?', a: 'Yes. You can join or log in with Google, LinkedIn or your work email and a password.' },

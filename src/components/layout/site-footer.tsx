@@ -30,7 +30,7 @@ const COLUMNS: Array<{ title: string; links: FooterLink[] }> = [
     title: 'For companies',
     links: [
       { href: '/join?as=provider', label: 'List your company' },
-      { href: '/get-verified', label: 'Get Verified' },
+      { href: '/get-verified', label: 'Get Accelfied' },
       { href: '/agencies', label: 'Claim your company' },
       { href: '/how-reviews-work', label: 'How reviews work' },
       { href: '/dashboard', label: 'Company dashboard' },

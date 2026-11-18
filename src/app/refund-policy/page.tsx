@@ -6,7 +6,7 @@ import { formatPrice, VERIFIED_PLAN } from '@/lib/verified-plan';
 
 export const metadata: Metadata = {
   title: 'Refund and cancellation policy',
-  description: 'How the Accelfied Verified plan is billed, how to cancel and when we refund.',
+  description: 'How the Verified plan is billed, how to cancel and when we refund.',
   alternates: { canonical: '/refund-policy' },
 };
 
@@ -18,11 +18,11 @@ export default async function RefundPolicyPage() {
       eyebrow="Billing"
       title="Refund and cancellation policy"
       updatedOn={d.updatedOn}
-      intro="Listing your company, collecting reviews and receiving briefs are free. This page covers the one paid product, Accelfied Verified."
+      intro="Listing your company, collecting reviews and receiving briefs are free. This page covers the one paid product, the Verified plan."
     >
       <h2>How billing works</h2>
       <p>
-        {VERIFIED_PLAN.name} costs {price} a month or {formatPrice(VERIFIED_PLAN.yearly)} a year, GST included. It is paid by autopay: Razorpay charges your card at the start of each monthly or yearly period until you cancel, and you get an invoice for every payment
+        The {VERIFIED_PLAN.name} costs {price} a month or {formatPrice(VERIFIED_PLAN.yearly)} a year, GST included. It is paid by autopay: Razorpay charges your card at the start of each monthly or yearly period until you cancel, and you get an invoice for every payment
         in your <Link href="/dashboard/company/billing">billing page</Link>.
       </p>
 

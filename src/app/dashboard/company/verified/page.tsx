@@ -26,7 +26,7 @@ export default async function VerifiedPlanPage() {
   if (!company) {
     return (
       <>
-        <DashboardHeader eyebrow="My company" title="Get Verified" />
+        <DashboardHeader eyebrow="My company" title="Get Accelfied" />
         <NoCompany />
       </>
     );
@@ -39,7 +39,7 @@ export default async function VerifiedPlanPage() {
     <>
       <DashboardHeader
         eyebrow={company.name}
-        title={step === 4 ? 'You are Verified' : 'Get Verified'}
+        title={step === 4 ? 'You are Accelfied' : 'Get Accelfied'}
         intro={
           step === 4
             ? 'Your badge is live and your company is listed above companies that are not verified.'
@@ -90,7 +90,7 @@ export default async function VerifiedPlanPage() {
         {step === 4 && (
           <Panel>
             <p className="flex items-center gap-2 font-display text-xl font-semibold text-ink">
-              <BadgeCheck className="size-6 text-brand" aria-hidden="true" /> {plan.name} is active
+              <BadgeCheck className="size-6 text-brand" aria-hidden="true" /> Your {plan.name} is active
             </p>
             <ul className="mt-5 grid gap-x-8 gap-y-3 sm:grid-cols-2">
               {ADD_ONS.map((item) => (
@@ -169,7 +169,7 @@ function PlanBlocked({ text }: { text: string }) {
   return (
     <>
       <Button type="button" size="lg" disabled className="w-full sm:w-auto">
-        Start Accelfied Verified
+        Start Verified plan
       </Button>
       <p className="mt-2 flex items-start gap-1.5 text-sm text-saffron-ink lg:justify-end">
         <Clock className="mt-0.5 size-4 shrink-0" aria-hidden="true" /> {text}

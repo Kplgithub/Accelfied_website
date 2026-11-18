@@ -56,7 +56,7 @@ async function Nav() {
           { href: '/dashboard/company/portfolio', label: 'Portfolio' },
           { href: '/dashboard/company/team', label: 'Team' },
           { href: '/dashboard/company/badge', label: 'Website badge' },
-          { href: '/dashboard/company/verified', label: company.verified ? 'Verified plan' : 'Get Verified' },
+          { href: '/dashboard/company/verified', label: company.verified ? 'Verified plan' : 'Get Accelfied' },
           { href: '/dashboard/company/sponsored', label: 'Sponsored places' },
           { href: '/dashboard/company/blog', label: 'Write a blog', prefix: true },
           { href: '/dashboard/company/billing', label: 'Billing' },

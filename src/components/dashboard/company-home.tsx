@@ -76,7 +76,7 @@ export function CompanyHome({ company, health, analytics, hasPackages }: { compa
                 <BadgeCheck className="size-6 text-accent-soft" aria-hidden="true" />
               </span>
               <div>
-                <p className="font-display text-xl font-semibold">Get Verified and stand out</p>
+                <p className="font-display text-xl font-semibold">Get Accelfied and stand out</p>
                 <p className="mt-1 max-w-xl text-sm text-paper/75">Verified companies show a trust badge, rank above unverified ones and get a blog feature written by our team.</p>
               </div>
             </div>
