@@ -2,7 +2,7 @@ import { Fragment, type ReactNode } from 'react';
 
 /**
  * A small, safe Markdown renderer for blog posts: headings (## and ###), paragraphs,
- * lists, quotes, bold, italic, links and images (`![Alt](src "Caption")` on its own line). It builds React elements, never raw HTML,
+ * lists, quotes, tables (`| a | b |` with a `|---|` row), bold, italic, links and images (`![Alt](src "Caption")` on its own line). It builds React elements, never raw HTML,
  * so nothing typed in a post can run as code.
  */
 export function Markdown({ source, className = '' }: { source: string; className?: string }) {
@@ -46,6 +46,27 @@ function blocks(source: string): ReactNode[] {
       out.push(<blockquote key={key}>{inline(quote.join(' '))}</blockquote>);
       continue;
     }
+    if (TABLE_ROW.test(line) && TABLE_RULE.test(lines[index + 1] ?? '')) {
+      const head = cells(line);
+      index += 2;
+      const rows: string[][] = [];
+      while (index < lines.length && TABLE_ROW.test(lines[index]!)) rows.push(cells(lines[index++]!));
+      out.push(
+        <div key={key} className="table-wrap">
+          <table>
+            <thead>
+              <tr>{head.map((cell, i) => <th key={i} scope="col">{inline(cell)}</th>)}</tr>
+            </thead>
+            <tbody>
+              {rows.map((row, r) => (
+                <tr key={r}>{head.map((_, i) => <td key={i}>{inline(row[i] ?? '')}</td>)}</tr>
+              ))}
+            </tbody>
+          </table>
+        </div>,
+      );
+      continue;
+    }
     const ordered = /^\d+[.)]\s+/.test(line);
     if (ordered || /^[-*]\s+/.test(line)) {
       const pattern = ordered ? /^\d+[.)]\s+/ : /^[-*]\s+/;
@@ -55,11 +76,20 @@ function blocks(source: string): ReactNode[] {
       out.push(ordered ? <ol key={key}>{children}</ol> : <ul key={key}>{children}</ul>);
       continue;
     }
-    const paragraph: string[] = [];
-    while (index < lines.length && lines[index]!.trim() && !/^(#{2,3}\s|>|[-*]\s|\d+[.)]\s|!\[)/.test(lines[index]!)) paragraph.push(lines[index++]!);
+    // The first line always goes in, so a line that only looks like a block start (a lone `| x |`) can't stall the loop.
+    const paragraph: string[] = [lines[index++]!];
+    while (index < lines.length && lines[index]!.trim() && !/^(#{2,3}\s|>|[-*]\s|\d+[.)]\s|!\[|\s*\|)/.test(lines[index]!)) paragraph.push(lines[index++]!);
     out.push(<p key={key}>{inline(paragraph.join(' '))}</p>);
   }
   return out;
+}
+
+/** A table row starts with a pipe; the second line of a table is its |---|:---:| rule. */
+const TABLE_ROW = /^\s*\|.*\|\s*$/;
+const TABLE_RULE = /^\s*\|(\s*:?-{3,}:?\s*\|)+\s*$/;
+
+function cells(row: string): string[] {
+  return row.trim().replace(/^\||\|$/g, '').split('|').map((cell) => cell.trim());
 }
 
 /** An image alone on its line: ![Alt text](https://... "Optional caption"). */
