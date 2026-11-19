@@ -3,7 +3,7 @@ import { Check } from 'lucide-react';
 import Link from 'next/link';
 import { istYear, sealArt, toSvg } from '@/lib/badges/art';
 import { soraText } from '@/lib/badges/text';
-import { formatPrice, VERIFIED_PLAN, VERIFIED_PLAN_INR } from '@/lib/verified-plan';
+import { formatPrice, VERIFIED_PLAN } from '@/lib/verified-plan';
 
 let badge: { year: number; src: string } | null = null;
 function badgeSrc(): string {
@@ -20,7 +20,7 @@ export function UpgradeStrip({ company }: { company: { verified: boolean; status
   const points = [
     'Verified badge on your profile, in listings and on your own website',
     'Listed above companies that are not verified',
-    `${formatPrice(VERIFIED_PLAN.monthly)} a month or ${formatPrice(VERIFIED_PLAN.yearly)} a year (${formatPrice(VERIFIED_PLAN_INR.monthly, 'INR')} or ${formatPrice(VERIFIED_PLAN_INR.yearly, 'INR')} in India), GST included`,
+    `${formatPrice(VERIFIED_PLAN.monthly)} a month or ${formatPrice(VERIFIED_PLAN.yearly)} a year, GST included`,
   ];
   return (
     <section aria-label="Upgrade to the Verified plan" className="mb-8 overflow-hidden rounded-[var(--radius-card)] bg-night text-paper shadow-[var(--shadow-card)]">

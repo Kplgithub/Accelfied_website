@@ -3,8 +3,6 @@
 import { Lock } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { confirmPostPayment, type OrderResult } from '@/app/company-post-actions';
-import type { Currency } from '@/lib/verified-plan';
-import { CurrencyChoice, type CurrencyPrices } from '../dashboard/currency-choice';
 import { Button } from '../ui/button';
 
 const CHECKOUT_SRC = 'https://checkout.razorpay.com/v1/checkout.js';
@@ -53,7 +51,6 @@ export function PostCheckout({
   description,
   email,
   name,
-  prices,
   start,
 }: {
   postId: string;
@@ -61,27 +58,17 @@ export function PostCheckout({
   description: string;
   email: string;
   name: string;
-  /** Rupees or dollars is asked after Pay is pressed. Without prices (an older API) it charges dollars. */
-  prices?: CurrencyPrices;
-  start: (currency: Currency) => Promise<OrderResult>;
+  start: () => Promise<OrderResult>;
 }) {
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
-  const [choosing, setChoosing] = useState(false);
   const [confirming, startConfirm] = useTransition();
 
-  function press() {
-    setMessage('');
-    if (prices) setChoosing(true);
-    else void pay('USD');
-  }
-
-  async function pay(currency: Currency) {
-    setChoosing(false);
+  async function pay() {
     setMessage('');
     setBusy(true);
     try {
-      const [order] = await Promise.all([start(currency), loadCheckout()]);
+      const [order] = await Promise.all([start(), loadCheckout()]);
       if (!order.ok) {
         setMessage(order.message);
         setBusy(false);
@@ -119,7 +106,7 @@ export function PostCheckout({
   const working = busy || confirming;
   return (
     <div>
-      <Button type="button" size="lg" onClick={press} disabled={working} className="w-full sm:w-auto">
+      <Button type="button" size="lg" onClick={() => void pay()} disabled={working} className="w-full sm:w-auto">
         {working && <span className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />}
         {confirming ? 'Confirming payment…' : busy ? 'Opening payment…' : label}
       </Button>
@@ -131,7 +118,6 @@ export function PostCheckout({
           {message}
         </p>
       )}
-      {prices && <CurrencyChoice open={choosing} prices={prices} note="one time" onChoose={pay} onClose={() => setChoosing(false)} />}
     </div>
   );
 }

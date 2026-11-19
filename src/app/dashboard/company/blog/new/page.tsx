@@ -23,7 +23,7 @@ export default async function NewCompanyPostPage() {
         intro={
           data.company
             ? `Save your draft first. You pay ${
-                data.prices ? `${formatWhole(data.prices.INR.total, 'INR')} (or ${formatWhole(data.prices.USD.total, 'USD')})` : formatWhole(data.price.total, data.price.currency)
+                formatWhole(data.price.total, data.price.currency)
               } only when you send it to our team, and it goes live within ${data.reviewHours} hours.`
             : undefined
         }

@@ -25,25 +25,23 @@ async function send<T>(path: string, body: unknown): Promise<Result<{ data: T }>
   }
 }
 
-/** Only the two currencies Razorpay charges us in; anything else from the browser means rupees. */
-const currencyOf = (value: unknown) => (value === 'USD' ? 'USD' : 'INR');
-
 /** Creates the Razorpay subscription that Checkout then charges. */
-export async function startVerifiedPlan(interval: 'monthly' | 'yearly' = 'monthly', currency: 'USD' | 'INR' = 'INR'): Promise<StartResult> {
+/** Everything is charged in US dollars. */
+export async function startVerifiedPlan(interval: 'monthly' | 'yearly' = 'monthly'): Promise<StartResult> {
   const result = await send<{ subscriptionId: string; keyId: string }>('/v1/me/billing/subscribe', {
     interval: interval === 'yearly' ? 'yearly' : 'monthly',
-    currency: currencyOf(currency),
+    currency: 'USD',
   });
   return result.ok ? { ok: true, ...result.data } : result;
 }
 
 /** Opens checkout for a sponsored place on one directory page. */
-export async function startSponsorship(page: { service: string; country?: string; city?: string }, currency: 'USD' | 'INR' = 'INR'): Promise<StartResult> {
+export async function startSponsorship(page: { service: string; country?: string; city?: string }): Promise<StartResult> {
   const result = await send<{ subscriptionId: string; keyId: string }>('/v1/me/sponsorships', {
     service: String(page.service ?? ''),
     ...(page.country ? { country: String(page.country) } : {}),
     ...(page.city ? { city: String(page.city) } : {}),
-    currency: currencyOf(currency),
+    currency: 'USD',
   });
   return result.ok ? { ok: true, ...result.data } : result;
 }
