@@ -29,7 +29,7 @@ export function SiteHeader() {
             <Link
               key={link.href}
               href={link.href}
-              className="rounded-full px-3.5 py-2 text-[15px] text-ink-soft transition-colors duration-150 hover:bg-ink/5 hover:text-ink"
+              className="whitespace-nowrap rounded-full px-2 py-2 text-sm font-semibold text-ink-soft xl:px-3 xl:text-[15px] transition-colors duration-150 hover:bg-ink/5 hover:text-ink"
             >
               {link.label}
             </Link>
@@ -71,7 +71,7 @@ function GuestActions() {
     <>
       <Link
         href="/login"
-        className="hidden rounded-full px-3.5 py-2 text-[15px] font-medium text-ink transition-colors duration-150 hover:bg-ink/5 sm:inline-flex"
+        className="hidden whitespace-nowrap rounded-full px-3.5 py-2 text-[15px] font-medium text-ink transition-colors duration-150 hover:bg-ink/5 sm:inline-flex"
       >
         Log in
       </Link>
@@ -93,7 +93,7 @@ async function ServiceBar() {
             <li key={group.slug} className="group/menu relative">
               <Link
                 href={`/services#${group.slug}`}
-                className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm text-ink-soft transition-colors hover:text-ink group-focus-within/menu:text-ink"
+                className="inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1.5 text-sm font-semibold text-ink-soft xl:px-3 transition-colors hover:text-ink group-focus-within/menu:text-ink"
               >
                 {group.name}
                 <ChevronDown className="size-3.5 transition-transform duration-200 group-hover/menu:rotate-180" aria-hidden="true" />
@@ -128,7 +128,7 @@ async function ServiceBar() {
         </ul>
         <Link
           href="/get-matched"
-          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-accent transition-colors hover:bg-accent-tint"
+          className="hidden items-center gap-1.5 whitespace-nowrap rounded-full xl:inline-flex px-3 py-1.5 text-sm font-semibold text-accent transition-colors hover:bg-accent-tint"
         >
           <Target className="size-4" aria-hidden="true" />
           Get a free shortlist
