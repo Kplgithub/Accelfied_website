@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { startVerifiedPlan } from '@/app/billing-actions';
 import type { BillingInterval, PlanPrice } from '@/lib/types';
-import { formatMoney } from '@/lib/verified-plan';
+import { formatMoney, type Currency } from '@/lib/verified-plan';
 import { VerifiedCheckout } from './verified-checkout';
 
 const whole = (plan: PlanPrice) => formatMoney(plan.total, plan.currency).replace(/\.00$/, '');
@@ -11,11 +11,14 @@ const whole = (plan: PlanPrice) => formatMoney(plan.total, plan.currency).replac
 /** Monthly or yearly, then pay. Both renew by autopay; yearly costs less than twelve monthly payments. */
 export function VerifiedPlanChooser({
   plans,
+  currency,
   companyName,
   name,
   email,
 }: {
+  /** Both billing periods in the chosen currency. */
   plans: Record<BillingInterval, PlanPrice>;
+  currency: Currency;
   companyName: string;
   name: string;
   email: string;
@@ -67,12 +70,12 @@ export function VerifiedPlanChooser({
       </fieldset>
       <div className="mt-4 sm:text-right">
         <VerifiedCheckout
-          key={interval}
+          key={`${interval}-${currency}`}
           label={`Pay ${formatMoney(chosen.total, chosen.currency)} and start`}
           description={`Verified plan for ${companyName}, ${interval}`}
           name={name}
           email={email}
-          start={() => startVerifiedPlan(interval)}
+          start={() => startVerifiedPlan(interval, currency)}
         />
       </div>
     </div>

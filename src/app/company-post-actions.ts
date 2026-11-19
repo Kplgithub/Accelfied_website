@@ -72,9 +72,11 @@ export async function saveCompanyPost(id: string | null, _prev: FormState, form:
 }
 
 /** Makes the Razorpay order that Checkout then charges. */
-export async function startPostCheckout(id: string): Promise<OrderResult> {
+export async function startPostCheckout(id: string, currency: 'USD' | 'INR' = 'INR'): Promise<OrderResult> {
   if (!isId(id)) return { ok: false, message: 'This post was not found.' };
-  const result = await call<{ orderId: string; keyId: string; amount: number; currency: string }>('POST', `/v1/me/company-posts/${id}/checkout`, {});
+  const result = await call<{ orderId: string; keyId: string; amount: number; currency: string }>('POST', `/v1/me/company-posts/${id}/checkout`, {
+    currency: currency === 'USD' ? 'USD' : 'INR',
+  });
   return result.ok ? { ok: true, ...result.data } : result;
 }
 

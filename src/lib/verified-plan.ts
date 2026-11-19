@@ -6,15 +6,30 @@ export const VERIFIED_PLAN = {
   currency: 'USD',
 } as const;
 
+/** The same plan in rupees (₹520 a month or ₹4,999 a year), for companies paying from India. */
+export const VERIFIED_PLAN_INR = { monthly: 520, yearly: 4_999, currency: 'INR' } as const;
+
+/** What a company can pay in. Rupees come first: most companies on Accelfied are in India. */
+export const CURRENCIES = ['INR', 'USD'] as const;
+export type Currency = (typeof CURRENCIES)[number];
+export const DEFAULT_CURRENCY: Currency = 'INR';
+/** Reads `?currency=` from a URL; anything else means rupees. */
+export const readCurrency = (value: unknown): Currency => (value === 'USD' ? 'USD' : 'INR');
+/** How each currency can be paid through Razorpay. */
+export const PAY_METHODS: Record<Currency, string> = { INR: 'UPI, cards, netbanking', USD: 'International cards' };
+
 /** What paying yearly saves against twelve monthly payments. */
 export const YEARLY_SAVING = VERIFIED_PLAN.monthly * 12 - VERIFIED_PLAN.yearly;
 
 /** A paid place at the top of one directory page, GST included. */
-export const SPONSORED_PLACE = { monthly: 29, perPage: 3 } as const;
+export const SPONSORED_PLACE = { monthly: 29, monthlyInr: 2_450, perPage: 3 } as const;
 
-/** A whole price for marketing copy, such as "$6". */
+/** A whole price for marketing copy, such as "$6" or "₹4,999". */
 export const formatPrice = (value: number, currency: string = VERIFIED_PLAN.currency) =>
-  new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: Number.isInteger(value) ? 0 : 2 }).format(value);
+  new Intl.NumberFormat(currency === 'INR' ? 'en-IN' : 'en-US', { style: 'currency', currency, maximumFractionDigits: Number.isInteger(value) ? 0 : 2 }).format(value);
+
+/** A price from the API without trailing zeros, such as "$6" or "₹520". */
+export const formatWhole = (minor: number, currency = 'USD') => formatMoney(minor, currency).replace(/\.00$/, '');
 
 /** Amounts from the API come in the currency's smallest unit (cents). Older invoices are in INR. */
 export const formatMoney = (minor: number, currency = 'USD') =>

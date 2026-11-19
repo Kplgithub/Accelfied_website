@@ -7,7 +7,7 @@ import { ButtonLink } from '@/components/ui/button';
 import { POST_STATUS, type CompanyPost } from '@/lib/company-posts';
 import { getMyCompanyPosts } from '@/lib/company-posts-data';
 import { formatDate, formatDay } from '@/lib/format';
-import { formatMoney } from '@/lib/verified-plan';
+import { formatWhole } from '@/lib/verified-plan';
 
 export const metadata: Metadata = { title: 'Write a blog' };
 
@@ -23,7 +23,10 @@ export default async function CompanyBlogPage() {
       </>
     );
   }
-  const price = formatMoney(data.price.total, data.price.currency);
+  // Rupees first, dollars as well; an API from before rupee prices only knows dollars.
+  const price = data.prices
+    ? `${formatWhole(data.prices.INR.total, 'INR')} (or ${formatWhole(data.prices.USD.total, 'USD')})`
+    : formatWhole(data.price.total, data.price.currency);
 
   return (
     <>

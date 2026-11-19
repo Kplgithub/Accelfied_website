@@ -19,7 +19,7 @@ import { Reveal } from '@/components/motion/reveal';
 import { ButtonLink } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 import { withSeo } from '@/lib/seo';
-import { formatPrice, PLAN_COMPARISON, SPONSORED_PLACE, VERIFIED_PLAN, YEARLY_SAVING } from '@/lib/verified-plan';
+import { formatPrice, PLAN_COMPARISON, SPONSORED_PLACE, VERIFIED_PLAN, VERIFIED_PLAN_INR, YEARLY_SAVING } from '@/lib/verified-plan';
 
 export async function generateMetadata(): Promise<Metadata> {
   return withSeo('getVerified', {
@@ -34,6 +34,10 @@ const PRICE = formatPrice(VERIFIED_PLAN.monthly);
 const YEARLY = formatPrice(VERIFIED_PLAN.yearly);
 const SAVING = formatPrice(YEARLY_SAVING);
 const SPONSOR_PRICE = formatPrice(SPONSORED_PLACE.monthly);
+/** The same prices in rupees, paid by UPI, card or netbanking. */
+const PRICE_INR = formatPrice(VERIFIED_PLAN_INR.monthly, 'INR');
+const YEARLY_INR = formatPrice(VERIFIED_PLAN_INR.yearly, 'INR');
+const SPONSOR_PRICE_INR = formatPrice(SPONSORED_PLACE.monthlyInr, 'INR');
 
 export default function GetVerifiedPage() {
   return (
@@ -66,6 +70,9 @@ export default function GetVerifiedPage() {
                 <span className="font-display text-2xl font-semibold text-paper">{PRICE}</span> / month, GST included
                 <span className="block text-sm">
                   or {YEARLY} / year (save {SAVING}). Autopay, cancel anytime
+                </span>
+                <span className="block text-sm">
+                  In rupees: {PRICE_INR} / month or {YEARLY_INR} / year, by UPI or card
                 </span>
               </p>
             </div>
@@ -189,7 +196,7 @@ export default function GetVerifiedPage() {
             <div className="flex flex-col items-center justify-between gap-4 border-t border-line bg-surface p-6 sm:flex-row">
               <p className="text-ink-soft">
                 <span className="font-display text-2xl font-semibold text-ink">{PRICE}</span> per month, or {YEARLY} per year (save {SAVING}), paid by autopay. GST
-                included.
+                included. Paying from India? {PRICE_INR} a month or {YEARLY_INR} a year, by UPI, card or netbanking.
               </p>
               <ButtonLink href={START}>
                 Get your business Accelfied <ArrowRight className="size-4" aria-hidden="true" />
@@ -240,8 +247,8 @@ export default function GetVerifiedPage() {
                 {SPONSORED_PLACE.perPage} places, and sponsored companies are always marked &ldquo;Sponsored&rdquo; so clients know.
               </p>
               <p className="mt-6 text-ink-soft">
-                <span className="font-display text-3xl font-semibold text-ink">{SPONSOR_PRICE}</span> / month per page, GST included. Works with or without
-                Verified.
+                <span className="font-display text-3xl font-semibold text-ink">{SPONSOR_PRICE}</span> / month per page ({SPONSOR_PRICE_INR} in rupees), GST included.
+                Works with or without Verified.
               </p>
               <ButtonLink href="/dashboard/company/sponsored" className="mt-6">
                 Choose a page <ArrowRight className="size-4" aria-hidden="true" />
@@ -359,7 +366,7 @@ const FAQ = [
   { q: 'Who should join?', a: 'Any agency, studio or service firm listed on Accelfied that wants more clients to trust and find it.' },
   {
     q: 'What does it cost?',
-    a: `${PRICE} a month, or ${YEARLY} a year (save ${SAVING}), with GST already included. Payment is by autopay: Razorpay charges your card at the start of each month or year until you cancel. You get an invoice for every payment, with the GST shown separately.`,
+    a: `${PRICE} a month, or ${YEARLY} a year (save ${SAVING}), with GST already included. Companies in India can pay in rupees instead: ${PRICE_INR} a month or ${YEARLY_INR} a year, by UPI, card or netbanking. Payment is by autopay: Razorpay charges you at the start of each month or year until you cancel. You get an invoice for every payment, with the GST shown separately.`,
   },
   {
     q: 'What is Premier Verified?',
@@ -367,7 +374,7 @@ const FAQ = [
   },
   {
     q: 'What is a sponsored place?',
-    a: `An add-on that shows your company at the top of one directory page for ${SPONSOR_PRICE} a month, GST included. Each page has ${SPONSORED_PLACE.perPage} places and sponsored companies are always labelled.`,
+    a: `An add-on that shows your company at the top of one directory page for ${SPONSOR_PRICE} (or ${SPONSOR_PRICE_INR}) a month, GST included. Each page has ${SPONSORED_PLACE.perPage} places and sponsored companies are always labelled.`,
   },
   {
     q: 'How long does verification take?',

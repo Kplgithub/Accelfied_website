@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { cancelSponsorship, startSponsorship } from '@/app/billing-actions';
 import { DashboardHeader, Panel } from '@/components/dashboard/bits';
+import { CurrencySwitch } from '@/components/dashboard/currency-switch';
 import { NoCompany } from '@/components/dashboard/no-company';
 import { VerifiedCheckout } from '@/components/dashboard/verified-checkout';
 import { Button } from '@/components/ui/button';
@@ -10,8 +11,8 @@ import { getMySponsorships } from '@/lib/account-data';
 import { countrySlug, placeSlug } from '@/lib/places';
 import { formatDay } from '@/lib/format';
 import { requireUser } from '@/lib/session';
-import type { SponsorOption } from '@/lib/types';
-import { formatMoney, PAYING_STATUSES } from '@/lib/verified-plan';
+import type { SponsorOption, Sponsorships } from '@/lib/types';
+import { formatWhole, PAYING_STATUSES, readCurrency } from '@/lib/verified-plan';
 
 export const metadata: Metadata = { title: 'Sponsored places' };
 
@@ -27,8 +28,15 @@ function pagePath(option: SponsorOption): string {
   return option.city ? `${country}/${placeSlug(option.city)}` : country;
 }
 
-export default async function SponsoredPlacesPage() {
-  const [{ user }, data] = await Promise.all([requireUser(HERE), getMySponsorships(HERE)]);
+/** The monthly price in a currency; an API from before rupee prices only knows dollars. */
+const priceIn = (data: Sponsorships, currency: 'USD' | 'INR') => {
+  const plan = data.prices?.[currency] ?? data.plan;
+  return formatWhole(plan.total, plan.currency);
+};
+
+export default async function SponsoredPlacesPage({ searchParams }: PageProps<'/dashboard/company/sponsored'>) {
+  const [{ user }, data, params] = await Promise.all([requireUser(HERE), getMySponsorships(HERE), searchParams]);
+  const currency = data.prices ? readCurrency(params.currency) : 'USD';
   if (!data.company) {
     return (
       <>
@@ -38,7 +46,7 @@ export default async function SponsoredPlacesPage() {
     );
   }
 
-  const price = formatMoney(data.plan.total, data.plan.currency).replace(/\.00$/, '');
+  const price = priceIn(data, currency);
   const live = data.company.status === 'published';
   const active = data.options.filter(isPaying);
   const available = data.options.filter((option) => !isPaying(option));
@@ -48,7 +56,9 @@ export default async function SponsoredPlacesPage() {
       <DashboardHeader
         eyebrow={data.company.name}
         title="Sponsored places"
-        intro={`Show your company at the top of a directory page, above every other listing, for ${price} a month per page, GST included. Each page has ${data.maxPerPage} places.`}
+        intro={`Show your company at the top of a directory page, above every other listing, for ${
+          data.prices ? `${priceIn(data, 'INR')} (or ${priceIn(data, 'USD')})` : price
+        } a month per page, GST included. Each page has ${data.maxPerPage} places.`}
       />
 
       {active.length > 0 && (
@@ -66,8 +76,8 @@ export default async function SponsoredPlacesPage() {
                         ? `Cancelled. Your place stays until ${formatDay(option.mine.currentEnd)}.`
                         : 'Cancelled. Your place stays until the paid month ends.'
                       : option.mine?.currentEnd
-                        ? `Next payment of ${price} on ${formatDay(option.mine.currentEnd)}.`
-                        : `Renews every month at ${price}.`}
+                        ? `Next payment of ${priceIn(data, option.mine.currency ?? 'USD')} on ${formatDay(option.mine.currentEnd)}.`
+                        : `Renews every month at ${priceIn(data, option.mine?.currency ?? 'USD')}.`}
                   </p>
                 </div>
                 <div className="flex shrink-0 items-center gap-4">
@@ -104,6 +114,7 @@ export default async function SponsoredPlacesPage() {
             <p className="-mt-2 mb-5 text-ink-soft">
               You can sponsor pages for the services and locations on your profile. Sponsored companies are marked &ldquo;Sponsored&rdquo; so clients always know.
             </p>
+            {data.prices && <CurrencySwitch value={currency} href={HERE} className="mb-5" />}
             <ul className="divide-y divide-line">
               {available.map((option) => {
                 const left = Math.max(0, data.maxPerPage - option.taken);
@@ -122,16 +133,21 @@ export default async function SponsoredPlacesPage() {
                     {left > 0 && (
                       <div className="shrink-0 sm:text-right">
                         <VerifiedCheckout
+                          key={currency}
                           size="md"
                           label={`Sponsor for ${price} / month`}
                           description={`Sponsored place: ${option.label}`}
                           name={`${user.firstName} ${user.lastName}`}
                           email={user.email}
-                          start={startSponsorship.bind(null, {
-                            service: option.service.slug,
-                            country: option.countryCode ?? undefined,
-                            city: option.city ?? undefined,
-                          })}
+                          start={startSponsorship.bind(
+                            null,
+                            {
+                              service: option.service.slug,
+                              country: option.countryCode ?? undefined,
+                              city: option.city ?? undefined,
+                            },
+                            currency,
+                          )}
                         />
                       </div>
                     )}

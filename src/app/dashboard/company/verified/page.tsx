@@ -4,6 +4,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { cancelVerifiedPlan } from '@/app/billing-actions';
 import { DashboardHeader, Panel } from '@/components/dashboard/bits';
+import { CurrencySwitch } from '@/components/dashboard/currency-switch';
 import { NoCompany } from '@/components/dashboard/no-company';
 import { VerificationForm } from '@/components/dashboard/verification-form';
 import { VerifiedPlanChooser } from '@/components/dashboard/verified-plan-chooser';
@@ -12,7 +13,7 @@ import { getMyBilling } from '@/lib/account-data';
 import { formatDay } from '@/lib/format';
 import { requireUser } from '@/lib/session';
 import type { Billing } from '@/lib/types';
-import { formatMoney, PAYING_STATUSES, PLAN_COMPARISON } from '@/lib/verified-plan';
+import { formatMoney, formatWhole, PAYING_STATUSES, PLAN_COMPARISON, readCurrency, type Currency } from '@/lib/verified-plan';
 
 export const metadata: Metadata = { title: 'Get Verified' };
 
@@ -20,8 +21,9 @@ const HERE = '/dashboard/company/verified';
 const ADD_ONS = PLAN_COMPARISON.slice(1).flatMap((group) => group.rows.map((row) => row.label));
 const ENDED = ['cancelled', 'completed', 'expired'];
 
-export default async function VerifiedPlanPage() {
-  const [{ user }, billing] = await Promise.all([requireUser(HERE), getMyBilling(HERE)]);
+export default async function VerifiedPlanPage({ searchParams }: PageProps<'/dashboard/company/verified'>) {
+  const [{ user }, billing, params] = await Promise.all([requireUser(HERE), getMyBilling(HERE), searchParams]);
+  const currency = readCurrency(params.currency);
   const { company, subscription, verification, plan } = billing;
   if (!company) {
     return (
@@ -55,7 +57,7 @@ export default async function VerifiedPlanPage() {
       />
       <Steps current={step} />
       <div className="mt-6 space-y-6">
-        {step === 1 && <PlanPanel billing={billing} user={user} />}
+        {step === 1 && <PlanPanel billing={billing} user={user} currency={currency} />}
         {step === 2 && (
           <Panel title="Share your business details">
             {verification?.status === 'rejected' ? (
@@ -108,10 +110,13 @@ export default async function VerifiedPlanPage() {
   );
 }
 
-function PlanPanel({ billing, user }: { billing: Billing; user: { firstName: string; lastName: string; email: string } }) {
-  const { company, subscription, plan, plans } = billing;
+function PlanPanel({ billing, user, currency }: { billing: Billing; user: { firstName: string; lastName: string; email: string }; currency: Currency }) {
+  const { company, subscription } = billing;
   if (!company) return null;
   const live = company.status === 'published';
+  // An API from before rupee prices only knows dollars.
+  const plans = billing.prices?.[currency] ?? billing.plans;
+  const plan = plans.monthly;
   const yearlySaving = plans.monthly.total * 12 - plans.yearly.total;
   return (
     <Panel>
@@ -133,12 +138,13 @@ function PlanPanel({ billing, user }: { billing: Billing; user: { firstName: str
         <div>
           <p className="font-display text-2xl font-semibold text-ink">{plan.name}</p>
           <p className="mt-1 text-ink-soft">
-            <span className="font-display text-3xl font-semibold text-ink">{formatMoney(plan.total, plan.currency).replace(/\.00$/, '')}</span> / month, or{' '}
-            {formatMoney(plans.yearly.total, plans.yearly.currency).replace(/\.00$/, '')} / year. GST included.
+            <span className="font-display text-3xl font-semibold text-ink">{formatWhole(plan.total, plan.currency)}</span> / month, or{' '}
+            {formatWhole(plans.yearly.total, plans.yearly.currency)} / year. GST included.
           </p>
           <p className="mt-1 text-sm text-ink-faint">
-            Paying yearly saves {formatMoney(yearlySaving, plan.currency).replace(/\.00$/, '')}. Every payment gets an invoice with the GST shown separately.
+            Paying yearly saves {formatWhole(yearlySaving, plan.currency)}. Every payment gets an invoice with the GST shown separately.
           </p>
+          {billing.prices && <CurrencySwitch value={currency} href={HERE} className="mt-4" />}
         </div>
         <div className="lg:w-[26rem] lg:shrink-0 lg:text-right">
           {!live ? (
@@ -146,7 +152,7 @@ function PlanPanel({ billing, user }: { billing: Billing; user: { firstName: str
           ) : !billing.enabled ? (
             <PlanBlocked text="Online payment is being set up." />
           ) : (
-            <VerifiedPlanChooser plans={plans} companyName={company.name} name={`${user.firstName} ${user.lastName}`} email={user.email} />
+            <VerifiedPlanChooser plans={plans} currency={billing.prices ? currency : 'USD'} companyName={company.name} name={`${user.firstName} ${user.lastName}`} email={user.email} />
           )}
         </div>
       </div>
@@ -181,7 +187,7 @@ function PlanBlocked({ text }: { text: string }) {
 function RenewalPanel({ billing }: { billing: Billing }) {
   const { subscription } = billing;
   if (!subscription) return null;
-  const plan = billing.plans[subscription.interval ?? 'monthly'];
+  const plan = (billing.prices?.[subscription.currency ?? 'USD'] ?? billing.plans)[subscription.interval ?? 'monthly'];
   const period = plan.interval === 'yearly' ? 'year' : 'month';
   return (
     <Panel title="Your plan">

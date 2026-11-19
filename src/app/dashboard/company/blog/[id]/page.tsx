@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import { deleteCompanyPost, resubmitCompanyPost, saveCompanyPost, startPostCheckout } from '@/app/company-post-actions';
 import { Markdown } from '@/components/blog/markdown';
 import { PostCheckout } from '@/components/company-posts/post-checkout';
+import { CurrencySwitch } from '@/components/dashboard/currency-switch';
 import { CompanyPostForm } from '@/components/company-posts/post-form';
 import { DashboardHeader, Panel } from '@/components/dashboard/bits';
 import { Button } from '@/components/ui/button';
@@ -13,16 +14,19 @@ import { MIN_WORDS, POST_STATUS } from '@/lib/company-posts';
 import { getMyCompanyPost, getMyCompanyPosts } from '@/lib/company-posts-data';
 import { formatDate } from '@/lib/format';
 import { requireUser } from '@/lib/session';
-import { formatMoney } from '@/lib/verified-plan';
+import { formatWhole, readCurrency } from '@/lib/verified-plan';
 
 export const metadata: Metadata = { title: 'Blog post' };
 
-export default async function CompanyPostPage({ params }: PageProps<'/dashboard/company/blog/[id]'>) {
-  const { id } = await params;
+export default async function CompanyPostPage({ params, searchParams }: PageProps<'/dashboard/company/blog/[id]'>) {
+  const [{ id }, query] = await Promise.all([params, searchParams]);
   const here = `/dashboard/company/blog/${id}`;
   const [{ user }, post, overview] = await Promise.all([requireUser(here), getMyCompanyPost(here, id), getMyCompanyPosts(here)]);
   if (!post || !overview.company) notFound();
-  const price = formatMoney(overview.price.total, overview.price.currency);
+  // An API from before rupee prices only knows dollars.
+  const currency = overview.prices ? readCurrency(query.currency) : 'USD';
+  const chosen = overview.prices?.[currency] ?? overview.price;
+  const price = formatWhole(chosen.total, chosen.currency);
   const editable = post.status === 'draft' || post.status === 'rejected';
   const live = overview.company.status === 'published';
 
@@ -51,14 +55,18 @@ export default async function CompanyPostPage({ params }: PageProps<'/dashboard/
             ) : post.words < MIN_WORDS ? (
               <p className="font-medium">Write at least {MIN_WORDS} words before sending. You have {post.words} now.</p>
             ) : (
-              <PostCheckout
+              <>
+                {overview.prices && <CurrencySwitch value={currency} href={here} className="mb-4" />}
+                <PostCheckout
+                key={currency}
                 postId={post.id}
                 label={`Pay ${price} and send`}
                 description={`Blog post: ${post.title.slice(0, 60)}`}
                 name={`${user.firstName} ${user.lastName}`}
                 email={user.email}
-                start={startPostCheckout.bind(null, post.id)}
+                start={startPostCheckout.bind(null, post.id, currency)}
               />
+              </>
             )}
           </div>
         </Banner>
