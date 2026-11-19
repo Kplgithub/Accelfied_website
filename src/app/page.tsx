@@ -1,40 +1,37 @@
 import type { Metadata } from 'next';
 import {
   ArrowRight,
-  ArrowUpRight,
   BadgeCheck,
   Building2,
   CheckCircle2,
   ClipboardList,
-  FileSearch,
   Handshake,
   MailCheck,
-  MapPin,
   MessageSquareQuote,
   PenLine,
   Scale,
   Search,
-  Star,
   UserCheck,
 } from 'lucide-react';
 import Link from 'next/link';
 import { PostCard } from '@/components/blog/post-card';
 import { CompanyCard } from '@/components/company/company-card';
-import { GroupIcon } from '@/components/home/group-icon';
+import { ClientLogos } from '@/components/home/client-logos';
 import { HeroTabs } from '@/components/home/hero-tabs';
-import { IndiaSearches } from '@/components/home/india-searches';
-import { TabbedPanels } from '@/components/home/tabbed-panels';
+import { IndustryGrid } from '@/components/home/industry-grid';
+import { LocationExplorer } from '@/components/home/location-explorer';
+import { ReviewProcess } from '@/components/home/review-process';
+import { ServiceDirectory } from '@/components/home/service-directory';
+import { TopRatedShowcase } from '@/components/home/top-rated-showcase';
 import { Reveal } from '@/components/motion/reveal';
 import { ButtonLink } from '@/components/ui/button';
 import { JsonLd } from '@/components/seo/json-ld';
 import { Container } from '@/components/ui/container';
 import { Stars } from '@/components/ui/stars';
-import { countryName } from '@/lib/countries';
-import { getCountryFacets, getFeaturedCompanies, getPosts, getRecentReviews, getServiceGroups, getSiteSettings, getTeamPicks, type RecentReview } from '@/lib/data';
+import { getPosts, getRecentReviews, getServiceGroups, getSiteSettings, getTeamPicks, type RecentReview } from '@/lib/data';
 import { formatDate, formatRating } from '@/lib/format';
-import { INDUSTRIES } from '@/lib/labels';
+import { getHomeShowcase } from '@/lib/home-showcase';
 import { SITE_URL } from '@/lib/site';
-import type { CompanySummary, ServiceGroup } from '@/lib/types';
 import { formatPrice, VERIFIED_PLAN } from '@/lib/verified-plan';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -72,13 +69,12 @@ const SITE_LD = [
 ];
 
 export default async function HomePage() {
-  const [groups, featured, reviews, countries, picks, posts] = await Promise.all([
+  const [groups, reviews, picks, posts, showcase] = await Promise.all([
     getServiceGroups(),
-    getFeaturedCompanies(12),
     getRecentReviews(6),
-    getCountryFacets(),
     getTeamPicks(),
     getPosts({ limit: 3 }),
+    getHomeShowcase(),
   ]);
   const services = groups.flatMap((group) => group.services);
   const popular = services.filter((service) => service.popular);
@@ -91,23 +87,24 @@ export default async function HomePage() {
         <div className="grid-lines absolute inset-0" aria-hidden="true" />
         <span className="orb -top-32 -left-24 size-[420px] bg-brand/35" aria-hidden="true" />
         <span className="orb top-1/3 -right-32 size-[460px] bg-accent/40 [animation-delay:-6s]" aria-hidden="true" />
-        <Container className="relative grid items-start gap-12 py-14 md:py-20 lg:grid-cols-[1fr_minmax(0,560px)] lg:gap-14 lg:py-24">
-          <div className="lg:pt-6">
+        {/* Sized so the whole hero, shortlist card included, fits a 1366×768 laptop screen under the header. */}
+        <Container className="relative grid items-center gap-10 py-12 md:py-16 lg:grid-cols-[1fr_minmax(0,540px)] lg:gap-14 lg:py-12 xl:py-14">
+          <div>
             <p className="inline-flex animate-rise items-center gap-2 rounded-full bg-white/8 px-3.5 py-1.5 text-sm font-medium text-accent-soft ring-1 ring-white/12">
               <BadgeCheck className="size-4" aria-hidden="true" />
               A real person reads every listing and review before it goes live
             </p>
             <h1
-              className="mt-6 animate-rise font-display text-[2.6rem] leading-[1.04] font-semibold tracking-[-0.025em] sm:text-6xl lg:text-[4.2rem]"
+              className="mt-5 animate-rise font-display text-[2.6rem] leading-[1.04] font-semibold tracking-[-0.025em] sm:text-6xl lg:text-[3.5rem] xl:text-[3.9rem]"
               style={{ animationDelay: '80ms' }}
             >
               Find an agency in India that actually <span className="scribble italic">delivers</span>.
             </h1>
-            <p className="mt-6 max-w-xl animate-rise text-lg leading-relaxed text-paper/72" style={{ animationDelay: '160ms' }}>
+            <p className="mt-5 max-w-xl animate-rise text-lg leading-relaxed text-paper/72" style={{ animationDelay: '160ms' }}>
               Compare software developers, app builders, designers and marketing agencies from Jaipur to Bengaluru on what their past clients
               say, what they charge and what they have shipped. Then send one brief to the few that fit.
             </p>
-            <ul className="mt-8 hidden animate-rise gap-3 text-[15px] text-paper/85 sm:grid sm:grid-cols-2" style={{ animationDelay: '240ms' }}>
+            <ul className="mt-7 hidden animate-rise gap-x-6 gap-y-3 text-[15px] text-paper/85 sm:grid sm:grid-cols-2" style={{ animationDelay: '240ms' }}>
               {['Ratings built only from approved reviews', 'Always free for businesses hiring', 'Checked companies clearly marked', 'One brief, replies from several firms'].map((item) => (
                 <li key={item} className="flex items-center gap-2.5">
                   <CheckCircle2 className="size-4.5 shrink-0 text-accent-soft" aria-hidden="true" />
@@ -146,6 +143,9 @@ export default async function HomePage() {
         </section>
       )}
 
+      {/* 3. Client logos, uploaded by our team in the admin panel; hidden until there is one. */}
+      <ClientLogos heading={showcase.clientLogos.heading} logos={showcase.clientLogos.logos} />
+
       {/* 4. Service directory */}
       <section className="py-20 lg:py-28">
         <Container>
@@ -154,41 +154,53 @@ export default async function HomePage() {
             title="Software, design, marketing and everything in between"
             action={<ArrowLink href="/services">All {services.length} services</ArrowLink>}
           />
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {groups.map((group, index) => (
-              <Reveal key={group.slug} delay={(index % 3) * 90}>
-                <ServiceGroupCard group={group} />
-              </Reveal>
-            ))}
-          </div>
+          <ServiceDirectory groups={groups} />
         </Container>
       </section>
+
+      {/* 4b. Top rated by category, chosen in the admin panel */}
+      <TopRatedShowcase heading={showcase.topRated.heading} categories={showcase.topRated.categories} />
 
       {/* 5. How it works */}
       <section className="grain border-y border-line bg-paper-deep py-20 lg:py-28">
         <Container>
-          <SectionHeading eyebrow="How it works" title="From a rough idea to a signed partner" />
-          <ol className="relative mt-14 grid gap-10 md:grid-cols-3 md:gap-8">
+          <SectionHeading
+            eyebrow="How it works"
+            title="From a rough idea to a signed partner"
+            action={
+              <ButtonLink href="/get-matched" size="lg">
+                Start your brief <ArrowRight className="size-4" aria-hidden="true" />
+              </ButtonLink>
+            }
+          />
+          <ol className="relative mt-14 grid gap-5 md:grid-cols-3">
             {[
-              { icon: ClipboardList, title: 'Say what you need', text: 'Six short questions on the service, your budget, the timeline and what you are building. About two minutes, and no sales call.' },
-              { icon: Scale, title: 'Line them up', text: 'See the companies that fit side by side: approved client reviews, hourly rates, team size and the smallest project each one takes.' },
-              { icon: Handshake, title: 'Pick and get going', text: 'Send your brief, keep every reply in one inbox, and leave an honest review once the work is done.' },
+              { icon: ClipboardList, title: 'Say what you need', meta: 'About 2 minutes', text: 'Six short questions on the service, your budget, the timeline and what you are building. No sales call.' },
+              { icon: Scale, title: 'Line them up', meta: 'Side by side', text: 'See the companies that fit side by side: approved client reviews, hourly rates, team size and the smallest project each one takes.' },
+              { icon: Handshake, title: 'Pick and get going', meta: 'One inbox', text: 'Send your brief, keep every reply in one inbox, and leave an honest review once the work is done.' },
             ].map((step, index) => (
-              <Reveal as="li" key={step.title} delay={index * 120} className="relative">
-                <span className="flex size-14 items-center justify-center rounded-2xl bg-surface text-brand shadow-[var(--shadow-card)]">
-                  <step.icon className="size-6" aria-hidden="true" />
-                </span>
-                <span className="mt-6 block font-display text-sm font-semibold text-accent">Step 0{index + 1}</span>
-                <h3 className="mt-1 font-display text-2xl font-semibold text-ink">{step.title}</h3>
-                <p className="mt-3 leading-relaxed text-ink-soft">{step.text}</p>
+              <Reveal as="li" key={step.title} delay={index * 120} className="relative h-full">
+                <div className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-line bg-surface p-7 shadow-[var(--shadow-card)] transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-lift)] sm:p-8">
+                  <span className="pointer-events-none absolute top-5 right-6 font-display text-6xl leading-none font-semibold text-line select-none" aria-hidden="true">
+                    0{index + 1}
+                  </span>
+                  <span className="relative flex size-14 items-center justify-center rounded-2xl bg-brand text-white shadow-[0_14px_30px_-12px_rgb(199_54_47/0.8)] transition-transform duration-300 group-hover:-rotate-6">
+                    <step.icon className="size-6" aria-hidden="true" />
+                  </span>
+                  <p className="relative mt-7 text-xs font-semibold tracking-[0.16em] text-accent uppercase">
+                    Step {index + 1} · {step.meta}
+                  </p>
+                  <h3 className="relative mt-2 font-display text-2xl font-semibold text-ink">{step.title}</h3>
+                  <p className="relative mt-3 leading-relaxed text-ink-soft">{step.text}</p>
+                </div>
+                {index < 2 && (
+                  <span className="absolute top-1/2 -right-[14px] z-10 hidden size-7 -translate-y-1/2 items-center justify-center rounded-full border border-line bg-surface text-ink-faint md:flex" aria-hidden="true">
+                    <ArrowRight className="size-3.5" />
+                  </span>
+                )}
               </Reveal>
             ))}
           </ol>
-          <Reveal className="mt-12">
-            <ButtonLink href="/get-matched" size="lg">
-              Start your brief <ArrowRight className="size-4" aria-hidden="true" />
-            </ButtonLink>
-          </Reveal>
         </Container>
       </section>
 
@@ -208,35 +220,8 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 6. Top rated companies */}
-      <section className="py-20 lg:py-28">
-        <Container>
-          <SectionHeading
-            eyebrow="Highest rated"
-            title="Firms their clients would hire again"
-            action={<ArrowLink href="/agencies?sort=rating">See all companies</ArrowLink>}
-          />
-          <div className="mt-10">
-            {featured.length > 0 ? (
-              <TabbedPanels label="Top rated companies by category" tabs={companyTabs(featured, groups)} />
-            ) : (
-              <Reveal className="rounded-[var(--radius-card)] border border-dashed border-line-strong bg-surface p-8 text-center sm:p-12">
-                <Star className="mx-auto size-8 text-saffron" aria-hidden="true" />
-                <h3 className="mt-4 font-display text-2xl font-semibold text-ink">Ratings show up as clients publish reviews</h3>
-                <p className="mx-auto mt-2 max-w-md text-ink-soft">
-                  We rank companies only on client reviews our team has approved. Worked with an agency recently? A few honest lines from you help the next business choose.
-                </p>
-                <ButtonLink href="/write-a-review" className="mt-6">
-                  Write a review
-                </ButtonLink>
-              </Reveal>
-            )}
-          </div>
-        </Container>
-      </section>
-
       {/* 7. Get matched band */}
-      <section className="px-4 sm:px-6">
+      <section className="px-4 py-20 sm:px-6 lg:py-28">
         <Reveal className="relative mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-brand px-6 py-14 text-white sm:px-12 lg:py-16">
           <span className="orb -top-24 right-10 size-72 bg-white/25" aria-hidden="true" />
           <div className="relative grid items-center gap-8 lg:grid-cols-[1.3fr_1fr]">
@@ -260,41 +245,7 @@ export default async function HomePage() {
       </section>
 
       {/* 8. How reviews are verified */}
-      <section className="py-20 lg:py-28">
-        <Container className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
-          <Reveal>
-            <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">Review process</p>
-            <h2 className="mt-3 font-display text-4xl leading-tight font-semibold tracking-tight text-ink sm:text-5xl">
-              A rating is only worth the reviews behind it.
-            </h2>
-            <p className="mt-5 text-lg leading-relaxed text-ink-soft">
-              Every score on Accelfied is worked out from approved client reviews and nothing else. Money cannot move a rating, and nobody types
-              one in by hand.
-            </p>
-            <ArrowLink href="/how-reviews-work" className="mt-6">
-              How reviews work
-            </ArrowLink>
-          </Reveal>
-          <ol className="relative space-y-4 before:absolute before:top-6 before:bottom-6 before:left-[27px] before:w-px before:bg-line-strong">
-            {[
-              { icon: PenLine, title: 'A client writes it', text: 'A signed-in client describes the brief, the work and the outcome, and scores quality, timelines and value for money.' },
-              { icon: FileSearch, title: 'Our team reads it', text: 'Nothing goes live until a person on our team has checked it. Each client can review a company only once.' },
-              { icon: BadgeCheck, title: 'It goes on the profile', text: 'Approved reviews appear on the company page with the project budget, timeline and service.' },
-              { icon: Star, title: 'The rating moves', text: 'Rankings weigh the score and how many clients stand behind it, so one glowing review cannot top the list.' },
-            ].map((step, index) => (
-              <Reveal as="li" key={step.title} delay={index * 100} className="relative flex gap-5 rounded-[var(--radius-card)] border border-line bg-surface p-5">
-                <span className="relative z-10 flex size-14 shrink-0 items-center justify-center rounded-full bg-accent-tint text-accent ring-4 ring-paper">
-                  <step.icon className="size-5.5" aria-hidden="true" />
-                </span>
-                <div>
-                  <h3 className="font-display text-xl font-semibold text-ink">{step.title}</h3>
-                  <p className="mt-1.5 text-[15px] leading-relaxed text-ink-soft">{step.text}</p>
-                </div>
-              </Reveal>
-            ))}
-          </ol>
-        </Container>
-      </section>
+      <ReviewProcess />
 
       {/* 9. Latest reviews */}
       {reviews.length > 0 && (
@@ -312,49 +263,18 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 10a. City and state pages in India */}
-      <IndiaSearches />
-
-      {/* 10b. Browse by country */}
-      {countries.length > 0 && (
-        <section className="py-20 lg:py-28">
-          <Container>
-            <SectionHeading eyebrow="Browse by country" title="Open to working across borders?" action={<ArrowLink href="/agencies">All locations</ArrowLink>} />
-            <ul className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {countries.slice(0, 12).map((country, index) => (
-                <Reveal as="li" key={country.countryCode} delay={(index % 4) * 60}>
-                  <Link
-                    href={`/agencies?country=${country.countryCode}`}
-                    className="lift flex items-center justify-between gap-3 rounded-2xl border border-line bg-surface px-5 py-4"
-                  >
-                    <span className="flex min-w-0 items-center gap-3">
-                      <MapPin className="size-4.5 shrink-0 text-accent" aria-hidden="true" />
-                      <span className="truncate font-medium text-ink">{countryName(country.countryCode)}</span>
-                    </span>
-                    <span className="shrink-0 rounded-full bg-paper px-2.5 py-0.5 text-sm text-ink-soft tabular-nums">{country.count}</span>
-                  </Link>
-                </Reveal>
-              ))}
-            </ul>
-          </Container>
-        </section>
-      )}
+      {/* 10. Cities, states and countries with live listings */}
+      <LocationExplorer />
 
       {/* 11. Browse by industry */}
-      <section className={`py-20 lg:py-28 ${countries.length > 0 ? 'pt-0 lg:pt-0' : ''}`}>
+      <section className="py-20 lg:py-28">
         <Container>
-          <SectionHeading eyebrow="Browse by industry" title="Teams that already know your industry" />
-          <Reveal className="mt-10 flex flex-wrap gap-2.5">
-            {INDUSTRIES.filter((industry) => industry !== 'Other').map((industry) => (
-              <Link
-                key={industry}
-                href={`/agencies?industry=${encodeURIComponent(industry)}`}
-                className="rounded-full border border-line-strong bg-surface px-4 py-2 text-[15px] text-ink-soft transition-[color,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-accent hover:text-accent"
-              >
-                {industry}
-              </Link>
-            ))}
-          </Reveal>
+          <SectionHeading
+            eyebrow="Browse by industry"
+            title="Teams that already know your industry"
+            action={<ArrowLink href="/agencies">All companies</ArrowLink>}
+          />
+          <IndustryGrid />
         </Container>
       </section>
 
@@ -553,54 +473,6 @@ const FAQ = [
   },
   { q: 'Can I sign in with Google or LinkedIn?', a: 'Yes. You can join or log in with Google, LinkedIn or your work email and a password.' },
 ];
-
-function companyTabs(companies: CompanySummary[], groups: ServiceGroup[]) {
-  const groupOf = new Map(groups.flatMap((group) => group.services.map((service) => [service.slug, group] as const)));
-  const grid = (list: CompanySummary[]) => (
-    <div className="grid gap-5">
-      {list.slice(0, 4).map((company) => (
-        <CompanyCard key={company.id} company={company} />
-      ))}
-    </div>
-  );
-  const tabs = [{ id: 'all', label: 'All categories', content: grid(companies) }];
-  for (const group of groups) {
-    const inGroup = companies.filter((company) => company.services[0] && groupOf.get(company.services[0].slug)?.slug === group.slug);
-    if (inGroup.length) tabs.push({ id: group.slug, label: group.name, content: grid(inGroup) });
-  }
-  return tabs;
-}
-
-function ServiceGroupCard({ group }: { group: ServiceGroup }) {
-  return (
-    <div className="group lift h-full rounded-[var(--radius-card)] border border-line bg-surface p-6">
-      <div className="flex items-center gap-3">
-        <span className="inline-flex size-11 items-center justify-center rounded-xl bg-accent-tint text-accent transition-colors duration-300 group-hover:bg-brand group-hover:text-white">
-          <GroupIcon slug={group.slug} className="size-5" />
-        </span>
-        <h3 className="font-display text-xl font-semibold text-ink">{group.name}</h3>
-      </div>
-      <ul className="mt-5 space-y-1">
-        {group.services.slice(0, 5).map((service) => (
-          <li key={service.slug}>
-            <Link
-              href={`/agencies/${service.slug}`}
-              className="flex items-center justify-between rounded-lg py-1.5 text-[15px] text-ink-soft transition-colors hover:text-accent"
-            >
-              {service.name}
-              <ArrowUpRight className="size-4 opacity-0 transition-opacity group-hover:opacity-60" aria-hidden="true" />
-            </Link>
-          </li>
-        ))}
-      </ul>
-      {group.services.length > 5 && (
-        <Link href={`/services#${group.slug}`} className="mt-3 inline-block text-sm font-medium text-accent hover:underline">
-          +{group.services.length - 5} more
-        </Link>
-      )}
-    </div>
-  );
-}
 
 function RecentReviewCard({ review }: { review: RecentReview }) {
   const quote = review.content.results || review.content.solution || review.content.challenge;
