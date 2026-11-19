@@ -13,25 +13,28 @@ const PLAN_PAGE = '/dashboard/company/verified';
 const STRIP_PAGES = ['/dashboard', '/dashboard/company', '/dashboard/company/reviews', '/dashboard/company/analytics'];
 
 /** Reminder for companies without the Verified plan. Closing it hides it for two weeks on this browser. */
-export function VerifyNudge() {
+/** `message` and `action` replace the default upgrade wording for a company that has paid but is not approved yet. */
+export function VerifyNudge({ message, action }: { message?: string; action?: string }) {
   const pathname = usePathname();
+  // A company that has paid gets its own reminder, even if it closed the upgrade one earlier.
+  const storageKey = message ? `${KEY}:paid` : KEY;
   // Hidden until mounted, so a closed reminder never flashes in.
   const [open, setOpen] = useState(false);
   useEffect(() => {
     let hiddenUntil = 0;
     try {
-      hiddenUntil = Number(window.localStorage.getItem(KEY) ?? 0);
+      hiddenUntil = Number(window.localStorage.getItem(storageKey) ?? 0);
     } catch {
       // Storage can be blocked; then the reminder simply shows.
     }
     // eslint-disable-next-line react-hooks/set-state-in-effect -- reads browser storage once after mount
     setOpen(Date.now() > hiddenUntil);
-  }, []);
+  }, [storageKey]);
   if (!open || pathname === PLAN_PAGE || STRIP_PAGES.includes(pathname)) return null;
   const close = () => {
     setOpen(false);
     try {
-      window.localStorage.setItem(KEY, String(Date.now() + HIDE_DAYS * 86_400_000));
+      window.localStorage.setItem(storageKey, String(Date.now() + HIDE_DAYS * 86_400_000));
     } catch {
       // Closes for this page view only.
     }
@@ -40,9 +43,9 @@ export function VerifyNudge() {
     <div role="region" aria-label="Verified plan" className="mb-6 flex items-start gap-3 rounded-2xl border border-accent/25 bg-accent-tint px-4 py-3.5 sm:items-center sm:px-5">
       <SealIcon className="mt-0.5 size-6 shrink-0 sm:mt-0" />
       <p className="flex-1 text-[15px] text-ink">
-        Your company is not verified yet. Verified companies show the Verified badge, are listed above companies that are not verified, and can add Accelfied badges to their own website.{' '}
+        {message ?? 'Your company is not verified yet. Verified companies show the Verified badge, are listed above companies that are not verified, and can add Accelfied badges to their own website.'}{' '}
         <Link href={PLAN_PAGE} className="inline-flex items-center gap-1 font-semibold whitespace-nowrap text-accent hover:underline">
-          Get Accelfied
+          {action ?? 'Get Accelfied'}
           <ArrowRight className="size-4" aria-hidden="true" />
         </Link>
       </p>

@@ -14,6 +14,7 @@ import { soraText } from '@/lib/badges/text';
 import { getCompanyAwards } from '@/lib/data';
 import { formatRating } from '@/lib/format';
 import type { OwnedCompany, TopAward } from '@/lib/types';
+import { myVerifyStage, PLAN_PAGE, STAGE_COPY, type VerifyStage } from '@/lib/verification-stage';
 
 export const metadata: Metadata = { title: 'Badges' };
 
@@ -24,7 +25,7 @@ export default async function CompanyBadgePage() {
   const company = await getMyCompany(HERE);
   if (!company || company.status === 'rejected') return <NoCompany />;
   const live = company.status === 'published';
-  const awards = live ? await getCompanyAwards(company.slug) : [];
+  const [awards, stage] = await Promise.all([live ? getCompanyAwards(company.slug) : Promise.resolve([] as TopAward[]), company.verified ? Promise.resolve<VerifyStage>('pay') : myVerifyStage()]);
   return (
     <>
       <DashboardHeader
@@ -38,21 +39,21 @@ export default async function CompanyBadgePage() {
         </Panel>
       ) : (
         <div className="space-y-8">
-          <Status company={company} awards={awards} />
-          {company.verified ? <Kit company={company} awards={awards} /> : <Locked company={company} />}
+          <Status company={company} awards={awards} stage={stage} />
+          {company.verified ? <Kit company={company} awards={awards} /> : <Locked company={company} stage={stage} />}
         </div>
       )}
     </>
   );
 }
 
-function Status({ company, awards }: { company: OwnedCompany; awards: TopAward[] }) {
+function Status({ company, awards, stage }: { company: OwnedCompany; awards: TopAward[]; stage: VerifyStage }) {
   const { count, average } = company.rating;
   const toGo = Math.max(0, PREMIER.reviews - count);
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <StatusTile icon={<SealIcon className="size-7" />} title="Verified" earned={company.verified}>
-        {company.verified ? 'Earned with your Verified plan.' : 'Comes with the Verified plan.'}
+        {company.verified ? 'Earned with your Verified plan.' : stage === 'pay' ? 'Comes with the Verified plan.' : stage === 'rejected' ? 'Payment received. Your business details need a fix.' : stage === 'details' ? 'Payment received. Add your business details to finish.' : 'Payment received. Your business details are in review.'}
       </StatusTile>
       <StatusTile icon={<SealIcon premier className="size-7" />} title="Premier Verified" earned={company.premier}>
         {company.premier
@@ -102,7 +103,8 @@ function Kit({ company, awards }: { company: OwnedCompany; awards: TopAward[] })
 }
 
 /** Companies without the Verified plan see what they would get, and keep the plain profile badge. */
-function Locked({ company }: { company: OwnedCompany }) {
+function Locked({ company, stage }: { company: OwnedCompany; stage: VerifyStage }) {
+  const copy = stage === 'pay' ? null : STAGE_COPY[stage];
   const preview = (svg: string) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   const seal = preview(toSvg(sealArt('verified', 'light', soraText, istYear(), 'v'), 'Verified badge'));
   const premier = preview(toSvg(sealArt('premier', 'light', soraText, istYear(), 'p'), 'Premier Verified badge'));
@@ -121,12 +123,13 @@ function Locked({ company }: { company: OwnedCompany }) {
             </span>
           </div>
           <div>
-            <h2 className="font-display text-2xl font-semibold text-ink">Unlock your Verified badges</h2>
+            <h2 className="font-display text-2xl font-semibold text-ink">{copy ? copy.title : 'Unlock your Verified badges'}</h2>
             <p className="mt-2 text-ink-soft">
-              With the Verified plan you get the Verified badge on your profile and in listings, high quality badge files (SVG and PNG up to 2048px), banners for social posts, and website code that links back to your profile. Premier Verified and Top company awards unlock as your client reviews grow.
+              {copy ? copy.text : null}
+              {copy ? null : 'With the Verified plan you get the Verified badge on your profile and in listings, high quality badge files (SVG and PNG up to 2048px), banners for social posts, and website code that links back to your profile. Premier Verified and Top company awards unlock as your client reviews grow.'}
             </p>
             <div className="mt-5">
-              <ButtonLink href="/dashboard/company/verified">Get Accelfied</ButtonLink>
+              <ButtonLink href={PLAN_PAGE}>{copy ? copy.action : 'Get Accelfied'}</ButtonLink>
             </div>
           </div>
         </div>

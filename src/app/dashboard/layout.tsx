@@ -5,6 +5,7 @@ import { DashboardNav, type NavGroup } from '@/components/dashboard/dashboard-na
 import { NavSkeleton } from '@/components/skeleton/dashboard';
 import { DashboardSkeleton } from '@/components/skeleton/skeleton';
 import { VerifyNudge } from '@/components/dashboard/verify-nudge';
+import { myVerifyStage, STAGE_COPY } from '@/lib/verification-stage';
 import { Container } from '@/components/ui/container';
 import { getUnreadCounts } from '@/lib/account-data';
 import { apiPrivateGet } from '@/lib/api';
@@ -42,7 +43,9 @@ async function Nudge() {
   if (!token) return null;
   const company = await loadMyCompany(token);
   if (!company || company.verified || company.status === 'rejected' || company.status === 'suspended') return null;
-  return <VerifyNudge />;
+  const stage = await myVerifyStage();
+  if (stage === 'pay') return <VerifyNudge />;
+  return <VerifyNudge message={STAGE_COPY[stage].text} action={STAGE_COPY[stage].action} />;
 }
 
 async function Nav() {
