@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { cancelSponsorship, startSponsorship } from '@/app/billing-actions';
 import { DashboardHeader, Panel } from '@/components/dashboard/bits';
-import { CurrencySwitch } from '@/components/dashboard/currency-switch';
 import { NoCompany } from '@/components/dashboard/no-company';
 import { VerifiedCheckout } from '@/components/dashboard/verified-checkout';
 import { Button } from '@/components/ui/button';
@@ -12,7 +11,7 @@ import { countrySlug, placeSlug } from '@/lib/places';
 import { formatDay } from '@/lib/format';
 import { requireUser } from '@/lib/session';
 import type { SponsorOption, Sponsorships } from '@/lib/types';
-import { formatWhole, PAYING_STATUSES, readCurrency } from '@/lib/verified-plan';
+import { formatWhole, PAYING_STATUSES } from '@/lib/verified-plan';
 
 export const metadata: Metadata = { title: 'Sponsored places' };
 
@@ -34,9 +33,10 @@ const priceIn = (data: Sponsorships, currency: 'USD' | 'INR') => {
   return formatWhole(plan.total, plan.currency);
 };
 
-export default async function SponsoredPlacesPage({ searchParams }: PageProps<'/dashboard/company/sponsored'>) {
-  const [{ user }, data, params] = await Promise.all([requireUser(HERE), getMySponsorships(HERE), searchParams]);
-  const currency = data.prices ? readCurrency(params.currency) : 'USD';
+export default async function SponsoredPlacesPage() {
+  const [{ user }, data] = await Promise.all([requireUser(HERE), getMySponsorships(HERE)]);
+  // Rupees first. An API from before rupee prices only knows dollars.
+  const prices = data.prices ? { INR: priceIn(data, 'INR'), USD: priceIn(data, 'USD') } : undefined;
   if (!data.company) {
     return (
       <>
@@ -46,7 +46,7 @@ export default async function SponsoredPlacesPage({ searchParams }: PageProps<'/
     );
   }
 
-  const price = priceIn(data, currency);
+  const price = priceIn(data, data.prices ? 'INR' : 'USD');
   const live = data.company.status === 'published';
   const active = data.options.filter(isPaying);
   const available = data.options.filter((option) => !isPaying(option));
@@ -114,7 +114,6 @@ export default async function SponsoredPlacesPage({ searchParams }: PageProps<'/
             <p className="-mt-2 mb-5 text-ink-soft">
               You can sponsor pages for the services and locations on your profile. Sponsored companies are marked &ldquo;Sponsored&rdquo; so clients always know.
             </p>
-            {data.prices && <CurrencySwitch value={currency} href={HERE} className="mb-5" />}
             <ul className="divide-y divide-line">
               {available.map((option) => {
                 const left = Math.max(0, data.maxPerPage - option.taken);
@@ -133,21 +132,18 @@ export default async function SponsoredPlacesPage({ searchParams }: PageProps<'/
                     {left > 0 && (
                       <div className="shrink-0 sm:text-right">
                         <VerifiedCheckout
-                          key={currency}
                           size="md"
-                          label={`Sponsor for ${price} / month`}
+                          label={prices ? 'Sponsor this page' : `Sponsor for ${price} / month`}
                           description={`Sponsored place: ${option.label}`}
                           name={`${user.firstName} ${user.lastName}`}
                           email={user.email}
-                          start={startSponsorship.bind(
-                            null,
-                            {
-                              service: option.service.slug,
-                              country: option.countryCode ?? undefined,
-                              city: option.city ?? undefined,
-                            },
-                            currency,
-                          )}
+                          prices={prices}
+                          priceNote="/ month"
+                          start={startSponsorship.bind(null, {
+                            service: option.service.slug,
+                            country: option.countryCode ?? undefined,
+                            city: option.city ?? undefined,
+                          })}
                         />
                       </div>
                     )}

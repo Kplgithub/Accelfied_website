@@ -3,7 +3,9 @@
 import { Lock } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { confirmVerifiedPayment, type StartResult } from '@/app/billing-actions';
+import type { Currency } from '@/lib/verified-plan';
 import { Button } from '../ui/button';
+import { CurrencyChoice, type CurrencyPrices } from './currency-choice';
 
 const CHECKOUT_SRC = 'https://checkout.razorpay.com/v1/checkout.js';
 
@@ -54,6 +56,8 @@ export function VerifiedCheckout({
   description,
   email,
   name,
+  prices,
+  priceNote,
   start: startSubscription,
   size = 'lg',
 }: {
@@ -62,18 +66,30 @@ export function VerifiedCheckout({
   description: string;
   email: string;
   name: string;
-  start: () => Promise<StartResult>;
+  /** Rupees or dollars is asked after Pay is pressed. Without prices (an older API) it charges dollars. */
+  prices?: CurrencyPrices;
+  /** Shown under each price in that question, such as "/ month". */
+  priceNote?: string;
+  start: (currency: Currency) => Promise<StartResult>;
   size?: 'lg' | 'md';
 }) {
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
+  const [choosing, setChoosing] = useState(false);
   const [confirming, startConfirm] = useTransition();
 
-  async function start() {
+  function press() {
+    setMessage('');
+    if (prices) setChoosing(true);
+    else void start('USD');
+  }
+
+  async function start(currency: Currency) {
+    setChoosing(false);
     setMessage('');
     setBusy(true);
     try {
-      const [plan] = await Promise.all([startSubscription(), loadCheckout()]);
+      const [plan] = await Promise.all([startSubscription(currency), loadCheckout()]);
       if (!plan.ok) {
         setMessage(plan.message);
         setBusy(false);
@@ -108,7 +124,7 @@ export function VerifiedCheckout({
   const working = busy || confirming;
   return (
     <div>
-      <Button type="button" size={size} onClick={start} disabled={working} className="w-full sm:w-auto">
+      <Button type="button" size={size} onClick={press} disabled={working} className="w-full sm:w-auto">
         {working && <span className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />}
         {confirming ? 'Confirming payment…' : busy ? 'Opening payment…' : label}
       </Button>
@@ -120,6 +136,7 @@ export function VerifiedCheckout({
           {message}
         </p>
       )}
+      {prices && <CurrencyChoice open={choosing} prices={prices} note={priceNote} onChoose={start} onClose={() => setChoosing(false)} />}
     </div>
   );
 }

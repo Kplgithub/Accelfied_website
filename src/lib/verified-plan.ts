@@ -12,9 +12,6 @@ export const VERIFIED_PLAN_INR = { monthly: 520, yearly: 4_999, currency: 'INR' 
 /** What a company can pay in. Rupees come first: most companies on Accelfied are in India. */
 export const CURRENCIES = ['INR', 'USD'] as const;
 export type Currency = (typeof CURRENCIES)[number];
-export const DEFAULT_CURRENCY: Currency = 'INR';
-/** Reads `?currency=` from a URL; anything else means rupees. */
-export const readCurrency = (value: unknown): Currency => (value === 'USD' ? 'USD' : 'INR');
 /** How each currency can be paid through Razorpay. */
 export const PAY_METHODS: Record<Currency, string> = { INR: 'UPI, cards, netbanking', USD: 'International cards' };
 
