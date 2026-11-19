@@ -19,6 +19,13 @@ export function DashboardNav({ groups }: { groups: NavGroup[] }) {
     if (nav && active && nav.scrollWidth > nav.clientWidth) {
       nav.scrollTo({ left: active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2 });
     }
+    // On desktop the sidebar scrolls on its own; keep the current page's link inside it.
+    const side = nav?.closest('aside');
+    if (side && active && side.scrollHeight > side.clientHeight) {
+      const link = active.getBoundingClientRect();
+      const box = side.getBoundingClientRect();
+      if (link.top < box.top || link.bottom > box.bottom) side.scrollTop += link.top - box.top - (box.height - link.height) / 2;
+    }
   }, [pathname]);
   return (
     <nav ref={scroller} aria-label="Dashboard" className="relative -mx-4 overflow-x-auto px-4 lg:mx-0 lg:overflow-visible lg:px-0">
