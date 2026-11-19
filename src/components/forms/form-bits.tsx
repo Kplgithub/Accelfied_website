@@ -19,8 +19,8 @@ export function SubmitButton({
 }) {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" size="lg" variant={variant} disabled={pending} className={block ? 'w-full' : 'w-full sm:w-auto'}>
-      {pending && <span className={`size-4 animate-spin rounded-full border-2 ${variant === 'secondary' ? 'border-ink/20 border-t-ink' : 'border-white/40 border-t-white'}`} aria-hidden="true" />}
+    <Button type="submit" size="lg" wrap variant={variant} disabled={pending} className={block ? 'w-full' : 'w-full sm:w-auto'}>
+      {pending && <span className={`size-4 shrink-0 animate-spin rounded-full border-2 ${variant === 'secondary' ? 'border-ink/20 border-t-ink' : 'border-white/40 border-t-white'}`} aria-hidden="true" />}
       {pending ? pendingLabel : children}
     </Button>
   );

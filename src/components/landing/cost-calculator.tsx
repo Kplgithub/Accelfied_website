@@ -108,7 +108,7 @@ export function CostCalculator({ unit, typesLabel, types, addonsLabel, addons, m
               {modifier.options.map((option, index) => (
                 <label
                   key={option.label}
-                  className="cursor-pointer rounded-full bg-surface px-4 py-2 text-sm text-ink ring-1 ring-line transition-colors duration-200 hover:ring-line-strong has-[:checked]:bg-night has-[:checked]:text-white has-[:checked]:ring-night has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent"
+                  className="cursor-pointer rounded-2xl bg-surface px-4 py-2 text-sm leading-snug sm:rounded-full text-ink ring-1 ring-line transition-colors duration-200 hover:ring-line-strong has-[:checked]:bg-night has-[:checked]:text-white has-[:checked]:ring-night has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent"
                 >
                   <input
                     type="radio"

@@ -124,7 +124,7 @@ export function GetMatchedWizard({ groups, tone = 'dark' }: { groups: ServiceGro
             </label>
             <p className="mt-4 text-xs font-medium tracking-wide text-ink-faint uppercase">{query ? 'Matching services' : 'Popular services'}</p>
             {matches.length ? (
-              <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+              <ul className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {matches.map((service) => (
                   <li key={service.slug}>
                     <button
@@ -176,7 +176,7 @@ export function GetMatchedWizard({ groups, tone = 'dark' }: { groups: ServiceGro
         )}
 
         {step === 2 && (
-          <ul className="mt-5 grid gap-2 sm:grid-cols-2">
+          <ul className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
             {BUDGETS.map((budget) => (
               <li key={budget.value}>
                 <button type="button" onClick={() => pick('budget', budget.value)} className={`${option} ${data.budget === budget.value ? optionActive : optionIdle}`}>
@@ -189,7 +189,7 @@ export function GetMatchedWizard({ groups, tone = 'dark' }: { groups: ServiceGro
         )}
 
         {step === 3 && (
-          <ul className="mt-5 grid gap-2 sm:grid-cols-2">
+          <ul className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
             {TIMELINES.map((timeline) => (
               <li key={timeline.value}>
                 <button type="button" onClick={() => pick('timeline', timeline.value)} className={`${option} ${data.timeline === timeline.value ? optionActive : optionIdle}`}>

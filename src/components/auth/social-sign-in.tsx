@@ -14,8 +14,9 @@ const PROVIDERS = [
 /** Google and LinkedIn buttons, then a divider before the email form. */
 export function SocialSignIn({ from, accountType = 'client', next }: Props) {
   return (
-    <div>
-      <div className="grid gap-3 sm:grid-cols-2">
+    <div className="@container">
+      {/* Side by side only when each button has room for its full label; otherwise one under the other. */}
+      <div className="grid gap-3 @lg:grid-cols-2">
         {PROVIDERS.map(({ id, label, icon: Icon }) => (
           <form key={id} action={startOAuth}>
             <input type="hidden" name="provider" value={id} />
@@ -24,10 +25,10 @@ export function SocialSignIn({ from, accountType = 'client', next }: Props) {
             {next && <input type="hidden" name="next" value={next} />}
             <button
               type="submit"
-              className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2.5 rounded-full bg-surface text-[15px] font-medium text-ink ring-1 ring-line-strong transition-[box-shadow,background-color] duration-200 hover:bg-paper hover:ring-ink/40"
+              className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2.5 rounded-full bg-surface px-6 text-[15px] font-medium whitespace-nowrap text-ink ring-1 ring-line-strong transition-[box-shadow,background-color] duration-200 hover:bg-paper hover:ring-ink/40"
             >
               <Icon />
-              {label}
+              <span>{label}</span>
             </button>
           </form>
         ))}
@@ -62,7 +63,7 @@ export function OAuthNotice({ reason, provider }: { reason?: string; provider?: 
 
 function GoogleMark() {
   return (
-    <svg viewBox="0 0 24 24" className="size-5" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className="size-5 shrink-0" aria-hidden="true">
       <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5a5.6 5.6 0 0 1-2.4 3.6v3h3.9c2.2-2.1 3.5-5.1 3.5-8.8Z" />
       <path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.9-3a7.2 7.2 0 0 1-10.8-3.8h-4v3.1A12 12 0 0 0 12 24Z" />
       <path fill="#FBBC05" d="M5.3 14.3a7.2 7.2 0 0 1 0-4.6V6.6h-4a12 12 0 0 0 0 10.8l4-3.1Z" />
@@ -73,7 +74,7 @@ function GoogleMark() {
 
 function LinkedInMark() {
   return (
-    <svg viewBox="0 0 24 24" className="size-5" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className="size-5 shrink-0" aria-hidden="true">
       <rect width="24" height="24" rx="4" fill="#0A66C2" />
       <path
         fill="#fff"
