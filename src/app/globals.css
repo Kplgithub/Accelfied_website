@@ -319,7 +319,12 @@ html {
   background: linear-gradient(90deg, transparent, var(--brand) 30%, var(--accent-soft) 50%, var(--accent) 70%, transparent);
   background-size: 200% 100%;
   opacity: 0.8;
-  animation: footer-sheen 9s linear infinite;
+}
+/* The light only runs on larger screens with a mouse; on phones it would repaint every frame on every page. */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .footer-sheen {
+    animation: footer-sheen 9s linear infinite;
+  }
 }
 @keyframes footer-sheen {
   from { background-position: 100% 0; }

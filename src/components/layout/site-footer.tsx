@@ -76,6 +76,10 @@ const BUSINESSES = [
 const INDIA = 'IN';
 const EXPLORE_LIMIT = 10;
 
+/*
+ * Footer links are not prefetched. The footer is on every page and holds 40+ links, and
+ * prefetching them all made each visit ask the server for pages most people never open.
+ */
 export function SiteFooter() {
   return (
     <footer className="relative mt-auto overflow-hidden bg-night text-paper/80 print:hidden">
@@ -101,7 +105,7 @@ export function SiteFooter() {
                   <ul className="mt-5 space-y-3">
                     {column.links.map((link) => (
                       <li key={link.href + link.label}>
-                        <Link href={link.href} className="footer-link text-[15px]">
+                        <Link prefetch={false} href={link.href} className="footer-link text-[15px]">
                           {link.label}
                         </Link>
                       </li>
@@ -162,6 +166,7 @@ function FooterPromise() {
         </h2>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
+            prefetch={false}
             href="/get-matched"
             className="group inline-flex h-12 items-center gap-2 rounded-full bg-brand px-6 text-[15px] font-medium text-white shadow-[0_10px_30px_-10px_rgb(199_54_47/0.8)] transition-colors hover:bg-brand-strong"
           >
@@ -169,6 +174,7 @@ function FooterPromise() {
             <ArrowRight className="size-4 transition-transform duration-300 ease-out group-hover:translate-x-1 motion-reduce:transition-none" aria-hidden="true" />
           </Link>
           <Link
+            prefetch={false}
             href="/join?as=provider"
             className="group inline-flex h-12 items-center gap-2 rounded-full border border-white/20 px-6 text-[15px] font-medium text-white transition-colors hover:border-white/50 hover:bg-white/5"
           >
@@ -183,7 +189,7 @@ function FooterPromise() {
           <ShieldCheck className="size-6 text-accent-soft" aria-hidden="true" />
           <p className="mt-3 text-[15px] leading-snug text-paper/80">
             Every review is read by our team before it goes live.{' '}
-            <Link href="/how-reviews-work" className="text-white underline decoration-white/30 underline-offset-4 transition-colors hover:decoration-white">
+            <Link prefetch={false} href="/how-reviews-work" className="text-white underline decoration-white/30 underline-offset-4 transition-colors hover:decoration-white">
               How reviews work
             </Link>
           </p>
@@ -231,7 +237,7 @@ async function FooterExplore() {
     <Reveal className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-6 sm:p-8">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h2 className="font-display text-2xl font-semibold text-white">Explore companies across India</h2>
-        <Link href="/agencies" className="footer-link text-sm text-accent-soft">
+        <Link prefetch={false} href="/agencies" className="footer-link text-sm text-accent-soft">
           See every company
         </Link>
       </div>
@@ -242,7 +248,7 @@ async function FooterExplore() {
             <ul className="flex min-w-0 flex-wrap gap-2">
               {row.links.map((link) => (
                 <li key={link.href} className="max-w-full max-sm:[&:nth-child(n+7)]:hidden">
-                  <Link href={link.href} className="footer-chip">
+                  <Link prefetch={false} href={link.href} className="footer-chip">
                     {link.label}
                   </Link>
                 </li>

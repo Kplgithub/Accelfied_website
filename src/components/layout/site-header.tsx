@@ -82,7 +82,11 @@ function GuestActions() {
   );
 }
 
-/** Second row on large screens: every service group opens a menu of its services. */
+/**
+ * Second row on large screens: every service group opens a menu of its services.
+ * The menu links sit hidden in the page, so they are not prefetched: otherwise every page view
+ * would ask the server for 25+ service pages nobody has opened. They load on click as usual.
+ */
 async function ServiceBar() {
   const groups = await getServiceGroups();
   return (
@@ -114,6 +118,7 @@ async function ServiceBar() {
                       <li key={service.slug}>
                         <Link
                           href={`/agencies/${service.slug}`}
+                          prefetch={false}
                           className="block rounded-lg px-2 py-1.5 text-sm text-ink-soft transition-colors hover:bg-paper hover:text-accent"
                         >
                           {service.name}
