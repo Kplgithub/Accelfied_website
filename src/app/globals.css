@@ -77,6 +77,9 @@
   }
 }
 
+/* Smooth only for in-page jumps (#section links). The data-scroll-behavior="smooth"
+   attribute on <html> tells Next.js to scroll instantly on page changes, so clicking a
+   tab or a link no longer slides the page up and down while the new page loads. */
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
