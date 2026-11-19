@@ -9,7 +9,6 @@ export type SectionKey =
   | 'locations'
   | 'social'
   | 'awards'
-  | 'packages'
   | 'portfolio'
   | 'team';
 
@@ -36,7 +35,7 @@ export function profileSections(company: OwnedCompany, details: CompanyDetails):
       title: 'Company information',
       tip: 'Add a logo, a one-line tagline and a full description.',
       done: Boolean(company.logoUrl && company.tagline && company.description.length >= 200),
-      weight: 16,
+      weight: 21,
       href: edit('company'),
     },
     {
@@ -96,19 +95,11 @@ export function profileSections(company: OwnedCompany, details: CompanyDetails):
       href: edit('awards'),
     },
     {
-      key: 'packages',
-      title: 'Packages',
-      tip: 'Show a price range with Starter, Growth and Scale packages.',
-      done: details.packages.some((item) => item.status === 'published'),
-      weight: 10,
-      href: '/dashboard/company/packages',
-    },
-    {
       key: 'portfolio',
       title: 'Portfolio',
       tip: 'Add at least three projects with pictures.',
       done: company.portfolio.length >= 3,
-      weight: 10,
+      weight: 15,
       href: '/dashboard/company/portfolio',
     },
     {

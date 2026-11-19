@@ -53,53 +53,69 @@ async function Nav() {
   const [user, token] = await Promise.all([getCurrentUser(), getSessionToken()]);
   if (!user || !token) return null;
   const [company, unread] = await Promise.all([loadMyCompany(token), getUnreadCounts(token)]);
-  const groups: NavGroup[] = [
-    {
-      title: 'Account',
-      links: [
-        { href: '/dashboard', label: 'Overview' },
-        { href: '/dashboard/messages', label: 'Messages', count: unread.client + unread.company, prefix: true },
-      ],
-    },
-  ];
-  const companyGroup: NavGroup = {
-    title: 'My company',
-    links: company
-      ? [
-          { href: '/dashboard/company', label: 'Edit profile' },
-          { href: '/dashboard/company/packages', label: 'Packages' },
-          { href: '/dashboard/company/requests', label: 'Project requests' },
-          { href: '/dashboard/company/analytics', label: 'Analytics' },
-          { href: '/dashboard/company/projects', label: 'Projects', prefix: true },
-          { href: '/dashboard/company/reviews', label: 'Client reviews' },
-          { href: '/dashboard/company/portfolio', label: 'Portfolio' },
-          { href: '/dashboard/company/team', label: 'Team' },
-          { href: '/dashboard/company/badge', label: 'Badges' },
-          { href: '/dashboard/company/verified', label: company.verified ? 'Verified plan' : 'Get Accelfied' },
-          { href: '/dashboard/company/sponsored', label: 'Sponsored places' },
-          { href: '/dashboard/company/blog', label: 'Write a blog', prefix: true },
-          { href: '/dashboard/company/billing', label: 'Billing' },
-        ]
-      : [{ href: '/dashboard/company', label: 'List your company' }],
-  };
-  const hiringGroup: NavGroup = {
+  const messages = { href: '/dashboard/messages', label: 'Messages', icon: 'messages', count: unread.client + unread.company, prefix: true } as const;
+  const hiring: NavGroup = {
     title: 'Hiring',
     links: [
-      { href: '/dashboard/briefs', label: 'Project briefs', prefix: true },
-      { href: '/dashboard/shortlist', label: 'Shortlist' },
-      { href: '/dashboard/requests', label: 'Quotes sent' },
-      { href: '/dashboard/reviews', label: 'My reviews' },
+      { href: '/dashboard/briefs', label: 'Project briefs', icon: 'brief', prefix: true },
+      { href: '/dashboard/shortlist', label: 'Shortlist', icon: 'shortlist' },
+      { href: '/dashboard/requests', label: 'Quotes sent', icon: 'quotes' },
+      { href: '/dashboard/reviews', label: 'My reviews', icon: 'myReviews' },
     ],
   };
-  if (user.accountType === 'provider' || company) groups.push(companyGroup, hiringGroup);
-  else groups.push(hiringGroup, companyGroup);
-  groups.push({
-    title: 'Settings',
-    links: [
-      { href: '/dashboard/profile', label: 'My profile' },
-      { href: '/dashboard/settings', label: 'Account settings' },
-    ],
-  });
+  const settings: NavGroup['links'] = [
+    { href: '/dashboard/profile', label: 'My profile', icon: 'profile' },
+    { href: '/dashboard/settings', label: 'Account settings', icon: 'settings' },
+  ];
+  const groups: NavGroup[] = [];
+  if (company) {
+    // Grouped by what an owner is trying to do: run the listing, see results, get found, manage the account.
+    groups.push(
+      {
+        title: 'Overview',
+        links: [
+          { href: '/dashboard', label: 'Dashboard', icon: 'home' },
+          { href: '/dashboard/company', label: 'Edit profile', icon: 'edit' },
+          { href: '/dashboard/company/reviews', label: 'Client reviews', icon: 'reviews', prefix: true },
+          messages,
+          // Project requests open once the company is Verified.
+          ...(company.verified ? [{ href: '/dashboard/company/requests', label: 'Project requests', icon: 'requests' } as const] : []),
+        ],
+      },
+      {
+        title: 'Performance',
+        links: [
+          { href: '/dashboard/company/analytics', label: 'Analytics', icon: 'analytics' },
+          { href: '/dashboard/company/projects', label: 'Projects', icon: 'projects', prefix: true },
+          { href: '/dashboard/company/badge', label: 'Badges', icon: 'badges' },
+        ],
+      },
+      {
+        title: 'Marketing',
+        links: [
+          { href: '/dashboard/company/portfolio', label: 'Portfolio', icon: 'portfolio' },
+          { href: '/dashboard/company/blog', label: 'Write a blog', icon: 'blog', prefix: true },
+          { href: '/dashboard/company/sponsored', label: 'Sponsored places', icon: 'sponsored' },
+        ],
+      },
+      hiring,
+      {
+        title: 'Account',
+        links: [
+          { href: '/dashboard/company/verified', label: company.verified ? 'Verified plan' : 'Get Accelfied', icon: 'verified' },
+          { href: '/dashboard/company/team', label: 'Team', icon: 'team' },
+          { href: '/dashboard/company/billing', label: 'Billing', icon: 'billing' },
+          ...settings,
+        ],
+      },
+    );
+  } else {
+    const listCompany: NavGroup = { title: 'My company', links: [{ href: '/dashboard/company', label: 'List your company', icon: 'edit' }] };
+    groups.push({ title: 'Overview', links: [{ href: '/dashboard', label: 'Dashboard', icon: 'home' }, messages] });
+    if (user.accountType === 'provider') groups.push(listCompany, hiring);
+    else groups.push(hiring, listCompany);
+    groups.push({ title: 'Account', links: settings });
+  }
   return (
     <>
       {company && <CompanySidebarCard company={company} />}

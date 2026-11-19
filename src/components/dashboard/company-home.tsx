@@ -1,4 +1,4 @@
-import { ArrowRight, MessageSquareQuote, Package, TrendingUp } from 'lucide-react';
+import { ArrowRight, MessageSquareQuote, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { TrendChart } from '@/components/analytics/trend-chart';
 import { HealthGauge } from '@/components/charts/health-gauge';
@@ -12,6 +12,7 @@ import { RecommendedTasks } from '../vendor/recommended-tasks';
 import { recommendedTasks } from '@/lib/tasks';
 import type { Certification, CertificationRules } from '@/lib/vendor-tools';
 import { Panel } from './bits';
+import { GetStarted } from './get-started';
 
 const HEALTH_TEXT = {
   Great: 'Clients see everything they need to trust you. Keep adding reviews and projects.',
@@ -19,19 +20,17 @@ const HEALTH_TEXT = {
   'Needs work': 'Fill in the sections below so clients can judge your work.',
 } as const;
 
-/** The top of a company owner's dashboard: health, reviews, the last 90 days and what to do next. */
+/** The top of a company owner's dashboard: next steps, health, reviews, the last 90 days and what to do next. */
 export function CompanyHome({
   company,
   health,
   analytics,
-  hasPackages,
   skippedTasks,
   certifications,
 }: {
   company: OwnedCompany;
   health: ProfileHealth;
   analytics: CompanyAnalytics | null;
-  hasPackages: boolean;
   skippedTasks: string[];
   certifications: { items: Certification[]; rules: CertificationRules } | null;
 }) {
@@ -39,6 +38,7 @@ export function CompanyHome({
   const tasks = recommendedTasks(company, health);
   return (
     <div className="space-y-6">
+      <GetStarted company={company} />
       <div className="grid gap-6 lg:grid-cols-2">
         <Reveal className="rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-[var(--shadow-card)]">
           <p className="text-xs font-semibold tracking-[0.14em] text-ink-faint uppercase">Profile score</p>
@@ -79,32 +79,12 @@ export function CompanyHome({
             Ask a past client for a review. It takes them about ten minutes, and our team checks every review before it shows.
           </p>
           <div className="mt-auto pt-5">
-            <ButtonLink href="/dashboard/company/reviews" size="sm">
-              Request a review
+            <ButtonLink href="/dashboard/company/reviews/request" size="sm">
+              Request a client review
             </ButtonLink>
           </div>
         </Reveal>
       </div>
-
-      {/* Companies without the Verified plan see the upgrade strip at the top of the page instead. */}
-      {!hasPackages ? (
-        <Reveal className="relative overflow-hidden rounded-[var(--radius-card)] border border-accent/30 bg-gradient-to-br from-accent-tint to-surface p-6 sm:p-7">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-4">
-              <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-accent text-white">
-                <Package className="size-5" aria-hidden="true" />
-              </span>
-              <div>
-                <p className="font-display text-xl font-semibold text-ink">Show clients a price range</p>
-                <p className="mt-1 max-w-xl text-sm text-ink-soft">Add Starter, Growth and Scale packages. Clients who can see prices send briefs that fit your budget.</p>
-              </div>
-            </div>
-            <ButtonLink href="/dashboard/company/packages" size="sm">
-              Add packages
-            </ButtonLink>
-          </div>
-        </Reveal>
-      ) : null}
 
       <Panel>
         <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
