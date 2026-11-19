@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { ApiError, apiSend } from '@/lib/api';
 import type { FormState } from '@/lib/form-state';
 import { getSessionToken } from '@/lib/session';
+import { dashboardUrl } from '@/lib/site';
 import { clientIp, echo, friendly, submit, text } from '@/lib/submit';
 
 const ID = /^[a-f\d]{24}$/i;
@@ -30,7 +31,7 @@ export async function startConversation(_prev: FormState, form: FormData): Promi
     if (!(error instanceof ApiError)) console.error('Starting a conversation failed', error);
     return { status: 'error', message, errors: body ? {} : { body: 'Write a message' }, values: echo(form), nonce: Date.now() };
   }
-  redirect(`/dashboard/messages/${id}`);
+  redirect(dashboardUrl(`/dashboard/messages/${id}`));
 }
 
 export async function sendMessage(_prev: FormState, form: FormData): Promise<FormState> {

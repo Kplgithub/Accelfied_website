@@ -7,6 +7,7 @@ import { AuthShell } from '@/components/auth/auth-shell';
 import { EmailOtpForm } from '@/components/auth/email-otp-form';
 import { TokenConfirm } from '@/components/auth/token-confirm';
 import { getCurrentUser, loginHref, safeNext } from '@/lib/session';
+import { dashboardUrl } from '@/lib/site';
 import { testOtpEnabled } from '@/lib/test-otp';
 
 export const metadata: Metadata = {
@@ -36,7 +37,7 @@ async function Content({ searchParams }: Pick<PageProps<'/verify-email'>, 'searc
   const destination = safeNext(typeof next === 'string' ? next : undefined);
   const user = await getCurrentUser();
   if (!user) redirect(loginHref(`/verify-email?next=${encodeURIComponent(destination)}`));
-  if (user.emailVerified) redirect(destination);
+  if (user.emailVerified) redirect(dashboardUrl(destination));
 
   return (
     <AuthShell

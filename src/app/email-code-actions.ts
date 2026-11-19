@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { ApiError, apiSend } from '@/lib/api';
 import type { FormState } from '@/lib/form-state';
 import { getSessionToken, loginHref, safeNext } from '@/lib/session';
+import { dashboardUrl } from '@/lib/site';
 import { clientIp, text } from '@/lib/submit';
 
 const CODE = /^\d{6}$/;
@@ -27,7 +28,7 @@ export async function verifyEmailCode(_prev: FormState, form: FormData): Promise
     console.error('Email code check failed', error);
     return { status: 'error', message: 'We could not reach our servers. Please try again in a moment.', nonce: Date.now() };
   }
-  redirect(next);
+  redirect(dashboardUrl(next));
 }
 
 /** Emails a fresh code. */

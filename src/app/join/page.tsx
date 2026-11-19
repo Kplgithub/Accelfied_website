@@ -9,6 +9,7 @@ import { JoinForm } from '@/components/auth/join-form';
 import { OAuthNotice, SocialSignIn } from '@/components/auth/social-sign-in';
 import { Container } from '@/components/ui/container';
 import { getCurrentUser, safeNext } from '@/lib/session';
+import { dashboardUrl } from '@/lib/site';
 import type { AccountType } from '@/lib/types';
 import { AuthSkeleton } from '@/components/skeleton/public';
 
@@ -46,7 +47,7 @@ export default function JoinPage({ searchParams }: PageProps<'/join'>) {
 async function JoinContent({ searchParams }: Pick<PageProps<'/join'>, 'searchParams'>) {
   const params = await searchParams;
   const next = typeof params.next === 'string' ? safeNext(params.next, '') || undefined : undefined;
-  if (await getCurrentUser()) redirect(next ?? '/dashboard');
+  if (await getCurrentUser()) redirect(dashboardUrl(next ?? '/dashboard'));
 
   const role = params.as === 'client' || params.as === 'provider' ? params.as : null;
   const withNext = (path: string) => (next ? `${path}${path.includes('?') ? '&' : '?'}next=${encodeURIComponent(next)}` : path);
