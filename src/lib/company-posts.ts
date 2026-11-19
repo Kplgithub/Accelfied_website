@@ -27,6 +27,8 @@ export interface CompanyPostFull extends CompanyPost {
 export interface CompanyPostOverview {
   enabled: boolean;
   price: { total: number; taxable: number; gst: number; currency: string };
+  /** The price in each currency. Missing from APIs older than rupee prices. */
+  prices?: Record<'USD' | 'INR', { total: number; taxable: number; gst: number; currency: string }>;
   reviewHours: number;
   company: { name: string; slug: string; status: string } | null;
   posts: CompanyPost[];

@@ -12,7 +12,7 @@ import { getMyBilling } from '@/lib/account-data';
 import { formatDay } from '@/lib/format';
 import { requireUser } from '@/lib/session';
 import type { Billing } from '@/lib/types';
-import { formatMoney, PAYING_STATUSES, PLAN_COMPARISON } from '@/lib/verified-plan';
+import { formatMoney, formatWhole, PAYING_STATUSES, PLAN_COMPARISON } from '@/lib/verified-plan';
 
 export const metadata: Metadata = { title: 'Get Verified' };
 
@@ -109,9 +109,13 @@ export default async function VerifiedPlanPage() {
 }
 
 function PlanPanel({ billing, user }: { billing: Billing; user: { firstName: string; lastName: string; email: string } }) {
-  const { company, subscription, plan, plans } = billing;
+  const { company, subscription } = billing;
   if (!company) return null;
   const live = company.status === 'published';
+  // Rupees first. An API from before rupee prices only knows dollars.
+  const plans = billing.prices?.INR ?? billing.plans;
+  const usd = billing.prices?.USD;
+  const plan = plans.monthly;
   const yearlySaving = plans.monthly.total * 12 - plans.yearly.total;
   return (
     <Panel>
@@ -133,11 +137,16 @@ function PlanPanel({ billing, user }: { billing: Billing; user: { firstName: str
         <div>
           <p className="font-display text-2xl font-semibold text-ink">{plan.name}</p>
           <p className="mt-1 text-ink-soft">
-            <span className="font-display text-3xl font-semibold text-ink">{formatMoney(plan.total, plan.currency).replace(/\.00$/, '')}</span> / month, or{' '}
-            {formatMoney(plans.yearly.total, plans.yearly.currency).replace(/\.00$/, '')} / year. GST included.
+            <span className="font-display text-3xl font-semibold text-ink">{formatWhole(plan.total, plan.currency)}</span> / month, or{' '}
+            {formatWhole(plans.yearly.total, plans.yearly.currency)} / year. GST included.
+            {usd && (
+              <span className="block text-sm text-ink-faint">
+                Or {formatWhole(usd.monthly.total, 'USD')} / month, {formatWhole(usd.yearly.total, 'USD')} / year in dollars. You choose when you pay.
+              </span>
+            )}
           </p>
           <p className="mt-1 text-sm text-ink-faint">
-            Paying yearly saves {formatMoney(yearlySaving, plan.currency).replace(/\.00$/, '')}. Every payment gets an invoice with the GST shown separately.
+            Paying yearly saves {formatWhole(yearlySaving, plan.currency)}. Every payment gets an invoice with the GST shown separately.
           </p>
         </div>
         <div className="lg:w-[26rem] lg:shrink-0 lg:text-right">
@@ -146,7 +155,7 @@ function PlanPanel({ billing, user }: { billing: Billing; user: { firstName: str
           ) : !billing.enabled ? (
             <PlanBlocked text="Online payment is being set up." />
           ) : (
-            <VerifiedPlanChooser plans={plans} companyName={company.name} name={`${user.firstName} ${user.lastName}`} email={user.email} />
+            <VerifiedPlanChooser plans={billing.plans} prices={billing.prices} companyName={company.name} name={`${user.firstName} ${user.lastName}`} email={user.email} />
           )}
         </div>
       </div>
@@ -181,7 +190,7 @@ function PlanBlocked({ text }: { text: string }) {
 function RenewalPanel({ billing }: { billing: Billing }) {
   const { subscription } = billing;
   if (!subscription) return null;
-  const plan = billing.plans[subscription.interval ?? 'monthly'];
+  const plan = (billing.prices?.[subscription.currency ?? 'USD'] ?? billing.plans)[subscription.interval ?? 'monthly'];
   const period = plan.interval === 'yearly' ? 'year' : 'month';
   return (
     <Panel title="Your plan">

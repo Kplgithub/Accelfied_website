@@ -6,7 +6,7 @@ import { CompanyPostForm } from '@/components/company-posts/post-form';
 import { DashboardHeader, Panel } from '@/components/dashboard/bits';
 import { NoCompany } from '@/components/dashboard/no-company';
 import { getMyCompanyPosts } from '@/lib/company-posts-data';
-import { formatMoney } from '@/lib/verified-plan';
+import { formatWhole } from '@/lib/verified-plan';
 
 export const metadata: Metadata = { title: 'New blog post' };
 
@@ -22,7 +22,9 @@ export default async function NewCompanyPostPage() {
         title="New blog post"
         intro={
           data.company
-            ? `Save your draft first. You pay ${formatMoney(data.price.total, data.price.currency)} only when you send it to our team, and it goes live within ${data.reviewHours} hours.`
+            ? `Save your draft first. You pay ${
+                data.prices ? `${formatWhole(data.prices.INR.total, 'INR')} (or ${formatWhole(data.prices.USD.total, 'USD')})` : formatWhole(data.price.total, data.price.currency)
+              } only when you send it to our team, and it goes live within ${data.reviewHours} hours.`
             : undefined
         }
       />

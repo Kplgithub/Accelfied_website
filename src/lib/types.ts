@@ -219,13 +219,16 @@ export interface SponsorOption {
   country: string | null;
   city: string | null;
   taken: number;
-  mine: { status: SubscriptionStatus; currentEnd: string | null; cancelAtCycleEnd: boolean } | null;
+  /** `currency` is missing from APIs older than rupee prices: those are dollars. */
+  mine: { status: SubscriptionStatus; currency?: 'USD' | 'INR'; currentEnd: string | null; cancelAtCycleEnd: boolean } | null;
 }
 
 export interface Sponsorships {
   enabled: boolean;
   keyId: string | null;
   plan: PlanPrice;
+  /** The monthly price in each currency. Missing from APIs older than rupee prices. */
+  prices?: Record<'USD' | 'INR', PlanPrice>;
   maxPerPage: number;
   company: { name: string; status: CompanyStatus } | null;
   options: SponsorOption[];
@@ -237,8 +240,10 @@ export interface Billing {
   /** The monthly plan; `plans` has both billing periods. */
   plan: PlanPrice;
   plans: Record<BillingInterval, PlanPrice>;
+  /** Both billing periods in each currency. Missing from APIs older than rupee prices. */
+  prices?: Record<'USD' | 'INR', Record<BillingInterval, PlanPrice>>;
   company: { id: string; name: string; status: CompanyStatus; verified: boolean } | null;
-  subscription: { id: string; status: SubscriptionStatus; interval: BillingInterval; currentEnd: string | null; cancelAtCycleEnd: boolean } | null;
+  subscription: { id: string; status: SubscriptionStatus; interval: BillingInterval; currency?: 'USD' | 'INR'; currentEnd: string | null; cancelAtCycleEnd: boolean } | null;
   verification: VerificationDetails | null;
   invoices: Array<{ id: string; number: string; description: string; total: number; currency: string; paidAt: string; periodStart: string | null; periodEnd: string | null }>;
 }
