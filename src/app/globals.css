@@ -511,3 +511,21 @@ html {
     animation: none;
   }
 }
+
+/* Search suggestions drop in from the box. */
+@keyframes search-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}

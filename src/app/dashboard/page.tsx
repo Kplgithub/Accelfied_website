@@ -3,6 +3,7 @@ import { ClientProgress, type ClientStep } from '@/components/dashboard/client-p
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { UpgradeStrip } from '@/components/dashboard/upgrade-strip';
 import { DashboardHeader, Panel, StatTile, StatusPill } from '@/components/dashboard/bits';
 import { VerifyEmailBanner } from '@/components/dashboard/verify-email-banner';
 import { ClaimCodeForm } from '@/components/auth/code-forms';
@@ -12,6 +13,7 @@ import { ButtonLink } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { getMyClaims, getMyCompany, getMyCompanyAnalytics, getMyCompanyDetails, getMyCompanyLeads, getMyConversations, getMyLeads, getMyReviews, getMyBriefs, getMyShortlist } from '@/lib/account-data';
 import { CompanyHome } from '@/components/dashboard/company-home';
+import { CompanyWelcome } from '@/components/dashboard/company-identity';
 import { profileHealth } from '@/lib/profile-health';
 import { formatDate, formatRating } from '@/lib/format';
 import { requireUser } from '@/lib/session';
@@ -83,27 +85,12 @@ async function CompanyOverview({ user, company }: { user: Account; company: Owne
   const health = company && data ? profileHealth(company, data.details) : null;
   return (
     <>
-      <DashboardHeader
-        eyebrow={company ? company.name : 'Company account'}
-        title={`Welcome back, ${user.firstName}`}
-        intro={
-          company ? (
-            <span className="inline-flex flex-wrap items-center gap-2">
-              <StatusPill status={company.status} kind="company" />
-              Here is how your listing is doing.
-            </span>
-          ) : (
-            'A few steps and your company will be ready for clients.'
-          )
-        }
-        action={
-          company?.status === 'published' ? (
-            <ButtonLink href={`/profile/${company.slug}`} variant="secondary" size="sm">
-              View public profile
-            </ButtonLink>
-          ) : undefined
-        }
-      />
+      <UpgradeStrip company={company} />
+      {company ? (
+        <CompanyWelcome company={company} />
+      ) : (
+        <DashboardHeader eyebrow="Company account" title={`Welcome back, ${user.firstName}`} intro="A few steps and your company will be ready for clients." />
+      )}
       {company && !health && (
         <div className="mb-8 grid gap-4 sm:grid-cols-3">
           <StatTile label="Listing" value={<StatusPill status={company.status} kind="company" />} />

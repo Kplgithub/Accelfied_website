@@ -28,6 +28,17 @@ export interface ServiceLine {
   percent: number;
 }
 
+/** One row in the company name search box. Rating comes only from published reviews. */
+export interface CompanySuggestion {
+  slug: string;
+  name: string;
+  logoUrl: string;
+  city: string;
+  country: string;
+  verified: boolean;
+  rating: { average: number; count: number };
+}
+
 export interface CompanySummary {
   id: string;
   slug: string;
@@ -463,4 +474,16 @@ export interface ReviewDraft {
   step: number;
   answers: Record<string, string | number | boolean>;
   updatedAt: string;
+}
+
+/** A "Top {service} company" award, earned from published reviews (see Accelfied_backend awards module). */
+export interface TopAward {
+  service: string;
+  serviceName: string;
+  scope: 'city' | 'country';
+  /** Empty for country awards. */
+  city: string;
+  countryCode: string;
+  rank: number;
+  year: number;
 }

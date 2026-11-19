@@ -7,6 +7,7 @@ import type {
   CountryFacet,
   IndianStateInfo,
   Page,
+  TopAward,
   Post,
   PublicCompanyDetails,
   PostCard,
@@ -103,6 +104,21 @@ export async function getCompany(slug: string): Promise<CompanyProfile | null> {
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) return null;
     throw error;
+  }
+}
+
+/** "Top {service} company" awards the company holds right now. Empty when the API has none or is older than this route. */
+export async function getCompanyAwards(slug: string): Promise<TopAward[]> {
+  'use cache';
+  cacheLife({ stale: 60, revalidate: 300, expire: 86_400 });
+  cacheTag('companies', `company:${slug}`);
+  try {
+    const { items } = await apiGet<{ items: TopAward[] }>(`/v1/awards/${encodeURIComponent(slug)}`);
+    return items;
+  } catch (error) {
+    if (error instanceof ApiError && (error.status === 404 || error.status === 400)) return [];
+    console.error('Loading company awards failed', error);
+    return [];
   }
 }
 
