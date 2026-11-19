@@ -33,15 +33,28 @@ export function HeroTabs({ groups }: { groups: ServiceGroup[] }) {
           </button>
         ))}
       </div>
-      <div id={`hero-panel-${tab}`} role="tabpanel" aria-labelledby={`hero-tab-${tab}`} className="mt-5">
-        {tab === 'match' ? (
+      {/* Both panels share one grid cell, so the hero keeps the height of the taller one and
+          switching tabs never pushes the rest of the page up or down. */}
+      <div className="mt-5 grid">
+        <div
+          id="hero-panel-match"
+          role="tabpanel"
+          aria-labelledby="hero-tab-match"
+          inert={tab !== 'match'}
+          className={`[grid-area:1/1] ${tab === 'match' ? '' : 'invisible'}`}
+        >
           <GetMatchedWizard groups={groups} />
-        ) : (
-          <div className="animate-rise">
-            <HeroSearch groups={groups} />
-            <p className="mt-4 pl-2 text-sm text-paper/60">Pick a service and a location to see every matching company, ranked by real reviews.</p>
-          </div>
-        )}
+        </div>
+        <div
+          id="hero-panel-browse"
+          role="tabpanel"
+          aria-labelledby="hero-tab-browse"
+          inert={tab !== 'browse'}
+          className={`[grid-area:1/1] ${tab === 'browse' ? 'animate-rise' : 'invisible'}`}
+        >
+          <HeroSearch groups={groups} />
+          <p className="mt-4 pl-2 text-sm text-paper/60">Pick a service and a location to see every matching company, ranked by real reviews.</p>
+        </div>
       </div>
     </div>
   );

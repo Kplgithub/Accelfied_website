@@ -24,14 +24,13 @@ import { GroupIcon } from '@/components/home/group-icon';
 import { HeroTabs } from '@/components/home/hero-tabs';
 import { IndiaSearches } from '@/components/home/india-searches';
 import { TabbedPanels } from '@/components/home/tabbed-panels';
-import { CountUp } from '@/components/motion/count-up';
 import { Reveal } from '@/components/motion/reveal';
 import { ButtonLink } from '@/components/ui/button';
 import { JsonLd } from '@/components/seo/json-ld';
 import { Container } from '@/components/ui/container';
 import { Stars } from '@/components/ui/stars';
 import { countryName } from '@/lib/countries';
-import { getCountryFacets, getFeaturedCompanies, getPosts, getRecentReviews, getServiceGroups, getSiteSettings, getStats, getTeamPicks, type RecentReview } from '@/lib/data';
+import { getCountryFacets, getFeaturedCompanies, getPosts, getRecentReviews, getServiceGroups, getSiteSettings, getTeamPicks, type RecentReview } from '@/lib/data';
 import { formatDate, formatRating } from '@/lib/format';
 import { INDUSTRIES } from '@/lib/labels';
 import { SITE_URL } from '@/lib/site';
@@ -73,9 +72,8 @@ const SITE_LD = [
 ];
 
 export default async function HomePage() {
-  const [groups, stats, featured, reviews, countries, picks, posts] = await Promise.all([
+  const [groups, featured, reviews, countries, picks, posts] = await Promise.all([
     getServiceGroups(),
-    getStats(),
     getFeaturedCompanies(12),
     getRecentReviews(6),
     getCountryFacets(),
@@ -147,25 +145,6 @@ export default async function HomePage() {
           </div>
         </section>
       )}
-
-      {/* 3. Live numbers, straight from the directory */}
-      <section aria-label="Accelfied in numbers" className="border-b border-line bg-paper">
-        <Container className="grid grid-cols-2 gap-6 py-12 text-center md:grid-cols-4">
-          {[
-            { value: stats.companies, label: stats.companies === 1 ? 'company listed' : 'companies listed' },
-            { value: stats.reviews, label: stats.reviews === 1 ? 'published review' : 'published reviews' },
-            { value: services.length, label: 'services covered' },
-            { value: groups.length, label: 'service categories' },
-          ].map((stat, index) => (
-            <Reveal key={stat.label} delay={index * 80}>
-              <p className="font-display text-4xl font-semibold text-ink tabular-nums sm:text-5xl">
-                <CountUp value={stat.value} />
-              </p>
-              <p className="mt-1 text-sm text-ink-soft">{stat.label}</p>
-            </Reveal>
-          ))}
-        </Container>
-      </section>
 
       {/* 4. Service directory */}
       <section className="py-20 lg:py-28">
