@@ -315,31 +315,17 @@ html {
 .prose-post blockquote { border-left: 3px solid var(--brand); padding: 0.25em 0 0.25em 1.1em; font-family: var(--font-display); font-size: 1.3rem; line-height: 1.5; color: var(--ink); }
 
 /*
- * Site footer. A slow light runs along its top edge, links grow an underline,
- * chips glow on hover and the big wordmark draws itself in once.
+ * Site footer: white, with a brick-red rule along the top, links that grow an
+ * underline, and a deep-teal bottom line for the copyright and our businesses.
  */
-.footer-sheen {
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--brand) 30%, var(--accent-soft) 50%, var(--accent) 70%, transparent);
-  background-size: 200% 100%;
-  opacity: 0.8;
-}
-/* The light only runs on larger screens with a mouse; on phones it would repaint every frame on every page. */
-@media (min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .footer-sheen {
-    animation: footer-sheen 9s linear infinite;
-  }
-}
-@keyframes footer-sheen {
-  from { background-position: 100% 0; }
-  to { background-position: -100% 0; }
+.footer-rule {
+  height: 4px;
+  background: linear-gradient(90deg, var(--brand) 0 38%, var(--accent) 38% 52%, var(--line) 52%);
 }
 .footer-link {
   position: relative;
   display: inline-block;
-  color: rgb(247 249 250 / 0.72);
+  color: var(--ink-soft);
   transition: color 200ms;
 }
 .footer-link::after {
@@ -356,55 +342,27 @@ html {
 }
 .footer-link:hover,
 .footer-link:focus-visible {
-  color: #fff;
+  color: var(--ink);
 }
 .footer-link:hover::after,
 .footer-link:focus-visible::after {
   transform: scaleX(1);
   transform-origin: left;
 }
-.footer-chip {
-  display: inline-block;
-  max-width: 100%;
+/* "Explore" lists: compact index links with a small arrow that slides in. */
+.footer-index-link {
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  border: 1px solid rgb(255 255 255 / 0.12);
-  border-radius: 9999px;
-  padding: 0.4rem 0.95rem;
-  font-size: 0.875rem;
-  color: rgb(247 249 250 / 0.78);
-  transition: color 200ms, border-color 200ms, background-color 200ms, box-shadow 260ms, transform 260ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  transition: color 200ms, transform 260ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
-.footer-chip:hover,
-.footer-chip:focus-visible {
-  color: #fff;
-  border-color: rgb(140 203 226 / 0.55);
-  background: rgb(27 116 153 / 0.22);
-  box-shadow: 0 8px 24px -12px rgb(27 116 153 / 0.9);
-  transform: translateY(-2px);
-}
-.footer-tile {
-  border: 1px solid rgb(255 255 255 / 0.1);
-  border-radius: 1.25rem;
-  background: linear-gradient(160deg, rgb(255 255 255 / 0.07), rgb(255 255 255 / 0.015));
-  padding: 1.25rem 1.35rem;
-  backdrop-filter: blur(6px);
-}
-.footer-scribble {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'><path d='M2 9c38-6 80-8 118-5 26 2 50 2 78-3' fill='none' stroke='%23c7362f' stroke-width='3.2' stroke-linecap='round'/></svg>");
-  background-repeat: no-repeat;
-  background-position: 0 100%;
-  background-size: 0% 0.32em;
-  padding-bottom: 0.08em;
-  transition: background-size 900ms 500ms cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-.is-in .footer-scribble,
-:not([data-reveal]) > .footer-scribble {
-  background-size: 100% 0.32em;
-}
-@media (scripting: none) {
-  .footer-scribble { background-size: 100% 0.32em; }
+.footer-index-link:hover,
+.footer-index-link:focus-visible {
+  color: var(--accent);
+  transform: translateX(3px);
 }
 .footer-business {
   display: inline-flex;
@@ -424,31 +382,6 @@ html {
 }
 @media (max-width: 639px) {
   .footer-business img { height: 22px; }
-}
-.footer-wordmark svg {
-  fill: url(#footer-wordmark-fill);
-}
-.footer-wordmark-dot {
-  fill: var(--brand);
-  opacity: 0.9;
-}
-@media (scripting: enabled) {
-  .footer-wordmark svg {
-    clip-path: inset(0 100% 0 0);
-    transition: clip-path 1800ms cubic-bezier(0.65, 0, 0.2, 1);
-  }
-  .footer-wordmark-dot {
-    transform-box: fill-box;
-    transform-origin: center;
-    transform: scale(0);
-    transition: transform 700ms 1300ms cubic-bezier(0.3, 1.6, 0.5, 1);
-  }
-  .footer-wordmark.is-in svg {
-    clip-path: inset(0 0 0 0);
-  }
-  .footer-wordmark.is-in .footer-wordmark-dot {
-    transform: scale(1);
-  }
 }
 /* The PEID logo has a round mark beside the word, so it needs a little more height to match. */
 .footer-business img[src$=".svg"] { height: 32px; }
@@ -557,4 +490,70 @@ html {
   from {
     opacity: 0;
   }
+}
+
+/* ---- Home page sections ---- */
+
+/* Soft dotted texture fading out downwards, behind section headings on white. */
+.dot-field {
+  background-image: radial-gradient(rgb(23 49 59 / 0.13) 1px, transparent 1.2px);
+  background-size: 18px 18px;
+  mask-image: linear-gradient(to bottom, black, transparent);
+  pointer-events: none;
+}
+
+/* A brick-red line slides in along the foot of a top-rated card on hover. */
+.showcase-card::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 450ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.showcase-card:hover::after,
+.showcase-card:focus-within::after {
+  transform: scaleX(1);
+}
+
+/* Same idea at the top of the light service cards. */
+.service-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: var(--brand);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 450ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.service-card:hover::before,
+.service-card:focus-within::before {
+  transform: scaleX(1);
+}
+
+/* Dashed track joining the review steps; it draws itself in when the section appears. */
+.process-track {
+  background-image: linear-gradient(90deg, var(--line-strong) 55%, transparent 0);
+  background-size: 12px 1px;
+}
+
+/* Client logos sit in quiet grey and take their own colours on hover. */
+.client-logo {
+  filter: grayscale(1);
+  opacity: 0.62;
+  transition:
+    filter 300ms,
+    opacity 300ms;
+}
+.client-logo:hover,
+a:focus-visible .client-logo {
+  filter: none;
+  opacity: 1;
+}
+/* Logos fade out at both edges of the scrolling row. */
+.logo-fade {
+  mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
 }

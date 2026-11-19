@@ -27,6 +27,7 @@ export function GetMatchedWizard({ groups, tone = 'dark' }: { groups: ServiceGro
   const [error, setError] = useState('');
   const [data, setData] = useState<Brief>({ service: '', country: '', budget: '', timeline: '', brief: '' });
 
+  const compact = tone === 'dark';
   const services = useMemo(() => groups.flatMap((group) => group.services), [groups]);
   const serviceName = services.find((service) => service.slug === data.service)?.name ?? '';
   const matches = useMemo(() => {
@@ -34,8 +35,9 @@ export function GetMatchedWizard({ groups, tone = 'dark' }: { groups: ServiceGro
     const list: Service[] = term
       ? services.filter((service) => `${service.name} ${service.group}`.toLowerCase().includes(term))
       : services.filter((service) => service.popular);
-    return list.slice(0, 8);
-  }, [query, services]);
+    // The hero card shows six so the whole card fits on a laptop screen without scrolling.
+    return list.slice(0, compact ? 6 : 8);
+  }, [query, services, compact]);
 
   function go(next: number) {
     setError('');
@@ -60,13 +62,13 @@ export function GetMatchedWizard({ groups, tone = 'dark' }: { groups: ServiceGro
 
   const dark = tone === 'dark';
   const option =
-    'group flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left text-[15px] transition-[border-color,background-color,transform] duration-200 hover:-translate-y-0.5 focus-visible:outline-2';
+    `group flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl border px-4 text-left text-[15px] transition-[border-color,background-color,transform] duration-200 hover:-translate-y-0.5 focus-visible:outline-2 ${compact ? 'py-2.5' : 'py-3'}`;
   const optionIdle = 'border-line bg-surface text-ink hover:border-accent';
   const optionActive = 'border-accent bg-accent-tint text-ink';
 
   return (
     <div
-      className={`w-full rounded-[1.75rem] p-5 sm:p-7 ${
+      className={`w-full rounded-[1.75rem] p-5 ${compact ? 'sm:p-6' : 'sm:p-7'} ${
         dark ? 'bg-surface shadow-[0_30px_80px_-30px_rgb(0_0_0/0.55)]' : 'border border-line bg-surface shadow-[var(--shadow-card)]'
       }`}
     >
@@ -96,7 +98,7 @@ export function GetMatchedWizard({ groups, tone = 'dark' }: { groups: ServiceGro
         ))}
       </div>
 
-      <div key={step} className="mt-6 animate-rise">
+      <div key={step} className={`${compact ? 'mt-5' : 'mt-6'} animate-rise`}>
         <h2 ref={headingRef} tabIndex={-1} className="font-display text-2xl font-semibold text-ink outline-none sm:text-[1.7rem]">
           {
             [
