@@ -22,7 +22,6 @@ import { PostCard } from '@/components/blog/post-card';
 import { CompanyCard } from '@/components/company/company-card';
 import { GroupIcon } from '@/components/home/group-icon';
 import { HeroTabs } from '@/components/home/hero-tabs';
-import { CompanySearch } from '@/components/search/company-search';
 import { IndiaSearches } from '@/components/home/india-searches';
 import { TabbedPanels } from '@/components/home/tabbed-panels';
 import { CountUp } from '@/components/motion/count-up';
@@ -110,10 +109,6 @@ export default async function HomePage() {
               Compare software developers, app builders, designers and marketing agencies from Jaipur to Bengaluru on what their past clients
               say, what they charge and what they have shipped. Then send one brief to the few that fit.
             </p>
-            <div className="relative z-20 mt-8 max-w-xl animate-rise" style={{ animationDelay: '200ms' }}>
-              <p className="mb-2.5 pl-1 text-sm font-medium text-paper/70">Know the company? Look it up by name</p>
-              <CompanySearch tone="dark" placeholder="Type a company name" />
-            </div>
             <ul className="mt-8 hidden animate-rise gap-3 text-[15px] text-paper/85 sm:grid sm:grid-cols-2" style={{ animationDelay: '240ms' }}>
               {['Ratings built only from approved reviews', 'Always free for businesses hiring', 'Checked companies clearly marked', 'One brief, replies from several firms'].map((item) => (
                 <li key={item} className="flex items-center gap-2.5">

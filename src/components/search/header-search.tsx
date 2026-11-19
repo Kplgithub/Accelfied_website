@@ -46,11 +46,9 @@ export function HeaderSearch() {
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-label="Search companies"
-        className="inline-flex size-11 cursor-pointer lg:size-10 xl:size-11 items-center justify-center gap-2 rounded-full text-ink transition-colors hover:bg-ink/5 2xl:w-auto 2xl:border 2xl:border-line 2xl:bg-surface 2xl:px-3.5 2xl:text-ink-soft 2xl:hover:border-line-strong"
+        className="inline-flex size-11 cursor-pointer items-center justify-center rounded-full text-ink transition-colors hover:bg-ink/5 hover:text-accent lg:size-10"
       >
-        <Search className="size-5 2xl:size-4" aria-hidden="true" />
-        <span className="hidden text-sm 2xl:inline">Search</span>
-        <kbd className="hidden rounded-md border border-line bg-paper px-1.5 font-sans text-[11px] text-ink-faint 2xl:inline">/</kbd>
+        <Search className="size-5" aria-hidden="true" />
       </button>
       {open && (
         <div className="fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-label="Search companies">
