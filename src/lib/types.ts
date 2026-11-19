@@ -464,3 +464,15 @@ export interface ReviewDraft {
   answers: Record<string, string | number | boolean>;
   updatedAt: string;
 }
+
+/** A "Top {service} company" award, earned from published reviews (see Accelfied_backend awards module). */
+export interface TopAward {
+  service: string;
+  serviceName: string;
+  scope: 'city' | 'country';
+  /** Empty for country awards. */
+  city: string;
+  countryCode: string;
+  rank: number;
+  year: number;
+}
