@@ -13,9 +13,11 @@ import { ButtonLink } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { getMyClaims, getMyCompany, getMyCompanyAnalytics, getMyCompanyDetails, getMyCompanyLeads, getMyConversations, getMyLeads, getMyReviews, getMyBriefs, getMyShortlist } from '@/lib/account-data';
 import { CompanyHome } from '@/components/dashboard/company-home';
+import { CompanyWelcome } from '@/components/dashboard/company-identity';
 import { profileHealth } from '@/lib/profile-health';
 import { formatDate, formatRating } from '@/lib/format';
 import { requireUser } from '@/lib/session';
+import { getMyCertifications, getMyWorkspace } from '@/lib/vendor-tools';
 import { testOtpEnabled } from '@/lib/test-otp';
 import type { Account, CompanyClaim, OwnedCompany } from '@/lib/types';
 
@@ -72,40 +74,26 @@ function ClaimsPanel({ claims, codeEntry }: { claims: CompanyClaim[]; codeEntry:
 
 async function CompanyOverview({ user, company }: { user: Account; company: OwnedCompany | null }) {
   const active = company && company.status !== 'rejected';
-  const [leads, data, analytics] = active
+  const [leads, data, analytics, workspace, certifications] = active
     ? await Promise.all([
         getMyCompanyLeads(HERE),
         getMyCompanyDetails(HERE).catch(() => null),
         company.status === 'published' ? getMyCompanyAnalytics(HERE, 90).catch(() => null) : Promise.resolve(null),
+        getMyWorkspace(HERE).catch(() => null),
+        getMyCertifications(HERE).catch(() => null),
       ])
-    : [null, null, null];
+    : [null, null, null, null, null];
   const steps = companySteps(company);
   const setupDone = steps.every((step) => step.done);
   const health = company && data ? profileHealth(company, data.details) : null;
   return (
     <>
-      <DashboardHeader
-        eyebrow={company ? company.name : 'Company account'}
-        title={`Welcome back, ${user.firstName}`}
-        intro={
-          company ? (
-            <span className="inline-flex flex-wrap items-center gap-2">
-              <StatusPill status={company.status} kind="company" />
-              Here is how your listing is doing.
-            </span>
-          ) : (
-            'A few steps and your company will be ready for clients.'
-          )
-        }
-        action={
-          company?.status === 'published' ? (
-            <ButtonLink href={`/profile/${company.slug}`} variant="secondary" size="sm">
-              View public profile
-            </ButtonLink>
-          ) : undefined
-        }
-      />
       <UpgradeStrip company={company} />
+      {company ? (
+        <CompanyWelcome company={company} />
+      ) : (
+        <DashboardHeader eyebrow="Company account" title={`Welcome back, ${user.firstName}`} intro="A few steps and your company will be ready for clients." />
+      )}
       {company && !health && (
         <div className="mb-8 grid gap-4 sm:grid-cols-3">
           <StatTile label="Listing" value={<StatusPill status={company.status} kind="company" />} />
@@ -124,7 +112,14 @@ async function CompanyOverview({ user, company }: { user: Account; company: Owne
       )}
       {company && health && data && (
         <div className="mb-8">
-          <CompanyHome company={company} health={health} analytics={analytics} hasPackages={data.details.packages.some((item) => item.status === 'published')} />
+          <CompanyHome
+            company={company}
+            health={health}
+            analytics={analytics}
+            hasPackages={data.details.packages.some((item) => item.status === 'published')}
+            skippedTasks={workspace?.skippedTasks ?? []}
+            certifications={certifications}
+          />
         </div>
       )}
       {leads && (

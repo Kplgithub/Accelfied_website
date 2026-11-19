@@ -6,6 +6,7 @@ import { BriefWizard } from '@/components/brief/brief-wizard';
 import { Container } from '@/components/ui/container';
 import { getServiceGroups } from '@/lib/data';
 import { getCurrentUser } from '@/lib/session';
+import { FormSkeleton } from '@/components/skeleton/public';
 
 export const metadata: Metadata = {
   title: 'Free project brief: get quotes from top companies in India',
@@ -17,7 +18,7 @@ export default function ProjectBriefPage({ searchParams }: PageProps<'/project-b
   return (
     <section className="grain min-h-[80vh] border-b border-line">
       <Container className="py-12 lg:py-16">
-        <Suspense fallback={<div className="mx-auto h-[520px] max-w-2xl animate-pulse rounded-[var(--radius-card)] bg-surface" />}>
+        <Suspense fallback={<FormSkeleton className="mx-auto min-h-[520px] max-w-2xl" />}>
           <BriefContent searchParams={searchParams} />
         </Suspense>
       </Container>

@@ -9,6 +9,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { getPosts, getSiteSettings } from '@/lib/data';
 import { pageParam, pagedCanonical } from '@/lib/page-param';
 import type { PostKind } from '@/lib/types';
+import { PostGridSkeleton } from '@/components/skeleton/public';
 
 const KINDS: Array<{ value: PostKind | ''; label: string }> = [
   { value: '', label: 'Everything' },
@@ -106,11 +107,5 @@ async function PostList({ searchParams }: Pick<PageProps<'/blog'>, 'searchParams
 }
 
 function PostsSkeleton() {
-  return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
-      {[0, 1, 2].map((index) => (
-        <div key={index} className="h-96 animate-pulse rounded-[var(--radius-card)] bg-surface" />
-      ))}
-    </div>
-  );
+  return <PostGridSkeleton />;
 }

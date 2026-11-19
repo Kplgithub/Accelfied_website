@@ -28,6 +28,17 @@ export interface ServiceLine {
   percent: number;
 }
 
+/** One row in the company name search box. Rating comes only from published reviews. */
+export interface CompanySuggestion {
+  slug: string;
+  name: string;
+  logoUrl: string;
+  city: string;
+  country: string;
+  verified: boolean;
+  rating: { average: number; count: number };
+}
+
 export interface CompanySummary {
   id: string;
   slug: string;

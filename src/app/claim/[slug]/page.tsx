@@ -9,6 +9,7 @@ import { Container } from '@/components/ui/container';
 import { getCompany } from '@/lib/data';
 import { hostname } from '@/lib/format';
 import { getCurrentUser } from '@/lib/session';
+import { FormSkeleton } from '@/components/skeleton/public';
 
 export const metadata: Metadata = {
   title: 'Claim a company',
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
 export default function ClaimPage({ params }: PageProps<'/claim/[slug]'>) {
   return (
     <Container className="max-w-5xl py-12 lg:py-16">
-      <Suspense fallback={<div className="h-[640px] animate-pulse rounded-[var(--radius-card)] bg-surface" />}>
+      <Suspense fallback={<FormSkeleton className="min-h-[640px]" />}>
         <ClaimContent params={params} />
       </Suspense>
     </Container>

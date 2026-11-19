@@ -2,12 +2,14 @@ import { BadgeCheck, MessageSquareQuote, Search } from 'lucide-react';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { SignInPrompt } from '@/components/auth/sign-in-prompt';
-import { ListingForm } from '@/components/forms/listing-form';
+import { ListingStart } from '@/components/forms/listing-start';
 import { ButtonLink } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 import { getMyCompany } from '@/lib/account-data';
 import { getServiceGroups } from '@/lib/data';
-import { getCurrentUser } from '@/lib/session';
+import { redirect } from 'next/navigation';
+import { FormSkeleton } from '@/components/skeleton/public';
+import { getCurrentUser, verifyEmailHref } from '@/lib/session';
 
 export const metadata: Metadata = {
   title: 'List Your Agency Free and Get Client Enquiries',
@@ -47,7 +49,7 @@ export default function GetListedPage() {
         </Container>
       </section>
       <Container className="max-w-5xl py-12 lg:py-16">
-        <Suspense fallback={<div className="h-[640px] animate-pulse rounded-[var(--radius-card)] bg-surface" />}>
+        <Suspense fallback={<FormSkeleton className="min-h-[640px]" />}>
           <ListingContent />
         </Suspense>
       </Container>
@@ -67,6 +69,7 @@ async function ListingContent() {
       />
     );
   }
+  if (!user.emailVerified) redirect(verifyEmailHref('/get-listed'));
 
   const [groups, existing] = await Promise.all([getServiceGroups(), getMyCompany('/get-listed')]);
   if (existing && existing.status !== 'rejected') {
@@ -82,8 +85,6 @@ async function ListingContent() {
   }
 
   return (
-    <div className="rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-[var(--shadow-card)] sm:p-10">
-      <ListingForm groups={groups} account={{ email: user.email }} />
-    </div>
+    <ListingStart groups={groups} account={{ email: user.email }} />
   );
 }
