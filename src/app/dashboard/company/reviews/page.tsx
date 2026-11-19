@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { remindReviewer } from '@/app/dashboard-actions';
+import { UpgradeStrip } from '@/components/dashboard/upgrade-strip';
 import { DashboardHeader, Panel } from '@/components/dashboard/bits';
 import { CopyLink } from '@/components/dashboard/copy-link';
 import { MyReviewCard } from '@/components/dashboard/my-review-card';
@@ -28,6 +29,7 @@ export default async function CompanyReviewsPage({ searchParams }: PageProps<'/d
   return (
     <>
       <DashboardHeader eyebrow={company.name} title="Client reviews" intro="Reviews about your company. Our team checks each one before it counts towards your rating." />
+      <UpgradeStrip company={company} />
       <Panel title="Ask past clients for a review" className="mb-8">
         {live ? (
           <>
