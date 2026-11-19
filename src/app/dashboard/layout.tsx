@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { DashboardNav, type NavGroup } from '@/components/dashboard/dashboard-nav';
+import { NavSkeleton } from '@/components/skeleton/dashboard';
+import { DashboardSkeleton } from '@/components/skeleton/skeleton';
 import { Container } from '@/components/ui/container';
 import { getUnreadCounts } from '@/lib/account-data';
 import { apiPrivateGet } from '@/lib/api';
@@ -16,12 +18,12 @@ export default function DashboardLayout({ children }: LayoutProps<'/dashboard'>)
   return (
     <Container className="grid grid-cols-1 gap-8 py-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-12 lg:py-12 print:block print:py-0">
       <aside className="min-w-0 print:hidden lg:sticky lg:top-32 lg:self-start">
-        <Suspense fallback={<div className="h-10 lg:h-80" />}>
+        <Suspense fallback={<NavSkeleton />}>
           <Nav />
         </Suspense>
       </aside>
       <div className="min-w-0">
-        <Suspense fallback={<div className="h-96 animate-pulse rounded-[var(--radius-card)] bg-surface" />}>{children}</Suspense>
+        <Suspense fallback={<DashboardSkeleton />}>{children}</Suspense>
       </div>
     </Container>
   );
@@ -52,6 +54,7 @@ async function Nav() {
           { href: '/dashboard/company/packages', label: 'Packages' },
           { href: '/dashboard/company/requests', label: 'Project requests' },
           { href: '/dashboard/company/analytics', label: 'Analytics' },
+          { href: '/dashboard/company/projects', label: 'Projects', prefix: true },
           { href: '/dashboard/company/reviews', label: 'Client reviews' },
           { href: '/dashboard/company/portfolio', label: 'Portfolio' },
           { href: '/dashboard/company/team', label: 'Team' },
@@ -74,6 +77,12 @@ async function Nav() {
   };
   if (user.accountType === 'provider' || company) groups.push(companyGroup, hiringGroup);
   else groups.push(hiringGroup, companyGroup);
-  groups.push({ title: 'Settings', links: [{ href: '/dashboard/settings', label: 'Account settings' }] });
+  groups.push({
+    title: 'Settings',
+    links: [
+      { href: '/dashboard/profile', label: 'My profile' },
+      { href: '/dashboard/settings', label: 'Account settings' },
+    ],
+  });
   return <DashboardNav groups={groups} />;
 }

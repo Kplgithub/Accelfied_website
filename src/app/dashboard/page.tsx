@@ -15,6 +15,7 @@ import { CompanyHome } from '@/components/dashboard/company-home';
 import { profileHealth } from '@/lib/profile-health';
 import { formatDate, formatRating } from '@/lib/format';
 import { requireUser } from '@/lib/session';
+import { getMyCertifications, getMyWorkspace } from '@/lib/vendor-tools';
 import { testOtpEnabled } from '@/lib/test-otp';
 import type { Account, CompanyClaim, OwnedCompany } from '@/lib/types';
 
@@ -71,13 +72,15 @@ function ClaimsPanel({ claims, codeEntry }: { claims: CompanyClaim[]; codeEntry:
 
 async function CompanyOverview({ user, company }: { user: Account; company: OwnedCompany | null }) {
   const active = company && company.status !== 'rejected';
-  const [leads, data, analytics] = active
+  const [leads, data, analytics, workspace, certifications] = active
     ? await Promise.all([
         getMyCompanyLeads(HERE),
         getMyCompanyDetails(HERE).catch(() => null),
         company.status === 'published' ? getMyCompanyAnalytics(HERE, 90).catch(() => null) : Promise.resolve(null),
+        getMyWorkspace(HERE).catch(() => null),
+        getMyCertifications(HERE).catch(() => null),
       ])
-    : [null, null, null];
+    : [null, null, null, null, null];
   const steps = companySteps(company);
   const setupDone = steps.every((step) => step.done);
   const health = company && data ? profileHealth(company, data.details) : null;
@@ -122,7 +125,14 @@ async function CompanyOverview({ user, company }: { user: Account; company: Owne
       )}
       {company && health && data && (
         <div className="mb-8">
-          <CompanyHome company={company} health={health} analytics={analytics} hasPackages={data.details.packages.some((item) => item.status === 'published')} />
+          <CompanyHome
+            company={company}
+            health={health}
+            analytics={analytics}
+            hasPackages={data.details.packages.some((item) => item.status === 'published')}
+            skippedTasks={workspace?.skippedTasks ?? []}
+            certifications={certifications}
+          />
         </div>
       )}
       {leads && (

@@ -6,6 +6,7 @@ import { ConversationList } from '@/components/messages/conversation-list';
 import { LiveRefresh } from '@/components/messages/live-refresh';
 import { ButtonLink } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
+import { NoMessagesYet } from '@/components/vendor/buyer-empty';
 import { getMyCompany, getMyConversations, getUnreadCounts } from '@/lib/account-data';
 import { pageParam } from '@/lib/page-param';
 import { requireUser } from '@/lib/session';
@@ -62,9 +63,7 @@ export default async function MessagesPage({ searchParams }: PageProps<'/dashboa
       ) : as === 'company' ? (
         <EmptyState title="No messages yet">When a client writes to your company or sends you a brief, the conversation shows up here.</EmptyState>
       ) : (
-        <EmptyState title="No conversations yet" action={<ButtonLink href="/agencies">Browse companies</ButtonLink>}>
-          Open any company profile and choose “Send a message” to ask a question before you hire.
-        </EmptyState>
+<NoMessagesYet />
       )}
     </>
   );

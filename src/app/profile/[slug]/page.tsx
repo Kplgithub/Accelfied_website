@@ -1,4 +1,4 @@
-import { Award, Building2, Calendar, DollarSign, ExternalLink, Globe, MapPin, MessageSquare, PenLine, Star, Timer, Users } from 'lucide-react';
+import { Award, BadgeCheck, Building2, Calendar, DollarSign, ExternalLink, Globe, MapPin, MessageSquare, PenLine, Pin, Star, Timer, Users } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -21,6 +21,7 @@ import { JsonLd, breadcrumbLd } from '@/components/seo/json-ld';
 import { MAX_DESCRIPTION, OG_DEFAULTS } from '@/lib/seo-text';
 import { SITE_URL } from '@/lib/site';
 import type { CompanyProfile, PublicCompanyDetails, Review } from '@/lib/types';
+import { getCompanyExtras } from '@/lib/vendor-tools';
 import { Donut } from '@/components/charts/donut';
 import { PackagesSection } from '@/components/company/packages-section';
 import { Reveal } from '@/components/motion/reveal';
@@ -31,6 +32,8 @@ import { WebsiteLink } from '@/components/tracking/website-link';
 import { SocialLinks } from '@/components/ui/social-icon';
 import { OwnerTools } from '@/components/company/owner-tools';
 import { SimilarCompanies } from '@/components/company/similar-companies';
+import { ProfilePageSkeleton } from '@/components/skeleton/public';
+import { SkeletonRows } from '@/components/skeleton/skeleton';
 
 /** Placeholder so the route can be validated at build time before any company is published. */
 const SHELL_SLUG = '__shell__';
@@ -64,7 +67,7 @@ async function Profile({ params, searchParams }: PageProps<'/profile/[slug]'>) {
   const { slug } = await params;
   const company = await getCompany(slug);
   if (!company) notFound();
-  const details = await getCompanyDetails(slug);
+  const [details, extras] = await Promise.all([getCompanyDetails(slug), getCompanyExtras(slug)]);
 
   return (
     <>
@@ -82,7 +85,7 @@ async function Profile({ params, searchParams }: PageProps<'/profile/[slug]'>) {
           <Pricing company={company} details={details} />
           {company.portfolio.length > 0 && <Portfolio company={company} />}
           {details && details.awards.length > 0 && <Awards details={details} />}
-          {company.team.length > 0 && <Team company={company} />}
+          {(company.team.length > 0 || extras.story) && <Team company={company} story={extras.story} />}
           <section id="reviews" className="scroll-mt-28 lg:scroll-mt-36">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <h2 className="font-display text-3xl font-semibold text-ink">Client reviews</h2>
@@ -94,8 +97,8 @@ async function Profile({ params, searchParams }: PageProps<'/profile/[slug]'>) {
             {company.rating.count > 0 ? (
               <div className="mt-6 space-y-6">
                 <RatingSummary rating={company.rating} />
-                <Suspense fallback={<div className="h-64 animate-pulse rounded-[var(--radius-card)] bg-surface" />}>
-                  <ReviewList slug={company.slug} searchParams={searchParams} />
+                <Suspense fallback={<SkeletonRows rows={3} />}>
+                  <ReviewList slug={company.slug} searchParams={searchParams} featured={extras.featuredReview} />
                 </Suspense>
               </div>
             ) : (
@@ -115,6 +118,7 @@ async function Profile({ params, searchParams }: PageProps<'/profile/[slug]'>) {
         </div>
         <aside className="space-y-4 lg:sticky lg:top-32 lg:self-start">
           <QuoteCard company={company} />
+          {extras.certifications.length > 0 && <CertifiedCard name={company.name} items={extras.certifications} />}
           <ClaimCard company={company} />
           <Suspense fallback={null}>
             <SimilarCompanies slug={company.slug} service={[...company.services].sort((a, b) => b.percent - a.percent)[0]} />
@@ -372,12 +376,22 @@ function Portfolio({ company }: { company: CompanyProfile }) {
   );
 }
 
-function Team({ company }: { company: CompanyProfile }) {
+function Team({ company, story }: { company: CompanyProfile; story: string }) {
   return (
     <section id="team" className="scroll-mt-28 lg:scroll-mt-36">
-      <h2 className="font-display text-3xl font-semibold text-ink">Team</h2>
-      <p className="mt-2 text-ink-soft">The people you would work with at {company.name}.</p>
-      <ul className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
+      <h2 className="font-display text-3xl font-semibold text-ink">About the team</h2>
+      {story && (
+        <div className="mt-5 space-y-4 rounded-[var(--radius-card)] border-l-4 border-accent bg-surface p-6 text-[17px] leading-relaxed text-ink-soft shadow-[var(--shadow-card)]">
+          <p className="text-xs font-semibold tracking-[0.16em] text-accent uppercase">Our story</p>
+          {story.split(/\n{2,}/).map((paragraph, index) => (
+            <p key={index} className="whitespace-pre-line">
+              {paragraph}
+            </p>
+          ))}
+        </div>
+      )}
+      {company.team.length > 0 && <p className="mt-6 text-ink-soft">The people you would work with at {company.name}.</p>}
+      {company.team.length > 0 && <ul className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
         {company.team.map((member) => (
           <li key={member.id} className="flex flex-col items-center rounded-2xl border border-line bg-surface p-5 text-center">
             <PersonAvatar name={member.name} photoUrl={member.photoUrl} size={88} />
@@ -388,6 +402,29 @@ function Team({ company }: { company: CompanyProfile }) {
                 LinkedIn
               </a>
             )}
+          </li>
+        ))}
+      </ul>}
+    </section>
+  );
+}
+
+/** Service certifications this company has earned from its published reviews. */
+function CertifiedCard({ name, items }: { name: string; items: Array<{ slug: string; name: string }> }) {
+  return (
+    <section className="rounded-[var(--radius-card)] border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
+      <h2 className="flex items-center gap-2 font-semibold text-ink">
+        <Award className="size-5 text-brand" aria-hidden="true" />
+        Certified services
+      </h2>
+      <p className="mt-1 text-sm text-ink-soft">{name} has 3+ published client reviews rated 4.0 or higher in the last two years in each of these.</p>
+      <ul className="mt-3 flex flex-wrap gap-2">
+        {items.map((item) => (
+          <li key={item.slug}>
+            <Link href={`/agencies/${item.slug}`} className="inline-flex items-center gap-1.5 rounded-full bg-accent-tint px-3 py-1.5 text-sm font-medium text-accent transition-colors hover:bg-accent/15">
+              <BadgeCheck className="size-4" aria-hidden="true" />
+              {item.name}
+            </Link>
           </li>
         ))}
       </ul>
@@ -436,7 +473,7 @@ function ClaimCard({ company }: { company: CompanyProfile }) {
   );
 }
 
-async function ReviewList({ slug, searchParams }: { slug: string; searchParams: PageProps<'/profile/[slug]'>['searchParams'] }) {
+async function ReviewList({ slug, searchParams, featured }: { slug: string; searchParams: PageProps<'/profile/[slug]'>['searchParams']; featured: Review | null }) {
   const raw = await searchParams;
   const pageParam = Number.parseInt(String(raw.page ?? '1'), 10);
   const page = Number.isFinite(pageParam) && pageParam >= 1 && pageParam <= 500 ? pageParam : 1;
@@ -444,9 +481,20 @@ async function ReviewList({ slug, searchParams }: { slug: string; searchParams: 
   return (
     <>
       <div className="space-y-6">
-        {reviews.items.map((review) => (
-          <ReviewCard key={review.id} review={review} reportFrom={`/profile/${slug}#reviews`} />
-        ))}
+        {featured && page === 1 && (
+          <div className="relative rounded-[calc(var(--radius-card)+6px)] bg-gradient-to-br from-accent/25 via-accent-tint to-transparent p-1.5">
+            <p className="absolute -top-3 left-5 z-10 inline-flex items-center gap-1 rounded-full bg-accent px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
+              <Pin className="size-3" aria-hidden="true" />
+              Featured review
+            </p>
+            <ReviewCard review={featured} reportFrom={`/profile/${slug}#reviews`} />
+          </div>
+        )}
+        {reviews.items
+          .filter((review) => !(featured && page === 1 && review.id === featured.id))
+          .map((review) => (
+            <ReviewCard key={review.id} review={review} reportFrom={`/profile/${slug}#reviews`} />
+          ))}
       </div>
       <Pagination
         page={reviews.page}
@@ -474,23 +522,7 @@ async function CompanyPosts({ slug, name }: { slug: string; name: string }) {
 }
 
 function ProfileSkeleton() {
-  // At least a screen tall, so the footer never flashes into view and then jumps away when the profile streams in.
-  return (
-    <div aria-hidden="true" className="min-h-dvh">
-      <section className="grain border-b border-line">
-        <Container className="flex items-center gap-5 py-14">
-          <div className="size-22 animate-pulse rounded-2xl bg-paper-deep" />
-          <div className="flex-1 space-y-3">
-            <div className="h-10 w-1/2 animate-pulse rounded-lg bg-paper-deep" />
-            <div className="h-5 w-1/3 animate-pulse rounded bg-paper-deep" />
-          </div>
-        </Container>
-      </section>
-      <Container className="py-12">
-        <div className="h-72 animate-pulse rounded-[var(--radius-card)] bg-surface" />
-      </Container>
-    </div>
-  );
+  return <ProfilePageSkeleton />;
 }
 
 /**

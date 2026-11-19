@@ -10,6 +10,7 @@ import { OAuthNotice, SocialSignIn } from '@/components/auth/social-sign-in';
 import { Container } from '@/components/ui/container';
 import { getCurrentUser, safeNext } from '@/lib/session';
 import type { AccountType } from '@/lib/types';
+import { AuthSkeleton } from '@/components/skeleton/public';
 
 export const metadata: Metadata = {
   title: 'Join Free: Hire an Agency or List Your Company',
@@ -36,7 +37,7 @@ const one = (value: string | string[] | undefined) => (typeof value === 'string'
 
 export default function JoinPage({ searchParams }: PageProps<'/join'>) {
   return (
-    <Suspense fallback={<div className="h-[720px]" />}>
+    <Suspense fallback={<AuthSkeleton tall />}>
       <JoinContent searchParams={searchParams} />
     </Suspense>
   );

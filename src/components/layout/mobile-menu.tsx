@@ -4,10 +4,13 @@ import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { logout } from '@/app/auth-actions';
+import { accountLinkGroups } from '@/lib/account-links';
+import type { AccountType } from '@/lib/types';
+import { ACCOUNT_ICONS } from './account-menu';
 
 interface Props {
   links: Array<{ href: string; label: string }>;
-  account?: { firstName: string; email: string } | null;
+  account?: { firstName: string; email: string; accountType: AccountType } | null;
 }
 
 export function MobileMenu({ links, account = null }: Props) {
@@ -49,9 +52,27 @@ export function MobileMenu({ links, account = null }: Props) {
               </Link>
             ))}
             {account && (
-              <Link href="/dashboard" onClick={() => setOpen(false)} className="border-b border-line py-4 font-display text-2xl text-ink">
-                Dashboard
-              </Link>
+              <div className="border-b border-line py-4">
+                <p className="mb-2 text-xs font-semibold tracking-[0.14em] text-ink-faint uppercase">Your account</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {accountLinkGroups(account.accountType)
+                    .flatMap((group) => group.links)
+                    .map((link) => {
+                      const Icon = ACCOUNT_ICONS[link.icon];
+                      return (
+                        <Link
+                          key={link.href}
+                          href={link.href}
+                          onClick={() => setOpen(false)}
+                          className="flex min-w-0 items-center gap-2 rounded-xl bg-surface px-3 py-2.5 text-sm text-ink ring-1 ring-line"
+                        >
+                          <Icon className="size-4 shrink-0 text-accent" aria-hidden="true" />
+                          <span className="truncate">{link.label}</span>
+                        </Link>
+                      );
+                    })}
+                </div>
+              </div>
             )}
             <Link
               href="/get-matched"

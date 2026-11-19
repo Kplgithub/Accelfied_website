@@ -1,4 +1,4 @@
-import { ArrowRight, BadgeCheck, MessageSquareQuote, Package, Sparkles, TrendingUp } from 'lucide-react';
+import { ArrowRight, BadgeCheck, MessageSquareQuote, Package, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { TrendChart } from '@/components/analytics/trend-chart';
 import { HealthGauge } from '@/components/charts/health-gauge';
@@ -7,6 +7,10 @@ import { Reveal } from '@/components/motion/reveal';
 import { ButtonLink } from '@/components/ui/button';
 import type { ProfileHealth } from '@/lib/profile-health';
 import type { CompanyAnalytics, OwnedCompany } from '@/lib/types';
+import { Certifications } from '../vendor/certifications';
+import { RecommendedTasks } from '../vendor/recommended-tasks';
+import { recommendedTasks } from '@/lib/tasks';
+import type { Certification, CertificationRules } from '@/lib/vendor-tools';
 import { Panel } from './bits';
 
 const HEALTH_TEXT = {
@@ -16,8 +20,23 @@ const HEALTH_TEXT = {
 } as const;
 
 /** The top of a company owner's dashboard: health, reviews, the last 90 days and what to do next. */
-export function CompanyHome({ company, health, analytics, hasPackages }: { company: OwnedCompany; health: ProfileHealth; analytics: CompanyAnalytics | null; hasPackages: boolean }) {
+export function CompanyHome({
+  company,
+  health,
+  analytics,
+  hasPackages,
+  skippedTasks,
+  certifications,
+}: {
+  company: OwnedCompany;
+  health: ProfileHealth;
+  analytics: CompanyAnalytics | null;
+  hasPackages: boolean;
+  skippedTasks: string[];
+  certifications: { items: Certification[]; rules: CertificationRules } | null;
+}) {
   const next = health.todo[0];
+  const tasks = recommendedTasks(company, health);
   return (
     <div className="space-y-6">
       <div className="grid gap-6 lg:grid-cols-2">
@@ -140,31 +159,9 @@ export function CompanyHome({ company, health, analytics, hasPackages }: { compa
         )}
       </Panel>
 
-      {health.todo.length > 0 && (
-        <Panel>
-          <h2 className="flex items-center gap-2 font-display text-xl font-semibold text-ink">
-            <Sparkles className="size-5 text-saffron" aria-hidden="true" />
-            Improve your visibility
-          </h2>
-          <p className="mb-4 text-sm text-ink-soft">Complete profiles rank higher in the directory and get more briefs.</p>
-          <ul className="divide-y divide-line">
-            {health.todo.slice(0, 5).map((section, index) => (
-              <Reveal as="li" key={section.key} delay={index * 60}>
-                <Link href={section.href} className="group flex items-center justify-between gap-4 py-3">
-                  <span>
-                    <span className="block font-medium text-ink group-hover:text-accent">{section.title}</span>
-                    <span className="block text-sm text-ink-soft">{section.tip}</span>
-                  </span>
-                  <span className="flex shrink-0 items-center gap-2 text-sm text-ink-faint">
-                    +{section.weight}
-                    <ArrowRight className="size-4 text-accent transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-                  </span>
-                </Link>
-              </Reveal>
-            ))}
-          </ul>
-        </Panel>
-      )}
+      {certifications && <Certifications items={certifications.items} rules={certifications.rules} />}
+
+      <RecommendedTasks tasks={tasks} skipped={skippedTasks} />
     </div>
   );
 }

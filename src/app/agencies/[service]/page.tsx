@@ -13,6 +13,7 @@ import { getStatePlaces, listedServices, placeName, relatedPlaces } from '@/lib/
 import { SITE_URL } from '@/lib/site';
 import { MAX_DESCRIPTION } from '@/lib/seo-text';
 import { ServiceGuide } from '@/components/directory/service-guide';
+import { HeroSkeleton } from '@/components/skeleton/public';
 
 export async function generateStaticParams() {
   const groups = await getServiceGroups();
@@ -92,15 +93,7 @@ async function Header({ params }: Pick<PageProps<'/agencies/[service]'>, 'params
 }
 
 function HeaderShell() {
-  return (
-    <section className="grain border-b border-line">
-      <Container className="py-12 lg:py-16" aria-hidden="true">
-        <div className="h-5 w-40 animate-pulse rounded bg-paper-deep" />
-        <div className="mt-5 h-12 w-2/3 animate-pulse rounded-lg bg-paper-deep" />
-        <div className="mt-5 h-6 w-1/2 animate-pulse rounded bg-paper-deep" />
-      </Container>
-    </section>
-  );
+  return <HeroSkeleton />;
 }
 
 async function Results({ params, searchParams }: PageProps<'/agencies/[service]'>) {
