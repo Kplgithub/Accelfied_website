@@ -38,7 +38,11 @@ npm run dev                   # http://localhost:3000
 | `/how-reviews-work` | How reviews are checked and scored |
 | `/api/revalidate` | Called by the API after moderation so changes show right away |
 
-The session lives in an httpOnly `af_session` cookie set by server actions. Pages read it inside `<Suspense>` so the rest of each page still prerenders.
+The session lives in an httpOnly `af_sid` cookie set by server actions. Pages read it inside `<Suspense>` so the rest of each page still prerenders.
+
+### Vendor subdomain
+
+In production the dashboard lives on `vendor.accelfied.com` (`NEXT_PUBLIC_VENDOR_URL`) and public pages on `www.accelfied.com`. The same app serves both hosts; `src/proxy.ts` sends `/dashboard/*` on www to the vendor host (308), sends every public page asked for on the vendor host back to www, and marks the vendor host `noindex` with a `Disallow: /` robots.txt. Log in, Join and Google/LinkedIn sign-in stay on www; `COOKIE_DOMAIN=accelfied.com` shares the cookie so the vendor host sees the sign-in. Old `af_session` cookies are moved to `af_sid` on the next visit.
 
 ## Rules this codebase follows
 

@@ -4,8 +4,9 @@ import { redirect } from 'next/navigation';
 import { cache } from 'react';
 import { ApiError, apiPrivateGet } from './api';
 import type { Account } from './types';
+import { SESSION_COOKIE } from './session-cookie';
 
-export const SESSION_COOKIE = 'af_session';
+export { clearedSessionCookie, SESSION_COOKIE, sessionCookieOptions } from './session-cookie';
 
 export async function getSessionToken(): Promise<string | undefined> {
   return (await cookies()).get(SESSION_COOKIE)?.value || undefined;
@@ -40,16 +41,4 @@ export function safeNext(value: unknown, fallback = '/dashboard'): string {
   if (typeof value !== 'string' || !value.startsWith('/') || value.startsWith('//') || value.startsWith('/\\')) return fallback;
   // Long enough for a carried-over brief from /get-matched; cutting a URL short would break it.
   return value.length <= 6000 ? value : fallback;
-}
-
-/** Cookie settings for a new session. Without an expiry the cookie ends with the browser session. */
-export function sessionCookieOptions(expiresAt?: string) {
-  return {
-    httpOnly: true,
-    // COOKIE_SECURE=false lets sign-in work over plain http (e.g. http://IP:port) until a domain with https is set up.
-    secure: process.env.COOKIE_SECURE ? process.env.COOKIE_SECURE === 'true' : process.env.NODE_ENV === 'production',
-    sameSite: 'lax' as const,
-    path: '/',
-    ...(expiresAt ? { expires: new Date(expiresAt) } : {}),
-  };
 }

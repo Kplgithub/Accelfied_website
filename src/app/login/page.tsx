@@ -5,6 +5,7 @@ import { AuthShell } from '@/components/auth/auth-shell';
 import { LoginForm } from '@/components/auth/login-form';
 import { OAuthNotice, SocialSignIn } from '@/components/auth/social-sign-in';
 import { getCurrentUser, safeNext } from '@/lib/session';
+import { dashboardUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Log in',
@@ -24,7 +25,7 @@ export default function LoginPage({ searchParams }: PageProps<'/login'>) {
 async function LoginContent({ searchParams }: Pick<PageProps<'/login'>, 'searchParams'>) {
   const params = await searchParams;
   const next = typeof params.next === 'string' ? safeNext(params.next, '') || undefined : undefined;
-  if (await getCurrentUser()) redirect(next ?? '/dashboard');
+  if (await getCurrentUser()) redirect(dashboardUrl(next ?? '/dashboard'));
 
   return (
     <AuthShell

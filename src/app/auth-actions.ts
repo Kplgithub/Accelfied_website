@@ -5,8 +5,8 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { ApiError, apiGet, apiSend } from '@/lib/api';
 import type { FormState } from '@/lib/form-state';
-import { safeNext, SESSION_COOKIE, sessionCookieOptions } from '@/lib/session';
-import { SITE_URL } from '@/lib/site';
+import { clearedSessionCookie, safeNext, SESSION_COOKIE, sessionCookieOptions } from '@/lib/session';
+import { dashboardUrl, SITE_URL } from '@/lib/site';
 import { clientIp, echo, friendly, text } from '@/lib/submit';
 import { testOtpEnabled } from '@/lib/test-otp';
 import type { Account } from '@/lib/types';
@@ -73,7 +73,7 @@ export async function register(_prev: FormState, form: FormData): Promise<FormSt
   }
   await startSession(session, true);
   // Companies go straight into creating their listing; clients to where they were headed.
-  redirect(safeNext(text(form, 'next'), accountType === 'provider' ? '/dashboard/company' : '/dashboard'));
+  redirect(dashboardUrl(safeNext(text(form, 'next'), accountType === 'provider' ? '/dashboard/company' : '/dashboard')));
 }
 
 export async function login(_prev: FormState, form: FormData): Promise<FormState> {
@@ -90,15 +90,16 @@ export async function login(_prev: FormState, form: FormData): Promise<FormState
     return failure(error, form, 'Login failed', ['password']);
   }
   await startSession(session, remember);
-  redirect(safeNext(text(form, 'next')));
+  redirect(dashboardUrl(safeNext(text(form, 'next'))));
 }
 
 export async function logout(): Promise<void> {
   const store = await cookies();
   const token = store.get(SESSION_COOKIE)?.value;
   if (token) await apiSend('POST', '/v1/auth/logout', undefined, { token }).catch(() => undefined);
-  store.delete(SESSION_COOKIE);
-  redirect('/');
+  store.set(clearedSessionCookie());
+  // Logging out from the vendor subdomain lands on the public home page.
+  redirect(`${SITE_URL}/`);
 }
 
 export async function forgotPassword(_prev: FormState, form: FormData): Promise<FormState> {
