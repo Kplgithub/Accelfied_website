@@ -22,9 +22,7 @@ export default async function CompanyPostPage({ params }: PageProps<'/dashboard/
   const here = `/dashboard/company/blog/${id}`;
   const [{ user }, post, overview] = await Promise.all([requireUser(here), getMyCompanyPost(here, id), getMyCompanyPosts(here)]);
   if (!post || !overview.company) notFound();
-  // Rupees first, dollars as well. An API from before rupee prices only knows dollars.
-  const prices = overview.prices ? { INR: formatWhole(overview.prices.INR.total, 'INR'), USD: formatWhole(overview.prices.USD.total, 'USD') } : undefined;
-  const price = prices ? `${prices.INR} (or ${prices.USD})` : formatWhole(overview.price.total, overview.price.currency);
+  const price = formatWhole(overview.price.total, overview.price.currency);
   const editable = post.status === 'draft' || post.status === 'rejected';
   const live = overview.company.status === 'published';
 
@@ -55,11 +53,10 @@ export default async function CompanyPostPage({ params }: PageProps<'/dashboard/
             ) : (
               <PostCheckout
                 postId={post.id}
-                label={prices ? 'Pay and send' : `Pay ${price} and send`}
+                label={`Pay ${price} and send`}
                 description={`Blog post: ${post.title.slice(0, 60)}`}
                 name={`${user.firstName} ${user.lastName}`}
                 email={user.email}
-                prices={prices}
                 start={startPostCheckout.bind(null, post.id)}
               />
             )}

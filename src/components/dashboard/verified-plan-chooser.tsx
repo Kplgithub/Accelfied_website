@@ -3,32 +3,28 @@
 import { useState } from 'react';
 import { startVerifiedPlan } from '@/app/billing-actions';
 import type { BillingInterval, PlanPrice } from '@/lib/types';
-import { formatMoney, formatWhole, type Currency } from '@/lib/verified-plan';
+import { formatMoney, formatWhole } from '@/lib/verified-plan';
 import { VerifiedCheckout } from './verified-checkout';
 
 /**
  * Monthly or yearly, then pay. Both renew by autopay; yearly costs less than twelve monthly payments.
- * Rupees are shown first; rupees or dollars is asked when Pay is pressed.
+ * Prices are in US dollars.
  */
 export function VerifiedPlanChooser({
   plans,
-  prices,
   companyName,
   name,
   email,
 }: {
-  /** Dollar prices, from every API version. */
+  /** Dollar prices. */
   plans: Record<BillingInterval, PlanPrice>;
-  /** Both currencies; missing from an API older than rupee prices. */
-  prices?: Record<Currency, Record<BillingInterval, PlanPrice>>;
   companyName: string;
   name: string;
   email: string;
 }) {
   const [interval, setChoice] = useState<BillingInterval>('monthly');
-  const main = prices?.INR ?? plans;
+  const main = plans;
   const saving = main.monthly.total * 12 - main.yearly.total;
-  const also = (key: BillingInterval) => (prices ? ` or ${formatWhole(prices.USD[key].total, 'USD')}` : '');
   const options: Array<{ value: BillingInterval; title: string; price: string; note: string }> = [
     { value: 'monthly', title: 'Monthly', price: `${formatWhole(main.monthly.total, main.monthly.currency)} / month`, note: 'Charged each month' },
     {
@@ -39,7 +35,6 @@ export function VerifiedPlanChooser({
     },
   ];
   const chosen = main[interval];
-  const period = interval === 'yearly' ? '/ year' : '/ month';
 
   return (
     <div className="w-full">
@@ -69,7 +64,7 @@ export function VerifiedPlanChooser({
               </span>
               <span className="mt-1 font-display text-xl font-semibold text-ink">{option.price}</span>
               <span className="text-xs text-ink-faint">
-                {option.value === 'yearly' ? 'Charged once a year' : option.note} by autopay, GST included{also(option.value)}
+                {option.value === 'yearly' ? 'Charged once a year' : option.note} by autopay, GST included
               </span>
             </label>
           ))}
@@ -78,13 +73,11 @@ export function VerifiedPlanChooser({
       <div className="mt-4 sm:text-right">
         <VerifiedCheckout
           key={interval}
-          label={prices ? 'Pay and start' : `Pay ${formatMoney(chosen.total, chosen.currency)} and start`}
+          label={`Pay ${formatMoney(chosen.total, chosen.currency)} and start`}
           description={`Verified plan for ${companyName}, ${interval}`}
           name={name}
           email={email}
-          prices={prices ? { INR: formatWhole(prices.INR[interval].total, 'INR'), USD: formatWhole(prices.USD[interval].total, 'USD') } : undefined}
-          priceNote={period}
-          start={(currency) => startVerifiedPlan(interval, currency)}
+          start={() => startVerifiedPlan(interval)}
         />
       </div>
     </div>

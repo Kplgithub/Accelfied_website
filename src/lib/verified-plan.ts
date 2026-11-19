@@ -6,29 +6,23 @@ export const VERIFIED_PLAN = {
   currency: 'USD',
 } as const;
 
-/** The same plan in rupees (₹520 a month or ₹4,999 a year), for companies paying from India. */
-export const VERIFIED_PLAN_INR = { monthly: 520, yearly: 4_999, currency: 'INR' } as const;
-
-/** What a company can pay in. Rupees come first: most companies on Accelfied are in India. */
-export const CURRENCIES = ['INR', 'USD'] as const;
-export type Currency = (typeof CURRENCIES)[number];
-/** How each currency can be paid through Razorpay. */
-export const PAY_METHODS: Record<Currency, string> = { INR: 'UPI, cards, netbanking', USD: 'International cards' };
+/** Every price on the site is shown and charged in US dollars. */
+export type Currency = 'USD';
 
 /** What paying yearly saves against twelve monthly payments. */
 export const YEARLY_SAVING = VERIFIED_PLAN.monthly * 12 - VERIFIED_PLAN.yearly;
 
 /** A paid place at the top of one directory page, GST included. */
-export const SPONSORED_PLACE = { monthly: 29, monthlyInr: 2_450, perPage: 3 } as const;
+export const SPONSORED_PLACE = { monthly: 29, perPage: 3 } as const;
 
-/** A whole price for marketing copy, such as "$6" or "₹4,999". */
-export const formatPrice = (value: number, currency: string = VERIFIED_PLAN.currency) =>
-  new Intl.NumberFormat(currency === 'INR' ? 'en-IN' : 'en-US', { style: 'currency', currency, maximumFractionDigits: Number.isInteger(value) ? 0 : 2 }).format(value);
+/** A whole price for marketing copy, such as "$6" or "$59". */
+export const formatPrice = (value: number) =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: VERIFIED_PLAN.currency, maximumFractionDigits: Number.isInteger(value) ? 0 : 2 }).format(value);
 
-/** A price from the API without trailing zeros, such as "$6" or "₹520". */
+/** A price from the API without trailing zeros, such as "$6". */
 export const formatWhole = (minor: number, currency = 'USD') => formatMoney(minor, currency).replace(/\.00$/, '');
 
-/** Amounts from the API come in the currency's smallest unit (cents). Older invoices are in INR. */
+/** Amounts from the API come in the currency's smallest unit (cents). An invoice keeps the currency it was paid in. */
 export const formatMoney = (minor: number, currency = 'USD') =>
   new Intl.NumberFormat(currency === 'INR' ? 'en-IN' : 'en-US', { style: 'currency', currency, minimumFractionDigits: 2 }).format(minor / 100);
 

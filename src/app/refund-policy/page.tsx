@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { LegalPage, legalDetails, MailOrContact } from '@/components/legal/legal-page';
 import { getSiteSettings } from '@/lib/data';
-import { formatPrice, VERIFIED_PLAN, VERIFIED_PLAN_INR } from '@/lib/verified-plan';
+import { formatPrice, VERIFIED_PLAN } from '@/lib/verified-plan';
 
 export const metadata: Metadata = {
   title: 'Refund and cancellation policy',
@@ -22,8 +22,8 @@ export default async function RefundPolicyPage() {
     >
       <h2>How billing works</h2>
       <p>
-        The {VERIFIED_PLAN.name} costs {price} a month or {formatPrice(VERIFIED_PLAN.yearly)} a year, GST included, or {formatPrice(VERIFIED_PLAN_INR.monthly, 'INR')} a month
-        or {formatPrice(VERIFIED_PLAN_INR.yearly, 'INR')} a year in rupees. It is paid by autopay: Razorpay charges your card or UPI at the start of each monthly or yearly period until you cancel, and you get an invoice for every payment
+        The {VERIFIED_PLAN.name} costs {price} a month or {formatPrice(VERIFIED_PLAN.yearly)} a year, GST included, charged in US dollars. It is paid by
+        autopay: Razorpay charges your card at the start of each monthly or yearly period until you cancel, and you get an invoice for every payment
         in your <Link href="/dashboard/company/billing">billing page</Link>.
       </p>
 

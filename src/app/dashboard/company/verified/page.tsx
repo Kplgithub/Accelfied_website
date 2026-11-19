@@ -112,9 +112,7 @@ function PlanPanel({ billing, user }: { billing: Billing; user: { firstName: str
   const { company, subscription } = billing;
   if (!company) return null;
   const live = company.status === 'published';
-  // Rupees first. An API from before rupee prices only knows dollars.
-  const plans = billing.prices?.INR ?? billing.plans;
-  const usd = billing.prices?.USD;
+  const plans = billing.plans;
   const plan = plans.monthly;
   const yearlySaving = plans.monthly.total * 12 - plans.yearly.total;
   return (
@@ -139,11 +137,6 @@ function PlanPanel({ billing, user }: { billing: Billing; user: { firstName: str
           <p className="mt-1 text-ink-soft">
             <span className="font-display text-3xl font-semibold text-ink">{formatWhole(plan.total, plan.currency)}</span> / month, or{' '}
             {formatWhole(plans.yearly.total, plans.yearly.currency)} / year. GST included.
-            {usd && (
-              <span className="block text-sm text-ink-faint">
-                Or {formatWhole(usd.monthly.total, 'USD')} / month, {formatWhole(usd.yearly.total, 'USD')} / year in dollars. You choose when you pay.
-              </span>
-            )}
           </p>
           <p className="mt-1 text-sm text-ink-faint">
             Paying yearly saves {formatWhole(yearlySaving, plan.currency)}. Every payment gets an invoice with the GST shown separately.
@@ -155,7 +148,7 @@ function PlanPanel({ billing, user }: { billing: Billing; user: { firstName: str
           ) : !billing.enabled ? (
             <PlanBlocked text="Online payment is being set up." />
           ) : (
-            <VerifiedPlanChooser plans={billing.plans} prices={billing.prices} companyName={company.name} name={`${user.firstName} ${user.lastName}`} email={user.email} />
+            <VerifiedPlanChooser plans={billing.plans} companyName={company.name} name={`${user.firstName} ${user.lastName}`} email={user.email} />
           )}
         </div>
       </div>
@@ -190,7 +183,7 @@ function PlanBlocked({ text }: { text: string }) {
 function RenewalPanel({ billing }: { billing: Billing }) {
   const { subscription } = billing;
   if (!subscription) return null;
-  const plan = (billing.prices?.[subscription.currency ?? 'USD'] ?? billing.plans)[subscription.interval ?? 'monthly'];
+  const plan = billing.plans[subscription.interval ?? 'monthly'];
   const period = plan.interval === 'yearly' ? 'year' : 'month';
   return (
     <Panel title="Your plan">

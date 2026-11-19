@@ -23,10 +23,7 @@ export default async function CompanyBlogPage() {
       </>
     );
   }
-  // Rupees first, dollars as well; an API from before rupee prices only knows dollars.
-  const price = data.prices
-    ? `${formatWhole(data.prices.INR.total, 'INR')} (or ${formatWhole(data.prices.USD.total, 'USD')})`
-    : formatWhole(data.price.total, data.price.currency);
+  const price = formatWhole(data.price.total, data.price.currency);
 
   return (
     <>
