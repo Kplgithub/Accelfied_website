@@ -29,7 +29,13 @@ export const getCurrentUser = cache(async (): Promise<Account | null> => {
 export async function requireUser(returnTo: string): Promise<{ user: Account; token: string }> {
   const [user, token] = await Promise.all([getCurrentUser(), getSessionToken()]);
   if (!user || !token) redirect(loginHref(returnTo));
+  if (!user.emailVerified) redirect(verifyEmailHref(returnTo));
   return { user, token };
+}
+
+/** The 6-digit email code step; a fresh code is sent when the page opens. */
+export function verifyEmailHref(returnTo: string): string {
+  return `/verify-email?send=1&next=${encodeURIComponent(returnTo)}`;
 }
 
 export function loginHref(returnTo: string): string {

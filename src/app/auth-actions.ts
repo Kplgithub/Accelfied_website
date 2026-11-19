@@ -73,7 +73,9 @@ export async function register(_prev: FormState, form: FormData): Promise<FormSt
   }
   await startSession(session, true);
   // Companies go straight into creating their listing; clients to where they were headed.
-  redirect(dashboardUrl(safeNext(text(form, 'next'), accountType === 'provider' ? '/dashboard/company' : '/dashboard')));
+  const destination = safeNext(text(form, 'next'), accountType === 'provider' ? '/dashboard/company' : '/dashboard');
+  // First the 6-digit code from the signup email, then on to where they were going.
+  redirect(session.user.emailVerified ? dashboardUrl(destination) : `/verify-email?next=${encodeURIComponent(destination)}`);
 }
 
 export async function login(_prev: FormState, form: FormData): Promise<FormState> {

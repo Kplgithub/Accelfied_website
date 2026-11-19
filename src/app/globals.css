@@ -478,3 +478,54 @@ html {
     animation: none !important;
   }
 }
+
+/* Get listed: reading the company website. */
+.af-shimmer {
+  background: linear-gradient(90deg, var(--paper-deep) 0%, var(--line) 40%, var(--paper-deep) 80%);
+  background-size: 220% 100%;
+  animation: af-shimmer 1.4s linear infinite;
+}
+.af-scan {
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--accent) 18%, transparent) 60%, color-mix(in srgb, var(--accent) 45%, transparent) 98%, transparent);
+  animation: af-scan 2.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@keyframes af-shimmer {
+  from {
+    background-position: 120% 0;
+  }
+  to {
+    background-position: -120% 0;
+  }
+}
+@keyframes af-scan {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(420%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .af-shimmer,
+  .af-scan {
+    animation: none;
+  }
+}
+
+/* Search suggestions drop in from the box. */
+@keyframes search-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
