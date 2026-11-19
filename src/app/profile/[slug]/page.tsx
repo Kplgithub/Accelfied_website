@@ -10,17 +10,19 @@ import { RatingSummary } from '@/components/company/rating-summary';
 import { ReviewCard } from '@/components/company/review-card';
 import { Pagination } from '@/components/directory/pagination';
 import { VerifiedBadge } from '@/components/ui/badge';
+import { AwardIcon } from '@/components/ui/seal-icon';
+import { awardHref, awardTitle } from '@/lib/badges/catalog';
 import { ButtonLink, buttonClass } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 import { EmptyState } from '@/components/ui/empty-state';
 import { countryName } from '@/lib/countries';
-import { getCompany, getCompanyDetails, getCompanyReviews, getPosts, getSitemapCompanies } from '@/lib/data';
+import { getCompany, getCompanyAwards, getCompanyDetails, getCompanyReviews, getPosts, getSitemapCompanies } from '@/lib/data';
 import { formatRating, hostname, pluralize } from '@/lib/format';
 import { budgetLabel, hourlyRateLabel, minProjectLabel, teamSizeLabel } from '@/lib/labels';
 import { JsonLd, breadcrumbLd } from '@/components/seo/json-ld';
 import { MAX_DESCRIPTION, OG_DEFAULTS } from '@/lib/seo-text';
 import { SITE_URL } from '@/lib/site';
-import type { CompanyProfile, PublicCompanyDetails, Review } from '@/lib/types';
+import type { CompanyProfile, PublicCompanyDetails, Review, TopAward } from '@/lib/types';
 import { Donut } from '@/components/charts/donut';
 import { PackagesSection } from '@/components/company/packages-section';
 import { Reveal } from '@/components/motion/reveal';
@@ -64,7 +66,7 @@ async function Profile({ params, searchParams }: PageProps<'/profile/[slug]'>) {
   const { slug } = await params;
   const company = await getCompany(slug);
   if (!company) notFound();
-  const details = await getCompanyDetails(slug);
+  const [details, awards] = await Promise.all([getCompanyDetails(slug), getCompanyAwards(slug)]);
 
   return (
     <>
@@ -75,7 +77,7 @@ async function Profile({ params, searchParams }: PageProps<'/profile/[slug]'>) {
       <Suspense fallback={null}>
         <OwnerTools slug={company.slug} />
       </Suspense>
-      <ProfileHeader company={company} details={details} />
+      <ProfileHeader company={company} details={details} awards={awards} />
       <Container className="grid gap-12 py-12 lg:grid-cols-[1fr_320px] lg:gap-14">
         <div className="min-w-0 space-y-16">
           <Overview company={company} details={details} />
@@ -125,7 +127,7 @@ async function Profile({ params, searchParams }: PageProps<'/profile/[slug]'>) {
   );
 }
 
-function ProfileHeader({ company, details }: { company: CompanyProfile; details: PublicCompanyDetails | null }) {
+function ProfileHeader({ company, details, awards }: { company: CompanyProfile; details: PublicCompanyDetails | null; awards: TopAward[] }) {
   return (
     <section className="grain border-b border-line">
       <Container className="py-10 lg:py-14">
@@ -156,6 +158,22 @@ function ProfileHeader({ company, details }: { company: CompanyProfile; details:
                   <RatingInline average={company.rating.average} count={company.rating.count} />
                 </a>
               </div>
+              {awards.length > 0 && (
+                <ul className="mt-4 flex flex-wrap gap-2" aria-label="Awards earned on Accelfied">
+                  {awards.slice(0, 4).map((award) => (
+                    <li key={`${award.service}-${award.scope}-${award.city}`}>
+                      <Link
+                        href={awardHref(award)}
+                        title={`Ranked #${award.rank} by client reviews`}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface py-1 pr-3 pl-1.5 text-[13px] font-semibold text-ink transition-colors hover:border-accent hover:text-accent"
+                      >
+                        <AwardIcon className="size-5" />
+                        {awardTitle(award)}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
           <div className="flex flex-wrap gap-2">

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { TrendChart } from '@/components/analytics/trend-chart';
+import { UpgradeStrip } from '@/components/dashboard/upgrade-strip';
 import { DashboardHeader, Panel, StatTile } from '@/components/dashboard/bits';
 import { NoCompany } from '@/components/dashboard/no-company';
 import { getMyCompany, getMyCompanyAnalytics } from '@/lib/account-data';
@@ -42,6 +43,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<'/dashbo
         title="Analytics"
         intro={`How clients found and used your profile from ${label(stats.from)} to ${label(stats.to)} (IST). Updated every few seconds.`}
       />
+      <UpgradeStrip company={company} />
       <nav aria-label="Date range" className="mb-6 flex flex-wrap gap-2">
         {RANGES.map((range) => (
           <Link

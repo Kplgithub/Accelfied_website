@@ -1,5 +1,6 @@
 import { formatRating, pluralize } from './format';
 import { SITE_URL } from './site';
+import { logoTile, wordmark } from './badges/art';
 
 export const BADGE_SIZE = { width: 220, height: 76 };
 
@@ -36,10 +37,10 @@ export function badgeSvg(company: BadgeCompany): string {
     : '';
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeAttr(`${company.name} ${badgeHeadline(company).toLowerCase()} Accelfied`)}">
 <rect x="0.5" y="0.5" width="${width - 1}" height="${height - 1}" rx="14" fill="#FFFFFF" stroke="#D5DEE2"/>
-<g transform="translate(16 ${(height - 48) / 2})"><rect width="48" height="48" rx="13" fill="#C7362F"/><path d="M12.7 35.3L24 12.7l11.3 22.6" fill="none" stroke="#fff" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M17.3 28.3c4.8-2.1 10.1-2.5 16.5-.8" fill="none" stroke="#8CCBE2" stroke-width="4" stroke-linecap="round"/></g>
+${logoTile(16, (height - 48) / 2, 48)}
 <g font-family="Helvetica, Arial, sans-serif">
 <text x="78" y="${headY}" font-size="10" font-weight="700" letter-spacing="1.4" fill="#1B7499">${badgeHeadline(company)}</text>
-<text x="78" y="${titleY}" font-size="21" font-weight="700" fill="#17313B">Accelfied</text>
+${wordmark(78, titleY, 17, '#17313B').svg}
 ${ratingLine}
 </g>
 ${check}

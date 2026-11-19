@@ -1,6 +1,7 @@
 import { ArrowUpRight, Check, ChevronRight } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { UpgradeStrip } from '@/components/dashboard/upgrade-strip';
 import { DashboardHeader, Panel, StatusPill } from '@/components/dashboard/bits';
 import { CompanyProfileForm } from '@/components/dashboard/company-profile-form';
 import { companySteps, OnboardingSteps } from '@/components/dashboard/onboarding-steps';
@@ -66,6 +67,7 @@ export default async function EditProfilePage({ searchParams }: PageProps<'/dash
       }
     />
   );
+  const upgrade = <UpgradeStrip company={company} />;
   const status = (
     <div className="mb-8 flex items-start gap-3 rounded-2xl border border-line bg-surface p-4">
       <StatusPill status={company.status} kind="company" />
@@ -75,7 +77,7 @@ export default async function EditProfilePage({ searchParams }: PageProps<'/dash
   if (company.status === 'rejected') return (<>{header}{status}</>);
 
   const [data, groups] = await Promise.all([getMyCompanyDetails(HERE), getServiceGroups()]);
-  if (!data) return (<>{header}{status}</>);
+  if (!data) return (<>{header}{upgrade}{status}</>);
   const { details } = data;
   const sections = profileSections(company, details);
   const inline = sections.filter((section) => section.href.startsWith(`${HERE}?`));
@@ -85,6 +87,7 @@ export default async function EditProfilePage({ searchParams }: PageProps<'/dash
   return (
     <>
       {header}
+      {upgrade}
       {company.status !== 'published' && status}
       <div className="grid gap-6 xl:grid-cols-[260px_minmax(0,1fr)]">
         <aside className="xl:sticky xl:top-32 xl:self-start">
