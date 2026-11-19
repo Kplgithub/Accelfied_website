@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Sparkles, Trash2 } from 'lucide-react';
 import { useActionState, useState } from 'react';
 import { applyForListing } from '@/app/actions';
 import { COUNTRIES } from '@/lib/countries';
@@ -15,9 +15,30 @@ import { formFields } from './use-form-fields';
 
 const MAX_SERVICES = 5;
 
-export function ListingForm({ groups, account }: { groups: ServiceGroup[]; account: { email: string } }) {
+const SOCIALS = [
+  { key: 'linkedin', label: 'LinkedIn' },
+  { key: 'facebook', label: 'Facebook' },
+  { key: 'instagram', label: 'Instagram' },
+  { key: 'x', label: 'X (Twitter)' },
+  { key: 'youtube', label: 'YouTube' },
+] as const;
+
+/** Details read from the company's website, used as starting values the person can change. */
+export interface ListingPrefill {
+  values: Record<string, string>;
+  industries: string[];
+  /** Field names that came from the website. */
+  filled: string[];
+  /** Shown in the note above the form, e.g. bluepeak.in */
+  source: string;
+}
+
+export function ListingForm({ groups, account, prefill }: { groups: ServiceGroup[]; account: { email: string }; prefill?: ListingPrefill }) {
   const [state, action] = useActionState(applyForListing, initialFormState);
-  const { value, error } = formFields(state);
+  const fields = formFields(state);
+  const error = fields.error;
+  // After a failed send the form shows what was typed; before that, what the website gave us.
+  const value = (name: string) => (state.values ? fields.value(name) : (prefill?.values[name] ?? ''));
   const [rows, setRows] = useState(() => {
     const restored = Array.from({ length: MAX_SERVICES }, (_, i) => ({
       slug: value(`services.${i}.slug`),
@@ -25,7 +46,9 @@ export function ListingForm({ groups, account }: { groups: ServiceGroup[]; accou
     })).filter((row) => row.slug);
     return restored.length ? restored : [{ slug: '', percent: '100' }];
   });
-  const selectedIndustries = new Set((value('industries') || '').split(',').filter(Boolean));
+  const selectedIndustries = new Set(state.values ? (value('industries') || '').split(',').filter(Boolean) : (prefill?.industries ?? []));
+  const filled = new Set(prefill?.filled ?? []);
+  const fromSite = (name: string) => (filled.has(name) && !state.values ? 'border-accent/60! bg-accent-tint/40!' : '');
   const total = rows.reduce((sum, row) => sum + (Number(row.percent) || 0), 0);
 
   if (state.status === 'success') {
@@ -43,34 +66,43 @@ export function ListingForm({ groups, account }: { groups: ServiceGroup[]; accou
     <form key={state.nonce} action={action} className="relative space-y-8" noValidate>
       <Honeypot />
       <FormAlert state={state} />
+      {prefill && prefill.filled.length > 0 && (
+        <div role="status" className="animate-rise flex items-start gap-3 rounded-2xl border border-accent/25 bg-accent-tint/60 px-4 py-3.5">
+          <Sparkles className="mt-0.5 size-5 shrink-0 text-accent" aria-hidden="true" />
+          <p className="text-[15px] text-ink-soft">
+            <span className="font-semibold text-ink">We filled {prefill.filled.length} details from {prefill.source}.</span> Fields with a blue tint came from your
+            website. Check each one and add anything we missed before you submit.
+          </p>
+        </div>
+      )}
 
       <FormSection title="Company" description="This is what clients see first on your profile.">
         <Field label="Company name" name="name" error={error('name')}>
-          {(ids) => <Input id={ids.id} name="name" autoComplete="organization" defaultValue={value('name')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
+          {(ids) => <Input id={ids.id} name="name" autoComplete="organization" defaultValue={value('name')} className={fromSite('name')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
         </Field>
         <Field label="Website" name="website" error={error('website')}>
           {(ids) => <Input id={ids.id} type="url" name="website" placeholder="https://" defaultValue={value('website')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
         </Field>
         <div className="sm:col-span-2">
           <Field label="Tagline" name="tagline" optional hint="One line on what you do best. Up to 160 characters." error={error('tagline')}>
-            {(ids) => <Input id={ids.id} name="tagline" maxLength={160} defaultValue={value('tagline')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
+            {(ids) => <Input id={ids.id} name="tagline" maxLength={160} defaultValue={value('tagline')} className={fromSite('tagline')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
           </Field>
         </div>
         <div className="sm:col-span-2">
           <Field label="About the company" name="description" hint="Who you work with, how you work and what sets you apart. At least 80 characters." error={error('description')}>
-            {(ids) => <Textarea id={ids.id} name="description" rows={6} defaultValue={value('description')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
+            {(ids) => <Textarea id={ids.id} name="description" rows={6} className={fromSite('description')} defaultValue={value('description')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
           </Field>
         </div>
         <ImageUpload name="logoUrl" label="Logo" kind="logo" optional hint="A square JPG, PNG or WebP works best." defaultValue={value('logoUrl')} error={error('logoUrl')} />
         <Field label="Year founded" name="foundedYear" optional error={error('foundedYear')}>
-          {(ids) => <Input id={ids.id} type="number" inputMode="numeric" name="foundedYear" min={1800} defaultValue={value('foundedYear')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
+          {(ids) => <Input id={ids.id} type="number" inputMode="numeric" name="foundedYear" min={1800} defaultValue={value('foundedYear')} className={fromSite('foundedYear')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
         </Field>
       </FormSection>
 
       <FormSection title="Size & pricing" description="Clients filter by these, so keep them accurate.">
         <Field label="Team size" name="teamSize" error={error('teamSize')}>
           {(ids) => (
-            <Select id={ids.id} name="teamSize" defaultValue={value('teamSize')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy}>
+            <Select id={ids.id} name="teamSize" className={fromSite('teamSize')} defaultValue={value('teamSize')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy}>
               <option value="" disabled>
                 Choose a size
               </option>
@@ -114,14 +146,14 @@ export function ListingForm({ groups, account }: { groups: ServiceGroup[]; accou
 
       <FormSection title="Headquarters">
         <Field label="City" name="headquarters.city" error={error('headquarters.city')}>
-          {(ids) => <Input id={ids.id} name="headquarters.city" autoComplete="address-level2" defaultValue={value('headquarters.city')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
+          {(ids) => <Input id={ids.id} name="headquarters.city" autoComplete="address-level2" defaultValue={value('headquarters.city')} className={fromSite('headquarters.city')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
         </Field>
         <Field label="State or region" name="headquarters.region" optional error={error('headquarters.region')}>
-          {(ids) => <Input id={ids.id} name="headquarters.region" autoComplete="address-level1" defaultValue={value('headquarters.region')} aria-describedby={ids.describedBy} />}
+          {(ids) => <Input id={ids.id} name="headquarters.region" autoComplete="address-level1" defaultValue={value('headquarters.region')} className={fromSite('headquarters.region')} aria-describedby={ids.describedBy} />}
         </Field>
         <Field label="Country" name="headquarters.countryCode" error={error('headquarters.countryCode') ?? error('headquarters.country')}>
           {(ids) => (
-            <Select id={ids.id} name="headquarters.countryCode" defaultValue={value('headquarters.countryCode')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy}>
+            <Select id={ids.id} name="headquarters.countryCode" className={fromSite('headquarters.countryCode')} defaultValue={value('headquarters.countryCode')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy}>
               <option value="" disabled>
                 Choose a country
               </option>
@@ -233,6 +265,25 @@ export function ListingForm({ groups, account }: { groups: ServiceGroup[]; accou
         </div>
       </fieldset>
 
+      <FormSection title="Social links" description="Optional. Shown on your profile so clients can see more of your work.">
+        {SOCIALS.map(({ key, label }) => (
+          <Field key={key} label={label} name={`socials.${key}`} optional error={error(`socials.${key}`)}>
+            {(ids) => (
+              <Input
+                id={ids.id}
+                type="url"
+                name={`socials.${key}`}
+                placeholder="https://"
+                className={fromSite(`socials.${key}`)}
+                defaultValue={value(`socials.${key}`)}
+                aria-invalid={ids.invalid}
+                aria-describedby={ids.describedBy}
+              />
+            )}
+          </Field>
+        ))}
+      </FormSection>
+
       <FormSection title="Contact" description="Where client enquiries and our review team reach you. Never shown publicly.">
         <div className="sm:col-span-2 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-paper px-4 py-3 text-sm">
           <span className="text-ink-soft">
@@ -241,10 +292,10 @@ export function ListingForm({ groups, account }: { groups: ServiceGroup[]; accou
         </div>
 
         <Field label="Enquiries email" name="contactEmail" error={error('contactEmail')}>
-          {(ids) => <Input id={ids.id} type="email" name="contactEmail" defaultValue={value('contactEmail') || account.email} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
+          {(ids) => <Input id={ids.id} type="email" name="contactEmail" defaultValue={value('contactEmail') || account.email} className={fromSite('contactEmail')} aria-invalid={ids.invalid} aria-describedby={ids.describedBy} />}
         </Field>
         <Field label="Phone" name="contactPhone" optional error={error('contactPhone')}>
-          {(ids) => <Input id={ids.id} type="tel" name="contactPhone" defaultValue={value('contactPhone')} aria-describedby={ids.describedBy} />}
+          {(ids) => <Input id={ids.id} type="tel" name="contactPhone" defaultValue={value('contactPhone')} className={fromSite('contactPhone')} aria-describedby={ids.describedBy} />}
         </Field>
         <Field label="Your role" name="applicant.jobTitle" optional error={error('applicant.jobTitle')}>
           {(ids) => <Input id={ids.id} name="applicant.jobTitle" autoComplete="organization-title" defaultValue={value('applicant.jobTitle')} aria-describedby={ids.describedBy} />}

@@ -1,4 +1,4 @@
-import { ChevronDown, Target } from 'lucide-react';
+import { BadgeCheck, Building2, ChevronDown, CircleHelp, Target } from 'lucide-react';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { getServiceGroups } from '@/lib/data';
@@ -10,6 +10,7 @@ import { AccountMenu } from './account-menu';
 import { Container } from '../ui/container';
 import { Logo } from './logo';
 import { MobileMenu } from './mobile-menu';
+import { HeaderSearch } from '../search/header-search';
 
 export const NAV_LINKS = [
   { href: '/services', label: 'Browse services' },
@@ -20,23 +21,58 @@ export const NAV_LINKS = [
   { href: '/get-verified', label: 'Get Accelfied' },
 ];
 
+/** Desktop keeps four plain links; everything for companies sits in one menu. */
+const MAIN_LINKS = NAV_LINKS.slice(0, 4);
+const COMPANY_LINKS = [
+  { href: '/get-listed', label: 'List your company', text: 'Free profile, reviews and project requests', icon: Building2 },
+  { href: '/get-verified', label: 'Get Accelfied', text: 'Verified badge, higher ranking, a blog feature', icon: BadgeCheck },
+  { href: '/company-faq', label: 'Company FAQ', text: 'How listings, reviews and plans work', icon: CircleHelp },
+];
+
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 print:hidden border-b border-line/80 bg-paper/95 lg:bg-paper/85 lg:backdrop-blur-md lg:supports-[backdrop-filter]:bg-paper/75">
       <Container className="flex h-16 items-center justify-between gap-6 lg:h-[68px]">
         <Logo />
         <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
-          {NAV_LINKS.map((link) => (
+          {MAIN_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="whitespace-nowrap rounded-full px-2 py-2 text-sm font-semibold text-ink-soft xl:px-3 xl:text-[15px] transition-colors duration-150 hover:bg-ink/5 hover:text-ink"
+              className="whitespace-nowrap rounded-full px-2.5 py-2 text-sm font-semibold text-ink-soft xl:px-3.5 xl:text-[15px] transition-colors duration-150 hover:bg-ink/5 hover:text-ink"
             >
               {link.label}
             </Link>
           ))}
+          <div className="group/co relative">
+            <Link
+              href="/get-listed"
+              className="inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-2 text-sm font-semibold text-ink-soft xl:px-3.5 xl:text-[15px] transition-colors duration-150 hover:bg-ink/5 hover:text-ink group-focus-within/co:text-ink"
+            >
+              For companies
+              <ChevronDown className="size-3.5 transition-transform duration-200 group-hover/co:rotate-180" aria-hidden="true" />
+            </Link>
+            <div className="invisible absolute top-full right-0 z-50 w-[23rem] translate-y-1 pt-2 opacity-0 transition-[opacity,transform,visibility] duration-200 group-focus-within/co:visible group-focus-within/co:translate-y-0 group-focus-within/co:opacity-100 group-hover/co:visible group-hover/co:translate-y-0 group-hover/co:opacity-100">
+              <ul className="rounded-2xl border border-line bg-surface p-2 shadow-[var(--shadow-lift)]">
+                {COMPANY_LINKS.map(({ href, label, text, icon: Icon }) => (
+                  <li key={href}>
+                    <Link href={href} prefetch={false} className="group/item flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-paper">
+                      <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent-tint text-accent transition-colors group-hover/item:bg-accent group-hover/item:text-white">
+                        <Icon className="size-4.5" aria-hidden="true" />
+                      </span>
+                      <span>
+                        <span className="block text-[15px] font-semibold text-ink">{label}</span>
+                        <span className="block text-[13px] text-ink-faint">{text}</span>
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </nav>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 lg:gap-1 xl:gap-2">
+          <HeaderSearch />
           <Suspense
             fallback={
               <>

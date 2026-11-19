@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { TrendChart } from '@/components/analytics/trend-chart';
 import { DashboardHeader, Panel } from '@/components/dashboard/bits';
+import { UpgradeStrip } from '@/components/dashboard/upgrade-strip';
 import { NoCompany } from '@/components/dashboard/no-company';
 import { PageFilter } from '@/components/vendor/page-filter';
 import { getMyCompany } from '@/lib/account-data';
@@ -49,6 +50,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<'/dashbo
         intro={`How clients found and used your profile from ${label(stats.from)} to ${label(stats.to)} (IST). Updated every few seconds.`}
       />
 
+      <UpgradeStrip company={company} />
       <div className="mb-6 flex flex-col gap-3">
         <nav aria-label="Date range" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
           {PERFORMANCE_DAYS.map((range) => (

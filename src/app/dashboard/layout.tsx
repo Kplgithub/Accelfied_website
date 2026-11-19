@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
-import { Suspense } from 'react';
+import { cache, Suspense } from 'react';
+import { CompanySidebarCard } from '@/components/dashboard/company-identity';
 import { DashboardNav, type NavGroup } from '@/components/dashboard/dashboard-nav';
 import { NavSkeleton } from '@/components/skeleton/dashboard';
 import { DashboardSkeleton } from '@/components/skeleton/skeleton';
+import { VerifyNudge } from '@/components/dashboard/verify-nudge';
 import { Container } from '@/components/ui/container';
 import { getUnreadCounts } from '@/lib/account-data';
 import { apiPrivateGet } from '@/lib/api';
@@ -23,20 +25,31 @@ export default function DashboardLayout({ children }: LayoutProps<'/dashboard'>)
         </Suspense>
       </aside>
       <div className="min-w-0">
+        <Suspense fallback={null}>
+          <Nudge />
+        </Suspense>
         <Suspense fallback={<DashboardSkeleton />}>{children}</Suspense>
       </div>
     </Container>
   );
 }
 
+/** One /v1/me/company call per request, shared by the nav and the Verified reminder. */
+const loadMyCompany = cache(async (token: string) => (await apiPrivateGet<{ company: OwnedCompany | null }>('/v1/me/company', token)).company);
+
+async function Nudge() {
+  const token = await getSessionToken();
+  if (!token) return null;
+  const company = await loadMyCompany(token);
+  if (!company || company.verified || company.status === 'rejected' || company.status === 'suspended') return null;
+  return <VerifyNudge />;
+}
+
 async function Nav() {
   // Each page sends signed-out visitors to log in with its own address, so the nav only renders.
   const [user, token] = await Promise.all([getCurrentUser(), getSessionToken()]);
   if (!user || !token) return null;
-  const [{ company }, unread] = await Promise.all([
-    apiPrivateGet<{ company: OwnedCompany | null }>('/v1/me/company', token),
-    getUnreadCounts(token),
-  ]);
+  const [company, unread] = await Promise.all([loadMyCompany(token), getUnreadCounts(token)]);
   const groups: NavGroup[] = [
     {
       title: 'Account',
@@ -58,7 +71,7 @@ async function Nav() {
           { href: '/dashboard/company/reviews', label: 'Client reviews' },
           { href: '/dashboard/company/portfolio', label: 'Portfolio' },
           { href: '/dashboard/company/team', label: 'Team' },
-          { href: '/dashboard/company/badge', label: 'Website badge' },
+          { href: '/dashboard/company/badge', label: 'Badges' },
           { href: '/dashboard/company/verified', label: company.verified ? 'Verified plan' : 'Get Accelfied' },
           { href: '/dashboard/company/sponsored', label: 'Sponsored places' },
           { href: '/dashboard/company/blog', label: 'Write a blog', prefix: true },
@@ -84,5 +97,10 @@ async function Nav() {
       { href: '/dashboard/settings', label: 'Account settings' },
     ],
   });
-  return <DashboardNav groups={groups} />;
+  return (
+    <>
+      {company && <CompanySidebarCard company={company} />}
+      <DashboardNav groups={groups} />
+    </>
+  );
 }

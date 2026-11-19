@@ -1,4 +1,4 @@
-import { ArrowRight, BadgeCheck, MessageSquareQuote, Package, TrendingUp } from 'lucide-react';
+import { ArrowRight, MessageSquareQuote, Package, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { TrendChart } from '@/components/analytics/trend-chart';
 import { HealthGauge } from '@/components/charts/health-gauge';
@@ -86,25 +86,8 @@ export function CompanyHome({
         </Reveal>
       </div>
 
-      {!company.verified ? (
-        <Reveal className="relative overflow-hidden rounded-[var(--radius-card)] bg-night p-6 text-paper shadow-[var(--shadow-lift)] sm:p-7">
-          <div className="pointer-events-none absolute -top-16 -right-10 size-56 rounded-full bg-accent/30 blur-3xl" aria-hidden="true" />
-          <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-4">
-              <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white/10">
-                <BadgeCheck className="size-6 text-accent-soft" aria-hidden="true" />
-              </span>
-              <div>
-                <p className="font-display text-xl font-semibold">Get Accelfied and stand out</p>
-                <p className="mt-1 max-w-xl text-sm text-paper/75">Verified companies show a trust badge, rank above unverified ones and get a blog feature written by our team.</p>
-              </div>
-            </div>
-            <ButtonLink href="/dashboard/company/verified" size="sm">
-              See plans
-            </ButtonLink>
-          </div>
-        </Reveal>
-      ) : !hasPackages ? (
+      {/* Companies without the Verified plan see the upgrade strip at the top of the page instead. */}
+      {!hasPackages ? (
         <Reveal className="relative overflow-hidden rounded-[var(--radius-card)] border border-accent/30 bg-gradient-to-br from-accent-tint to-surface p-6 sm:p-7">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-4">
