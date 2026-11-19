@@ -1,4 +1,4 @@
-import { BarChart3, BadgeCheck, LayoutDashboard, Package, PenLine, Send } from 'lucide-react';
+import { BarChart3, BadgeCheck, LayoutDashboard, PenLine, Send } from 'lucide-react';
 import Link from 'next/link';
 import { apiPrivateGet } from '@/lib/api';
 import { getCurrentUser, getSessionToken } from '@/lib/session';
@@ -20,8 +20,7 @@ export async function OwnerTools({ slug }: { slug: string }) {
 
   const tools = [
     { href: '/dashboard/company', label: 'Edit profile', icon: PenLine },
-    { href: '/dashboard/company/packages', label: 'Packages', icon: Package },
-    { href: '/dashboard/company/reviews', label: 'Request reviews', icon: Send },
+    { href: '/dashboard/company/reviews/request', label: 'Request a client review', icon: Send },
     { href: '/dashboard/company/analytics', label: 'Analytics', icon: BarChart3 },
   ];
 

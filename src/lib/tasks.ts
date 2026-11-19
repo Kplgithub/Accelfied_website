@@ -12,7 +12,7 @@ export interface RecommendedTask {
 }
 
 const MINUTES: Record<string, number> = {
-  company: 10, basics: 2, services: 5, industries: 2, clients: 5, locations: 3, social: 2, awards: 5, packages: 15, portfolio: 15, team: 10,
+  company: 10, basics: 2, services: 5, industries: 2, clients: 5, locations: 3, social: 2, awards: 5, portfolio: 15, team: 10,
 };
 
 /**
@@ -26,7 +26,7 @@ export function recommendedTasks(company: OwnedCompany, health: ProfileHealth): 
       key: 'first-review',
       title: 'Get your first client review',
       tip: 'Send a past client your review link. One review lifts you above every company with none.',
-      href: '/dashboard/company/reviews',
+      href: '/dashboard/company/reviews/request',
       minutes: 3,
       done: reviews >= 1,
     },

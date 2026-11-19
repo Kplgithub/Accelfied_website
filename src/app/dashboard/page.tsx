@@ -76,7 +76,7 @@ async function CompanyOverview({ user, company }: { user: Account; company: Owne
   const active = company && company.status !== 'rejected';
   const [leads, data, analytics, workspace, certifications] = active
     ? await Promise.all([
-        getMyCompanyLeads(HERE),
+        company.verified ? getMyCompanyLeads(HERE) : Promise.resolve(null),
         getMyCompanyDetails(HERE).catch(() => null),
         company.status === 'published' ? getMyCompanyAnalytics(HERE, 90).catch(() => null) : Promise.resolve(null),
         getMyWorkspace(HERE).catch(() => null),
@@ -95,14 +95,14 @@ async function CompanyOverview({ user, company }: { user: Account; company: Owne
         <DashboardHeader eyebrow="Company account" title={`Welcome back, ${user.firstName}`} intro="A few steps and your company will be ready for clients." />
       )}
       {company && !health && (
-        <div className="mb-8 grid gap-4 sm:grid-cols-3">
+        <div className={`mb-8 grid gap-4 ${company.verified ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
           <StatTile label="Listing" value={<StatusPill status={company.status} kind="company" />} />
           <StatTile
             label="Client rating"
             value={company.rating.count > 0 ? formatRating(company.rating.average) : '–'}
             note={company.rating.count > 0 ? `From ${company.rating.count} published ${company.rating.count === 1 ? 'review' : 'reviews'}` : 'No published reviews yet'}
           />
-          <StatTile label="Project requests" value={leads?.total ?? 0} note="Sent to you directly" />
+          {company.verified && <StatTile label="Project requests" value={leads?.total ?? 0} note="Sent to you directly" />}
         </div>
       )}
       {!setupDone && company?.status !== 'published' && (
@@ -116,13 +116,13 @@ async function CompanyOverview({ user, company }: { user: Account; company: Owne
             company={company}
             health={health}
             analytics={analytics}
-            hasPackages={data.details.packages.some((item) => item.status === 'published')}
             skippedTasks={workspace?.skippedTasks ?? []}
             certifications={certifications}
           />
         </div>
       )}
-      {leads && (
+      {/* Project requests open once the company is Verified. */}
+      {leads && company?.verified && (
         <Panel title="Latest project requests">
           {leads.items.length ? (
             <div className="space-y-4">

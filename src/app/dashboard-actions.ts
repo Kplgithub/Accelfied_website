@@ -73,7 +73,7 @@ export async function removeTeamMember(form: FormData): Promise<void> {
 
 export async function inviteReviewer(_prev: FormState, form: FormData): Promise<FormState> {
   const payload = { name: text(form, 'name'), email: text(form, 'email'), note: text(form, 'note') };
-  return andRefresh(await submit('/v1/me/company/review-invites', payload, form, `Invite sent to ${payload.email}.`));
+  return andRefresh(await submit('/v1/me/company/review-invites', payload, form, `Review request sent to ${payload.email}.`));
 }
 
 export async function resendVerification(_prev?: FormState): Promise<FormState> {

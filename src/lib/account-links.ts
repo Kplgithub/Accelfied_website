@@ -17,7 +17,7 @@ const COMPANY: AccountLinkGroup = {
     { href: '/dashboard', label: 'Company dashboard', icon: 'home' },
     { href: '/dashboard/company/analytics', label: 'Performance', icon: 'chart' },
     { href: '/dashboard/company/projects', label: 'Projects', icon: 'folder' },
-    { href: '/dashboard/company/reviews', label: 'Ask for a review', icon: 'star' },
+    { href: '/dashboard/company/reviews/request', label: 'Request a client review', icon: 'star' },
     { href: '/dashboard/company', label: 'Edit company profile', icon: 'edit' },
   ],
 };

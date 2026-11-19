@@ -41,7 +41,7 @@ export function ReviewInviteForm({ companyName }: { companyName: string }) {
         </Field>
       </div>
       <div className="sm:col-span-2">
-        <SubmitButton pendingLabel="Sending…">Send invite</SubmitButton>
+        <SubmitButton pendingLabel="Sending…">Send review request</SubmitButton>
       </div>
     </form>
   );
