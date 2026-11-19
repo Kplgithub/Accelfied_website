@@ -50,6 +50,7 @@ function PlaceList({ title, places }: { title: string; places: ServicePlace[] })
           <li key={placePath(place)}>
             <Link
               href={placePath(place)}
+              prefetch={false}
               className="lift flex items-center justify-between gap-3 rounded-2xl border border-line bg-surface px-4 py-3 text-[15px]"
             >
               <span className="flex min-w-0 items-center gap-2.5">
