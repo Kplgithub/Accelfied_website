@@ -3,6 +3,7 @@ import { Check } from 'lucide-react';
 import Link from 'next/link';
 import { istYear, sealArt, toSvg } from '@/lib/badges/art';
 import { soraText } from '@/lib/badges/text';
+import { myVerifyStage, PLAN_PAGE, STAGE_COPY } from '@/lib/verification-stage';
 import { formatPrice, VERIFIED_PLAN } from '@/lib/verified-plan';
 
 let badge: { year: number; src: string } | null = null;
@@ -15,8 +16,28 @@ function badgeSrc(): string {
 }
 
 /** "Upgrade to the Verified plan" strip for companies without it, on the pages in verify-nudge.tsx STRIP_PAGES. Prices come from the plan constants. */
-export function UpgradeStrip({ company }: { company: { verified: boolean; status: string } | null }) {
+export async function UpgradeStrip({ company }: { company: { verified: boolean; status: string } | null }) {
   if (!company || company.verified || company.status === 'rejected' || company.status === 'suspended') return null;
+  const stage = await myVerifyStage();
+  // Paid but not approved yet: point to the one step left instead of selling the plan again.
+  if (stage !== 'pay') {
+    const copy = STAGE_COPY[stage];
+    return (
+      <section aria-label="Verification status" className="mb-8 overflow-hidden rounded-[var(--radius-card)] bg-night text-paper shadow-[var(--shadow-card)]">
+        <div className="flex flex-col gap-5 px-6 py-5 md:flex-row md:items-center">
+          {/* eslint-disable-next-line @next/next/no-img-element -- inline SVG of our own badge */}
+          <img src={badgeSrc()} alt="" width={66} height={81} className="shrink-0" />
+          <div className="flex-1">
+            <p className="font-display text-xl font-semibold">{copy.title}</p>
+            <p className="mt-1 max-w-2xl text-[15px] text-paper/85">{copy.text}</p>
+          </div>
+          <Link href={PLAN_PAGE} className="inline-flex h-11 shrink-0 items-center justify-center self-start rounded-full bg-brand px-6 text-[15px] font-semibold whitespace-nowrap text-white transition-colors hover:bg-brand-strong md:self-center">
+            {copy.action}
+          </Link>
+        </div>
+      </section>
+    );
+  }
   const points = [
     'Verified badge on your profile, in listings and on your own website',
     'Listed above companies that are not verified',
