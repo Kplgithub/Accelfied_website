@@ -54,7 +54,7 @@ export async function OwnerTools({ slug }: { slug: string }) {
               className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-brand px-3.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-brand-strong"
             >
               <BadgeCheck className="size-4" aria-hidden="true" />
-              Get Verified
+              Get Accelfied
             </Link>
           )}
         </nav>

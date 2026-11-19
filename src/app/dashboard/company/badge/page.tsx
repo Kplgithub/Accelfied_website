@@ -40,7 +40,7 @@ export default async function CompanyBadgePage() {
             {!company.verified && (
               <div className="mt-5">
                 <ButtonLink href="/dashboard/company/verified" variant="secondary" size="sm">
-                  Get Verified
+                  Get Accelfied
                 </ButtonLink>
               </div>
             )}

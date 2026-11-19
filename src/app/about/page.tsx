@@ -19,7 +19,7 @@ const PRINCIPLES = [
   },
   {
     title: 'Free to list, free to hire',
-    text: 'Companies list for free, and businesses never pay to search, message or send a brief. Verified is an optional paid plan for companies that want a checked badge and more reach.',
+    text: 'Companies list for free, and businesses never pay to search, message or send a brief. The Verified plan is an optional paid plan for companies that want a checked badge and more reach.',
   },
   {
     title: 'Every city, not just the metros',

@@ -44,7 +44,7 @@ export default async function TermsPage() {
         between you and that company. Accelfied is not a party to it and does not guarantee the work.
       </p>
 
-      <h2>Accelfied Verified</h2>
+      <h2>Verified plan</h2>
       <p>
         The Verified plan is a monthly subscription. The badge shows while the plan is paid and our team has approved your business details. Billing and refunds are
         explained in our <Link href="/refund-policy">refund policy</Link>.
