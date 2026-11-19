@@ -3,6 +3,7 @@ import { ClientProgress, type ClientStep } from '@/components/dashboard/client-p
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { UpgradeStrip } from '@/components/dashboard/upgrade-strip';
 import { DashboardHeader, Panel, StatTile, StatusPill } from '@/components/dashboard/bits';
 import { VerifyEmailBanner } from '@/components/dashboard/verify-email-banner';
 import { ClaimCodeForm } from '@/components/auth/code-forms';
@@ -104,6 +105,7 @@ async function CompanyOverview({ user, company }: { user: Account; company: Owne
           ) : undefined
         }
       />
+      <UpgradeStrip company={company} />
       {company && !health && (
         <div className="mb-8 grid gap-4 sm:grid-cols-3">
           <StatTile label="Listing" value={<StatusPill status={company.status} kind="company" />} />

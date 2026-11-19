@@ -113,46 +113,74 @@ export function checkPath(cx: number, cy: number, size: number): string {
   return `M${n(cx - 6 * u)} ${n(cy + 0.4 * u)}L${n(cx - 1.8 * u)} ${n(cy + 4.4 * u)}L${n(cx + 6.4 * u)} ${n(cy - 4.6 * u)}`;
 }
 
+/** Calendar year in India Standard Time, printed on badges. */
+export function istYear(now = new Date()): number {
+  return new Date(now.getTime() + 330 * 60_000).getUTCFullYear();
+}
+
+/* ------------------------------------------------------------- tile frame */
+
+/** Every big badge shares one frame: a rounded tile, a deep teal cap with the logo, a coloured band and two ribbon tails. */
+export const TILE_SIZE = { width: 440, height: 540 } as const;
+
+interface FrameColors {
+  band: string;
+  bandDeep: string;
+}
+
+const TILE = { x: 40, y: 20, w: 360, h: 420, r: 64 } as const;
+
+function tileFrame(theme: Theme, colors: FrameColors, idPrefix: string): { before: string; after: string; ink: string; soft: string } {
+  const dark = theme === 'dark';
+  const cx = TILE_SIZE.width / 2;
+  const face = dark ? COLORS.teal : COLORS.white;
+  const cap = dark ? COLORS.tealDeep : COLORS.teal;
+  const edge = dark ? COLORS.paper : COLORS.teal;
+  const clip = `${idPrefix}c`;
+  const parts: string[] = [];
+  const tail = (x: number, turn: number) =>
+    `<path transform="rotate(${turn} ${x + 32} 400)" d="M${x} 380H${x + 64}V520L${x + 32} 494L${x} 520Z" fill="${colors.band}"/><path transform="rotate(${turn} ${x + 32} 400)" d="M${x} 380H${x + 64}V420H${x}Z" fill="${colors.bandDeep}"/>`;
+  parts.push(tail(118, 9), tail(258, -9));
+  parts.push(`<defs><clipPath id="${clip}"><rect x="${TILE.x}" y="${TILE.y}" width="${TILE.w}" height="${TILE.h}" rx="${TILE.r}"/></clipPath></defs>`);
+  parts.push(`<rect x="${TILE.x}" y="${TILE.y}" width="${TILE.w}" height="${TILE.h}" rx="${TILE.r}" fill="${face}"/>`);
+  parts.push(`<g clip-path="url(#${clip})">`);
+  parts.push(`<rect x="${TILE.x}" y="${TILE.y}" width="${TILE.w}" height="96" fill="${cap}"/>`);
+  const mark = wordmark(0, 0, 26, COLORS.white);
+  const gx = cx - (40 + 12 + mark.width) / 2;
+  parts.push(logoTile(gx, 48, 40));
+  parts.push(wordmark(gx + 52, 78, 26, COLORS.white).svg);
+  parts.push(`<rect x="${TILE.x}" y="356" width="${TILE.w}" height="84" fill="${colors.band}"/>`);
+  parts.push(`</g>`);
+  parts.push(`<rect x="${TILE.x + 4}" y="${TILE.y + 4}" width="${TILE.w - 8}" height="${TILE.h - 8}" rx="${TILE.r - 4}" fill="none" stroke="${edge}" stroke-width="8"/>`);
+  return { before: parts.join(''), after: '', ink: dark ? COLORS.white : COLORS.teal, soft: dark ? COLORS.blueSoft : COLORS.blue };
+}
+
+function bandText(value: string, text: TextRenderer): string {
+  const style = { weight: 700 as const, tracking: 0.14, fill: COLORS.white, anchor: 'middle' as const };
+  return text.draw(value, TILE_SIZE.width / 2, 410, { ...style, size: fitSize(value, 300, 28, style, text) });
+}
+
 /* ------------------------------------------------------------------ seal */
 
 export type SealKind = 'verified' | 'premier';
 
-export function sealArt(kind: SealKind, theme: Theme, text: TextRenderer): Art {
-  const S = 512;
-  const c = S / 256 / 2; // 1 at 512
-  const cx = 256 * c;
-  const dark = theme === 'dark';
+/** Verified (blue band) and Premier Verified (red band) badges, in the same tile frame as the awards. The band shows the current year. */
+export function sealArt(kind: SealKind, theme: Theme, text: TextRenderer, year: number, idPrefix = 's'): Art {
   const premier = kind === 'premier';
-  const rosette = dark ? COLORS.paper : COLORS.teal;
-  const disk = dark ? COLORS.teal : COLORS.white;
-  const diskEdge = dark ? COLORS.tealDeep : COLORS.paper;
-  const ring = premier ? COLORS.red : COLORS.blue;
-  const title = dark ? COLORS.white : COLORS.teal;
-  const parts: string[] = [];
-  parts.push(`<defs><radialGradient id="sd" cx="50%" cy="38%" r="62%"><stop offset="0" stop-color="${disk}"/><stop offset="1" stop-color="${diskEdge}"/></radialGradient></defs>`);
-  if (premier) parts.push(`<path d="${rosettePath(cx, cx, 180, 44, 22.5)}" fill="${COLORS.red}"/>`);
-  parts.push(`<path d="${rosettePath(cx, cx, premier ? 174 : 182, 46)}" fill="${rosette}"/>`);
-  parts.push(`<circle cx="${cx}" cy="${cx}" r="${premier ? 166 : 172}" fill="none" stroke="${dark ? COLORS.teal : COLORS.white}" stroke-opacity=".18" stroke-width="2" stroke-dasharray="2 7" stroke-linecap="round"/>`);
-  parts.push(`<circle cx="${cx}" cy="${cx}" r="${premier ? 156 : 160}" fill="url(#sd)"/>`);
-  parts.push(`<circle cx="${cx}" cy="${cx}" r="${premier ? 145 : 148}" fill="none" stroke="${ring}" stroke-width="5"/>`);
-  parts.push(`<circle cx="${cx}" cy="${cx}" r="${premier ? 136 : 139}" fill="none" stroke="${ring}" stroke-width="1.5" stroke-opacity=".45"/>`);
-  const markColor = dark ? COLORS.white : COLORS.teal;
+  const frame = tileFrame(theme, premier ? { band: COLORS.red, bandDeep: COLORS.redDeep } : { band: COLORS.blue, bandDeep: '#135A78' }, idPrefix);
+  const cx = TILE_SIZE.width / 2;
+  const parts = [frame.before];
   if (premier) {
-    parts.push(logoTile(cx - 25, 136, 50));
-    parts.push(text.draw('PREMIER', cx, 222, { size: 20, weight: 700, tracking: 0.3, fill: COLORS.red, anchor: 'middle' }));
-    parts.push(text.draw('VERIFIED', cx, 270, { size: 46, weight: 700, tracking: 0.04, fill: title, anchor: 'middle' }));
+    parts.push(miniSeal(cx, 160, 64, 'premier'));
+    parts.push(text.draw('PREMIER', cx, 230, { size: 22, weight: 700, tracking: 0.32, fill: COLORS.red, anchor: 'middle' }));
+    parts.push(text.draw('VERIFIED', cx, 278, { size: 44, weight: 700, tracking: 0.03, fill: frame.ink, anchor: 'middle' }));
   } else {
-    parts.push(logoTile(cx - 27, 140, 54));
-    parts.push(text.draw('VERIFIED', cx, 266, { size: 50, weight: 700, tracking: 0.04, fill: title, anchor: 'middle' }));
+    parts.push(miniSeal(cx, 168, 76, 'verified'));
+    parts.push(text.draw('VERIFIED', cx, 268, { size: 50, weight: 700, tracking: 0.03, fill: frame.ink, anchor: 'middle' }));
   }
-  // Divider with a small rising chevron in the middle.
-  const dy = 296;
-  const lineColor = dark ? 'rgba(255,255,255,.28)' : COLORS.line;
-  parts.push(`<path d="M${cx - 84} ${dy}H${cx - 18}M${cx + 18} ${dy}H${cx + 84}" stroke="${lineColor}" stroke-width="2" stroke-linecap="round"/>`);
-  parts.push(`<path d="M${cx - 9} ${dy + 4}L${cx} ${dy - 5}L${cx + 9} ${dy + 4}" fill="none" stroke="${ring}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`);
-  const markW = 24 * WORDMARK_RATIO;
-  parts.push(wordmark(cx - markW / 2, 346, 24, markColor).svg);
-  return { width: S, height: S, body: parts.join('') };
+  parts.push(text.draw('COMPANY', cx, 322, { size: 20, weight: 700, tracking: 0.36, fill: frame.soft, anchor: 'middle' }));
+  parts.push(bandText(String(year), text));
+  return { ...TILE_SIZE, body: parts.join('') };
 }
 
 /* ----------------------------------------------------------------- award */
@@ -186,54 +214,18 @@ function fitSize(value: string, max: number, size: number, style: Omit<TextStyle
 }
 
 export function awardArt(award: AwardText, theme: Theme, text: TextRenderer, idPrefix = 'a'): Art {
-  const W = 440;
-  const H = 540;
-  const dark = theme === 'dark';
-  const cx = W / 2;
-  const tile = { x: 40, y: 20, w: 360, h: 420, r: 64 };
-  const face = dark ? COLORS.teal : COLORS.white;
-  const cap = dark ? COLORS.tealDeep : COLORS.teal;
-  const edge = dark ? COLORS.paper : COLORS.teal;
-  const ink = dark ? COLORS.white : COLORS.teal;
-  const soft = dark ? COLORS.blueSoft : COLORS.blue;
-  const clip = `${idPrefix}c`;
-  const parts: string[] = [];
-  // Ribbon tails behind the tile.
-  const tail = (x: number, turn: number) =>
-    `<path transform="rotate(${turn} ${x + 32} 400)" d="M${x} 380H${x + 64}V520L${x + 32} 494L${x} 520Z" fill="${COLORS.red}"/><path transform="rotate(${turn} ${x + 32} 400)" d="M${x} 380H${x + 64}V420H${x}Z" fill="${COLORS.redDeep}"/>`;
-  parts.push(tail(118, 9), tail(258, -9));
-  parts.push(`<defs><clipPath id="${clip}"><rect x="${tile.x}" y="${tile.y}" width="${tile.w}" height="${tile.h}" rx="${tile.r}"/></clipPath></defs>`);
-  parts.push(`<rect x="${tile.x}" y="${tile.y}" width="${tile.w}" height="${tile.h}" rx="${tile.r}" fill="${face}"/>`);
-  parts.push(`<g clip-path="url(#${clip})">`);
-  // Top cap with the logo.
-  parts.push(`<rect x="${tile.x}" y="${tile.y}" width="${tile.w}" height="96" fill="${cap}"/>`);
-  const mark = wordmark(0, 0, 26, COLORS.white);
-  const groupW = 40 + 12 + mark.width;
-  const gx = cx - groupW / 2;
-  parts.push(logoTile(gx, 48, 40));
-  parts.push(wordmark(gx + 52, 78, 26, COLORS.white).svg);
-  // Bottom band with the place and year.
-  parts.push(`<rect x="${tile.x}" y="356" width="${tile.w}" height="84" fill="${COLORS.red}"/>`);
-  parts.push(`</g>`);
-  parts.push(`<rect x="${tile.x + 4}" y="${tile.y + 4}" width="${tile.w - 8}" height="${tile.h - 8}" rx="${tile.r - 4}" fill="none" stroke="${edge}" stroke-width="8"/>`);
-
-  // TOP / service / COMPANY
+  const frame = tileFrame(theme, { band: COLORS.red, bandDeep: COLORS.redDeep }, idPrefix);
+  const cx = TILE_SIZE.width / 2;
+  const parts = [frame.before];
   const fit = fitLines(award.service, 290, 42, 24, text);
   const lineGap = fit.size * 1.12;
-  const blockTop = 142;
-  parts.push(text.draw('TOP', cx, blockTop + 18, { size: 20, weight: 700, tracking: 0.36, fill: soft, anchor: 'middle' }));
-  const serviceTop = blockTop + 30;
-  const bodyH = fit.lines.length * lineGap;
-  // Centre the service lines between TOP and COMPANY.
-  const firstBaseline = serviceTop + (fit.lines.length === 1 ? 62 : 16) + fit.size * 0.8;
-  fit.lines.forEach((line, i) => parts.push(text.draw(line, cx, firstBaseline + i * lineGap, { size: fit.size, weight: 700, fill: ink, anchor: 'middle' })));
-  const companyY = Math.max(firstBaseline + (fit.lines.length - 1) * lineGap + 44, serviceTop + bodyH + 40);
-  parts.push(text.draw('COMPANY', cx, Math.min(companyY, 330), { size: 20, weight: 700, tracking: 0.36, fill: soft, anchor: 'middle' }));
-  // Small chevrons either side of COMPANY? Keep it clean: a short rule above the band.
-  const band = `${award.place.toUpperCase()}  ${award.year}`;
-  const bandStyle = { weight: 700 as const, tracking: 0.14, fill: COLORS.white, anchor: 'middle' as const };
-  parts.push(text.draw(band, cx, 410, { ...bandStyle, size: fitSize(band, 300, 28, bandStyle, text) }));
-  return { width: W, height: H, body: parts.join('') };
+  parts.push(text.draw('TOP', cx, 160, { size: 20, weight: 700, tracking: 0.36, fill: frame.soft, anchor: 'middle' }));
+  const firstBaseline = 172 + (fit.lines.length === 1 ? 62 : 16) + fit.size * 0.8;
+  fit.lines.forEach((line, i) => parts.push(text.draw(line, cx, firstBaseline + i * lineGap, { size: fit.size, weight: 700, fill: frame.ink, anchor: 'middle' })));
+  const companyY = Math.max(firstBaseline + (fit.lines.length - 1) * lineGap + 44, 172 + fit.lines.length * lineGap + 40);
+  parts.push(text.draw('COMPANY', cx, Math.min(companyY, 330), { size: 20, weight: 700, tracking: 0.36, fill: frame.soft, anchor: 'middle' }));
+  parts.push(bandText(`${award.place.toUpperCase()}  ${award.year}`, text));
+  return { ...TILE_SIZE, body: parts.join('') };
 }
 
 /* --------------------------------------------------------------- compact */
@@ -251,28 +243,44 @@ export function miniSeal(cx: number, cy: number, size: number, kind: SealKind): 
   return `${back}<path d="${rosettePath(cx, cy, 8.2 * k, 2.4 * k)}" fill="${fill}"/><path d="${checkPath(cx, cy, size * 0.78)}" fill="none" stroke="#fff" stroke-width="${n(2.6 * k)}" stroke-linecap="round" stroke-linejoin="round"/>`;
 }
 
-export function compactArt(badge: CompactText, theme: Theme, text: TextRenderer): Art {
-  const W = 300;
-  const H = 96;
+export const COMPACT_SIZE = { width: 320, height: 100 } as const;
+
+/** Small horizontal badge for website footers: deep teal cap with the logo, status and live rating, coloured band on the right. */
+export function compactArt(badge: CompactText, theme: Theme, text: TextRenderer, idPrefix = 'k'): Art {
+  const { width: W, height: H } = COMPACT_SIZE;
   const dark = theme === 'dark';
+  const premier = badge.kind === 'premier';
+  const band = premier ? COLORS.red : COLORS.blue;
+  const ink = dark ? COLORS.white : COLORS.teal;
+  const soft = dark ? COLORS.blueSoft : COLORS.inkSoft;
+  const clip = `${idPrefix}c`;
   const parts: string[] = [];
-  parts.push(`<rect x="1" y="1" width="${W - 2}" height="${H - 2}" rx="20" fill="${dark ? COLORS.teal : COLORS.white}" stroke="${dark ? 'rgba(255,255,255,.18)' : COLORS.line}" stroke-width="2"/>`);
-  parts.push(miniSeal(52, 48, 64, badge.kind));
-  const label = badge.kind === 'premier' ? 'PREMIER VERIFIED' : 'VERIFIED';
+  parts.push(`<defs><clipPath id="${clip}"><rect x="0" y="0" width="${W}" height="${H}" rx="20"/></clipPath></defs>`);
+  parts.push(`<g clip-path="url(#${clip})"><rect width="${W}" height="${H}" fill="${dark ? COLORS.teal : COLORS.white}"/><rect width="96" height="${H}" fill="${dark ? COLORS.tealDeep : COLORS.teal}"/><rect x="${W - 16}" width="16" height="${H}" fill="${band}"/></g>`);
+  parts.push(`<rect x="1.5" y="1.5" width="${W - 3}" height="${H - 3}" rx="18.5" fill="none" stroke="${dark ? COLORS.paper : COLORS.teal}" stroke-width="3"/>`);
+  parts.push(logoTile(24, 26, 48));
+  parts.push(miniSeal(68, 70, 26, badge.kind));
+  const x = 114;
   const rated = badge.rating.count > 0;
-  const top = rated ? 32 : 40;
-  parts.push(text.draw(label, 96, top, { size: 13, weight: 700, tracking: 0.16, fill: badge.kind === 'premier' ? COLORS.red : dark ? COLORS.blueSoft : COLORS.blue }));
-  const on = text.draw('on', 96, top + 30, { size: 17, weight: 600, fill: dark ? COLORS.blueSoft : COLORS.inkSoft });
-  const onW = text.width('on', { size: 17, weight: 600, fill: '' });
-  parts.push(on, wordmark(96 + onW + 7, top + 30, 22, dark ? COLORS.white : COLORS.teal).svg);
+  const top = rated ? 36 : 46;
+  if (premier) {
+    parts.push(text.draw('PREMIER', x, top - 1, { size: 15, weight: 700, tracking: 0.12, fill: COLORS.red }));
+    const pw = text.width('PREMIER', { size: 15, weight: 700, tracking: 0.12, fill: '' }) + 8;
+    parts.push(text.draw('VERIFIED', x + pw, top - 1, { size: 15, weight: 700, tracking: 0.12, fill: ink }));
+  } else {
+    parts.push(text.draw('VERIFIED', x, top, { size: 20, weight: 700, tracking: 0.06, fill: ink }));
+  }
+  const onStyle = { size: 15, weight: 600 as const, fill: soft };
+  parts.push(text.draw('on', x, top + 24, onStyle));
+  parts.push(wordmark(x + text.width('on', onStyle) + 6, top + 24, 17, ink).svg);
   if (rated) {
     const value = badge.rating.average.toFixed(1);
     const reviews = `${badge.rating.count} ${badge.rating.count === 1 ? 'review' : 'reviews'}`;
-    const style = { size: 14, weight: 700 as const, fill: dark ? COLORS.white : COLORS.teal };
-    parts.push(text.draw(value, 96, top + 52, style));
-    const vx = 96 + text.width(value, style) + 6;
-    parts.push(starPath(vx + 7, top + 47, 7.5, '#F0A531'));
-    parts.push(text.draw(reviews, vx + 20, top + 52, { size: 14, weight: 600, fill: dark ? COLORS.blueSoft : COLORS.inkSoft }));
+    const style = { size: 13, weight: 700 as const, fill: ink };
+    parts.push(text.draw(value, x, top + 48, style));
+    const vx = x + text.width(value, style) + 5;
+    parts.push(starPath(vx + 7, top + 43.5, 7, '#F0A531'));
+    parts.push(text.draw(reviews, vx + 19, top + 48, { size: 13, weight: 600, fill: soft }));
   }
   return { width: W, height: H, body: parts.join('') };
 }
@@ -428,6 +436,19 @@ export function fallbackArt(width: number, height: number, label: 'Listed on' | 
     parts.push(wordmark(cx - markW / 2, top + block, markH, dark ? COLORS.white : COLORS.teal).svg);
   }
   return { width, height, body: parts.join('') };
+}
+
+/** Tile-sized stand-in for a lapsed seal or award: same frame, neutral band, no claim. */
+export function fallbackTileArt(label: 'Listed on' | 'Reviewed on', theme: Theme, text: TextRenderer): Art {
+  const frame = tileFrame(theme, { band: COLORS.inkSoft, bandDeep: '#36474F' }, 'f');
+  const cx = TILE_SIZE.width / 2;
+  const word = label === 'Listed on' ? 'LISTED' : 'REVIEWED';
+  const style = { weight: 700 as const, tracking: 0.03, fill: frame.ink, anchor: 'middle' as const };
+  const parts = [frame.before];
+  parts.push(text.draw(word, cx, 250, { ...style, size: fitSize(word, 290, 48, style, text) }));
+  parts.push(text.draw('ON ACCELFIED', cx, 300, { size: 20, weight: 700, tracking: 0.3, fill: frame.soft, anchor: 'middle' }));
+  parts.push(bandText('ACCELFIED.COM', text));
+  return { ...TILE_SIZE, body: parts.join('') };
 }
 
 export function toSvg(art: Art, title: string): string {

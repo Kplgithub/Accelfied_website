@@ -4,7 +4,7 @@ import { formatRating, pluralize } from '../format';
 import { placePath, placeSlug } from '../places';
 import { SITE_URL } from '../site';
 import type { TopAward } from '../types';
-import { awardArt, bannerArt, compactArt, fallbackArt, sealArt, type Art, type BannerLayout, type TextRenderer, type Theme } from './art';
+import { awardArt, bannerArt, COMPACT_SIZE, compactArt, fallbackArt, fallbackTileArt, istYear, sealArt, TILE_SIZE, type Art, type BannerLayout, type TextRenderer, type Theme } from './art';
 
 /**
  * Every badge file a company can use, by name. A name is what the URL ends with:
@@ -79,6 +79,7 @@ export function awardHref(award: TopAward): string {
 }
 
 const SEAL_PNG = [512, 1024, 2048];
+const TILE_EMBED = { width: 150, height: 184 };
 const WIDE = { width: 1200, height: 400 };
 const SQUARE = { width: 1080, height: 1080 };
 
@@ -88,14 +89,14 @@ export function earnedBadges(company: BadgeCompany, awards: TopAward[]): BadgeIt
   const items: BadgeItem[] = [];
   const seals: Array<{ id: string; title: string }> = [];
   if (company.premier) {
-    items.push({ id: 'seal-premier', group: 'seal', title: 'Premier Verified', note: 'For companies on the Verified plan with 10 or more client reviews averaging 4.5 or higher.', width: 512, height: 512, embed: { width: 160, height: 160 }, pngWidths: SEAL_PNG });
+    items.push({ id: 'seal-premier', group: 'seal', title: 'Premier Verified', note: 'For companies on the Verified plan with 10 or more client reviews averaging 4.5 or higher.', ...TILE_SIZE, embed: TILE_EMBED, pngWidths: SEAL_PNG });
     seals.push({ id: 'seal-premier', title: 'Premier Verified' });
   }
-  items.push({ id: 'seal-verified', group: 'seal', title: 'Verified', note: 'For companies on the Verified plan.', width: 512, height: 512, embed: { width: 160, height: 160 }, pngWidths: SEAL_PNG });
+  items.push({ id: 'seal-verified', group: 'seal', title: 'Verified', note: 'For companies on the Verified plan.', ...TILE_SIZE, embed: TILE_EMBED, pngWidths: SEAL_PNG });
   seals.push({ id: 'seal-verified', title: 'Verified' });
-  items.push({ id: 'compact', group: 'compact', title: company.premier ? 'Premier Verified, compact' : 'Verified, compact', note: 'Small enough for a website footer. Shows your live rating.', width: 300, height: 96, embed: { width: 240, height: 77 }, pngWidths: [600, 1200] });
+  items.push({ id: 'compact', group: 'compact', title: company.premier ? 'Premier Verified, compact' : 'Verified, compact', note: 'Small enough for a website footer. Shows your live rating.', ...COMPACT_SIZE, embed: { width: 240, height: 75 }, pngWidths: [640, 1280] });
   for (const award of awards) {
-    items.push({ id: awardId(award), group: 'award', title: awardTitle(award), note: `Ranked #${award.rank} of companies with 5+ reviews averaging 4.5 or higher.`, width: 440, height: 540, embed: { width: 150, height: 184 }, pngWidths: [440, 880, 1760] });
+    items.push({ id: awardId(award), group: 'award', title: awardTitle(award), note: `Ranked #${award.rank} of companies with 5+ reviews averaging 4.5 or higher.`, ...TILE_SIZE, embed: TILE_EMBED, pngWidths: SEAL_PNG });
   }
   const bannerSources = [...seals, ...awards.map((award) => ({ id: awardId(award), title: awardTitle(award) }))];
   for (const source of bannerSources) {
@@ -150,8 +151,8 @@ export function drawBadge(id: string, theme: Theme, company: BadgeCompany, award
   if (!item) return null;
   const award = (awardKey: string) => awards.find((a) => awardId(a) === awardKey);
   const base = (key: string, prefix: string): Art | null => {
-    if (key === 'seal-verified') return sealArt('verified', theme, text);
-    if (key === 'seal-premier') return sealArt('premier', theme, text);
+    if (key === 'seal-verified') return sealArt('verified', theme, text, istYear(), `${prefix}s`);
+    if (key === 'seal-premier') return sealArt('premier', theme, text, istYear(), `${prefix}s`);
     const a = award(key);
     return a ? awardArt({ service: a.serviceName, place: awardPlace(a), year: a.year }, theme, text, prefix) : null;
   };
@@ -176,9 +177,8 @@ export function drawBadge(id: string, theme: Theme, company: BadgeCompany, award
 /** Size-matched stand-in for a badge the company no longer holds, so its website layout stays intact. */
 export function drawFallback(id: string, theme: Theme, company: BadgeCompany, text: TextRenderer): Art | null {
   const label = company.rating.count > 0 ? 'Reviewed on' : 'Listed on';
-  if (id === 'compact') return fallbackArt(300, 96, label, theme, text);
-  if (id === 'seal-verified' || id === 'seal-premier') return fallbackArt(512, 512, label, theme, text);
-  if (id.startsWith('award-')) return fallbackArt(440, 540, label, theme, text);
+  if (id === 'compact') return fallbackArt(COMPACT_SIZE.width, COMPACT_SIZE.height, label, theme, text);
+  if (id === 'seal-verified' || id === 'seal-premier' || id.startsWith('award-')) return fallbackTileArt(label, theme, text);
   return null;
 }
 

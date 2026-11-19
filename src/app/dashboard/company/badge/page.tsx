@@ -8,7 +8,7 @@ import { ButtonLink } from '@/components/ui/button';
 import { AwardIcon, SealIcon } from '@/components/ui/seal-icon';
 import { getMyCompany } from '@/lib/account-data';
 import { badgeEmbedHtml, badgeSvg, BADGE_SIZE } from '@/lib/badge';
-import { sealArt, toSvg } from '@/lib/badges/art';
+import { istYear, sealArt, toSvg } from '@/lib/badges/art';
 import { badgeUrl, earnedBadges, embedHtml } from '@/lib/badges/catalog';
 import { soraText } from '@/lib/badges/text';
 import { getCompanyAwards } from '@/lib/data';
@@ -104,17 +104,17 @@ function Kit({ company, awards }: { company: OwnedCompany; awards: TopAward[] })
 /** Companies without the Verified plan see what they would get, and keep the plain profile badge. */
 function Locked({ company }: { company: OwnedCompany }) {
   const preview = (svg: string) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-  const seal = preview(toSvg(sealArt('verified', 'light', soraText), 'Verified badge'));
-  const premier = preview(toSvg(sealArt('premier', 'light', soraText), 'Premier Verified badge'));
+  const seal = preview(toSvg(sealArt('verified', 'light', soraText, istYear(), 'v'), 'Verified badge'));
+  const premier = preview(toSvg(sealArt('premier', 'light', soraText, istYear(), 'p'), 'Premier Verified badge'));
   return (
     <>
       <Panel>
         <div className="flex flex-col gap-8 md:flex-row md:items-center">
           <div className="relative flex shrink-0 items-center justify-center gap-3 rounded-2xl bg-paper-deep p-6">
             {/* eslint-disable-next-line @next/next/no-img-element -- inline SVG preview */}
-            <img src={seal} alt="The Verified badge" width={140} height={140} className="opacity-90 grayscale-[35%]" />
+            <img src={seal} alt="The Verified badge" width={122} height={150} className="opacity-90 grayscale-[35%]" />
             {/* eslint-disable-next-line @next/next/no-img-element -- inline SVG preview */}
-            <img src={premier} alt="The Premier Verified badge" width={110} height={110} className="opacity-80 grayscale-[35%]" />
+            <img src={premier} alt="The Premier Verified badge" width={122} height={150} className="opacity-80 grayscale-[35%]" />
             <span className="absolute top-3 right-3 inline-flex size-8 items-center justify-center rounded-full bg-night text-paper">
               <Lock className="size-4" aria-hidden="true" />
               <span className="sr-only">Locked</span>

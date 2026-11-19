@@ -9,6 +9,8 @@ import { SealIcon } from '../ui/seal-icon';
 const KEY = 'accelfied:verify-nudge-hidden-until';
 const HIDE_DAYS = 14;
 const PLAN_PAGE = '/dashboard/company/verified';
+/** Pages with the larger upgrade strip (upgrade-strip.tsx), so the two never stack. */
+const STRIP_PAGES = ['/dashboard', '/dashboard/company', '/dashboard/company/reviews', '/dashboard/company/analytics'];
 
 /** Reminder for companies without the Verified plan. Closing it hides it for two weeks on this browser. */
 export function VerifyNudge() {
@@ -25,7 +27,7 @@ export function VerifyNudge() {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- reads browser storage once after mount
     setOpen(Date.now() > hiddenUntil);
   }, []);
-  if (!open || pathname === PLAN_PAGE) return null;
+  if (!open || pathname === PLAN_PAGE || STRIP_PAGES.includes(pathname)) return null;
   const close = () => {
     setOpen(false);
     try {
