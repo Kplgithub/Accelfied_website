@@ -3,6 +3,7 @@
 import { ApiError, apiSend } from '@/lib/api';
 import { countryName } from '@/lib/countries';
 import type { FormState } from '@/lib/form-state';
+import { getSessionToken } from '@/lib/session';
 import { clientIp, echo, friendly, optional, submit, text } from '@/lib/submit';
 import { testOtpEnabled } from '@/lib/test-otp';
 
@@ -100,12 +101,61 @@ export async function applyForListing(_prev: FormState, form: FormData): Promise
     applicant: { jobTitle: text(form, 'applicant.jobTitle') },
     companyFax: text(form, 'companyFax'),
   };
-  return submit(
+  const socials = Object.fromEntries(SOCIAL_SITES.map(({ key }) => [key, text(form, `socials.${key}`)])) as Record<SocialKey, string>;
+  const socialErrors: Record<string, string> = {};
+  for (const { key, hosts, label } of SOCIAL_SITES) {
+    if (socials[key] && !isSocialLink(socials[key], hosts)) socialErrors[`socials.${key}`] = `Enter your ${label} page address, starting with https://`;
+  }
+  if (Object.keys(socialErrors).length) {
+    return { status: 'error', message: 'Some fields need a second look.', errors: socialErrors, values: echo(form), nonce: Date.now() };
+  }
+  const state = await submit(
     '/v1/companies/applications',
     payload,
     form,
     'Thanks, your company is in. Our team is verifying the details, usually within two working days. Once approved, your profile goes live.',
   );
+  // Social links are saved on the new listing right after it is created.
+  if (state.status === 'success' && Object.values(socials).some(Boolean)) {
+    const token = await getSessionToken();
+    if (token) {
+      await apiSend(
+        'PATCH',
+        '/v1/me/company',
+        {
+          tagline: payload.tagline,
+          description: payload.description,
+          logoUrl: payload.logoUrl,
+          contactEmail: payload.contactEmail,
+          contactPhone: payload.contactPhone,
+          clients: [],
+          socials,
+        },
+        { token, clientIp: await clientIp() },
+      ).catch((error: unknown) => console.error('Saving social links failed', error));
+    }
+  }
+  return state;
+}
+
+type SocialKey = 'linkedin' | 'facebook' | 'instagram' | 'x' | 'youtube';
+const SOCIAL_SITES: Array<{ key: SocialKey; label: string; hosts: string[] }> = [
+  { key: 'linkedin', label: 'LinkedIn', hosts: ['linkedin.com'] },
+  { key: 'facebook', label: 'Facebook', hosts: ['facebook.com', 'fb.com'] },
+  { key: 'instagram', label: 'Instagram', hosts: ['instagram.com'] },
+  { key: 'x', label: 'X', hosts: ['x.com', 'twitter.com'] },
+  { key: 'youtube', label: 'YouTube', hosts: ['youtube.com', 'youtu.be'] },
+];
+
+/** Same rule as the API: an https link on that site. */
+function isSocialLink(value: string, hosts: string[]): boolean {
+  try {
+    const url = new URL(value);
+    const host = url.hostname.toLowerCase().replace(/^www\./, '');
+    return url.protocol === 'https:' && value.length <= 300 && hosts.some((h) => host === h || host.endsWith(`.${h}`));
+  } catch {
+    return false;
+  }
 }
 
 export async function submitClaim(_prev: FormState, form: FormData): Promise<FormState> {
