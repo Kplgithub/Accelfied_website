@@ -101,23 +101,23 @@ export function CompanyWelcome({ company }: { company: OwnedCompany }) {
   const live = company.status === 'published';
   const city = company.headquarters?.city;
   return (
-    <header className="relative mb-8 overflow-hidden rounded-[var(--radius-card)] bg-night text-paper shadow-[var(--shadow-lift)]">
-      <div className="grid-lines absolute inset-0 opacity-60" aria-hidden="true" />
-      <span className="pointer-events-none absolute -top-24 -right-16 size-72 rounded-full bg-accent/40 blur-3xl" aria-hidden="true" />
-      <span className="pointer-events-none absolute -bottom-28 left-1/3 size-64 rounded-full bg-brand/30 blur-3xl" aria-hidden="true" />
+    <header className="relative mb-8 overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface text-ink shadow-[var(--shadow-card)]">
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand via-accent to-night" aria-hidden="true" />
+      <span className="pointer-events-none absolute -top-28 -right-20 size-80 rounded-full bg-accent-tint blur-2xl" aria-hidden="true" />
+      <span className="pointer-events-none absolute -bottom-32 right-1/4 size-64 rounded-full bg-brand-tint/80 blur-3xl" aria-hidden="true" />
       <div className="relative flex flex-col gap-6 p-6 sm:p-8 md:flex-row md:items-center md:justify-between">
         <div className="flex min-w-0 items-center gap-4 sm:gap-5">
           <div className="animate-rise">
-            <DashboardLogo company={company} size={76} ring />
+            <DashboardLogo company={company} size={76} />
           </div>
           <div className="min-w-0 animate-rise" style={{ animationDelay: '80ms' }}>
-            <p className="text-xs font-semibold tracking-[0.16em] text-accent-soft uppercase">Company dashboard</p>
+            <p className="text-xs font-semibold tracking-[0.16em] text-brand uppercase">Company dashboard</p>
             <h1 className="mt-1.5 font-display text-2xl leading-tight font-semibold tracking-tight break-words sm:text-[2.1rem]">Welcome, {company.name}!</h1>
-            <div className="mt-2.5 flex flex-wrap items-center gap-2 text-sm text-paper/70">
-              <PlanPill company={company} tone="dark" />
+            <div className="mt-2.5 flex flex-wrap items-center gap-2 text-sm text-ink-soft">
+              <PlanPill company={company} />
               {company.rating.count > 0 && (
                 <span className="tabular-nums">
-                  <span className="font-semibold text-paper">{company.rating.average.toFixed(1)}</span> from {company.rating.count}{' '}
+                  <span className="font-semibold text-ink">{company.rating.average.toFixed(1)}</span> from {company.rating.count}{' '}
                   {company.rating.count === 1 ? 'review' : 'reviews'}
                 </span>
               )}
@@ -127,7 +127,7 @@ export function CompanyWelcome({ company }: { company: OwnedCompany }) {
                   {city}
                 </span>
               )}
-              {!live && <span className="text-saffron">{STATUS_NOTE[company.status]}</span>}
+              {!live && <span className="text-saffron-ink">{STATUS_NOTE[company.status]}</span>}
             </div>
           </div>
         </div>

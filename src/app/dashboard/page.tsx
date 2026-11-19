@@ -85,12 +85,12 @@ async function CompanyOverview({ user, company }: { user: Account; company: Owne
   const health = company && data ? profileHealth(company, data.details) : null;
   return (
     <>
+      <UpgradeStrip company={company} />
       {company ? (
         <CompanyWelcome company={company} />
       ) : (
         <DashboardHeader eyebrow="Company account" title={`Welcome back, ${user.firstName}`} intro="A few steps and your company will be ready for clients." />
       )}
-      <UpgradeStrip company={company} />
       {company && !health && (
         <div className="mb-8 grid gap-4 sm:grid-cols-3">
           <StatTile label="Listing" value={<StatusPill status={company.status} kind="company" />} />
