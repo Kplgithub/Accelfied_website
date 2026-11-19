@@ -22,6 +22,7 @@ import { PostCard } from '@/components/blog/post-card';
 import { CompanyCard } from '@/components/company/company-card';
 import { GroupIcon } from '@/components/home/group-icon';
 import { HeroTabs } from '@/components/home/hero-tabs';
+import { CompanySearch } from '@/components/search/company-search';
 import { IndiaSearches } from '@/components/home/india-searches';
 import { TabbedPanels } from '@/components/home/tabbed-panels';
 import { CountUp } from '@/components/motion/count-up';
@@ -119,6 +120,10 @@ export default async function HomePage() {
             </ul>
           </div>
           <div className="animate-rise" style={{ animationDelay: '200ms' }}>
+            <div className="relative z-20 mb-7">
+              <p className="mb-2.5 pl-1 text-sm font-medium text-paper/70">Know the company? Look it up by name</p>
+              <CompanySearch tone="dark" placeholder="Type a company name" />
+            </div>
             <HeroTabs groups={groups} />
           </div>
         </Container>

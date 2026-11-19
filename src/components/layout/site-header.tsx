@@ -9,6 +9,7 @@ import { AccountMenu } from './account-menu';
 import { Container } from '../ui/container';
 import { Logo } from './logo';
 import { MobileMenu } from './mobile-menu';
+import { HeaderSearch } from '../search/header-search';
 
 export const NAV_LINKS = [
   { href: '/services', label: 'Browse services' },
@@ -22,9 +23,9 @@ export const NAV_LINKS = [
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 print:hidden border-b border-line/80 bg-paper/95 lg:bg-paper/85 lg:backdrop-blur-md lg:supports-[backdrop-filter]:bg-paper/75">
-      <Container className="flex h-16 items-center justify-between gap-6 lg:h-[68px]">
+      <Container className="flex h-16 items-center justify-between gap-6 lg:h-[68px] lg:gap-3 xl:gap-6">
         <Logo />
-        <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
+        <nav aria-label="Main" className="hidden items-center gap-1 lg:flex lg:gap-0 xl:gap-1">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
@@ -35,7 +36,8 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 lg:gap-1 xl:gap-2">
+          <HeaderSearch />
           <Suspense
             fallback={
               <>

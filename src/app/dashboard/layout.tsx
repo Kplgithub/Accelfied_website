@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
+import { CompanySidebarCard } from '@/components/dashboard/company-identity';
 import { DashboardNav, type NavGroup } from '@/components/dashboard/dashboard-nav';
 import { Container } from '@/components/ui/container';
 import { getUnreadCounts } from '@/lib/account-data';
@@ -75,5 +76,10 @@ async function Nav() {
   if (user.accountType === 'provider' || company) groups.push(companyGroup, hiringGroup);
   else groups.push(hiringGroup, companyGroup);
   groups.push({ title: 'Settings', links: [{ href: '/dashboard/settings', label: 'Account settings' }] });
-  return <DashboardNav groups={groups} />;
+  return (
+    <>
+      {company && <CompanySidebarCard company={company} />}
+      <DashboardNav groups={groups} />
+    </>
+  );
 }
