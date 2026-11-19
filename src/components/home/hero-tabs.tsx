@@ -25,7 +25,7 @@ export function HeroTabs({ groups }: { groups: ServiceGroup[] }) {
             aria-selected={tab === item.id}
             aria-controls={`hero-panel-${item.id}`}
             onClick={() => setTab(item.id)}
-            className={`cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200 sm:px-5 ${
+            className={`cursor-pointer rounded-full px-3 py-2 text-[13px] font-medium whitespace-nowrap min-[360px]:px-4 min-[360px]:text-sm transition-colors duration-200 sm:px-5 ${
               tab === item.id ? 'bg-paper text-night shadow-sm' : 'text-paper/75 hover:text-paper'
             }`}
           >

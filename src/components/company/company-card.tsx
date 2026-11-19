@@ -25,9 +25,9 @@ export function CompanyCard({ company, highlightService, sponsored = false }: { 
 
   return (
     <article
-      className={`group relative rounded-[var(--radius-card)] border bg-surface p-5 ${sponsored ? 'border-saffron/50 ring-1 ring-saffron/20' : 'border-line'} shadow-[var(--shadow-card)] transition-shadow duration-300 hover:shadow-[var(--shadow-lift)] sm:p-6`}
+      className={`group @container relative rounded-[var(--radius-card)] border bg-surface p-5 ${sponsored ? 'border-saffron/50 ring-1 ring-saffron/20' : 'border-line'} shadow-[var(--shadow-card)] transition-shadow duration-300 hover:shadow-[var(--shadow-lift)] sm:p-6`}
     >
-      <div className="flex flex-col gap-6 md:flex-row md:items-start">
+      <div className="flex flex-col gap-6 @2xl:flex-row @2xl:items-start">
         <div className="flex flex-1 gap-4">
           <CompanyLogo name={company.name} logoUrl={company.logoUrl} size={64} />
           <div className="min-w-0 flex-1">
@@ -48,7 +48,7 @@ export function CompanyCard({ company, highlightService, sponsored = false }: { 
           </div>
         </div>
 
-        <dl className="grid grid-cols-2 gap-x-5 gap-y-3 border-t border-line pt-5 text-sm md:w-72 md:shrink-0 md:border-t-0 md:border-l md:pt-0 md:pl-6">
+        <dl className="grid grid-cols-2 gap-x-5 gap-y-3 border-t border-line pt-5 text-sm @2xl:w-72 @2xl:shrink-0 @2xl:border-t-0 @2xl:border-l @2xl:pt-0 @2xl:pl-6">
           {facts.map(({ icon: Icon, label, value }) => (
             <div key={label} className="min-w-0">
               <dt className="flex items-center gap-1.5 text-xs text-ink-faint">
