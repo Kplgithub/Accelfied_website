@@ -3,7 +3,7 @@ import { CompanyCard } from '@/components/company/company-card';
 import { DashboardHeader } from '@/components/dashboard/bits';
 import { Pagination } from '@/components/directory/pagination';
 import { ButtonLink } from '@/components/ui/button';
-import { EmptyState } from '@/components/ui/empty-state';
+import { ShortlistHowItWorks } from '@/components/vendor/buyer-empty';
 import { getMyShortlist } from '@/lib/account-data';
 import { pluralize } from '@/lib/format';
 import { pageParam } from '@/lib/page-param';
@@ -35,9 +35,7 @@ export default async function ShortlistPage({ searchParams }: PageProps<'/dashbo
           <Pagination page={list.page} totalPages={list.totalPages} hrefFor={(p) => `/dashboard/shortlist?page=${p}`} />
         </>
       ) : (
-        <EmptyState title="Nothing saved yet" action={<ButtonLink href="/agencies">Browse companies</ButtonLink>}>
-          Tap the heart on any company to save it to your shortlist.
-        </EmptyState>
+<ShortlistHowItWorks />
       )}
     </>
   );

@@ -2,7 +2,8 @@ import { BadgeCheck, Building2, ChevronDown, CircleHelp, Target } from 'lucide-r
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { getServiceGroups } from '@/lib/data';
-import { getCurrentUser } from '@/lib/session';
+import { getCurrentUser, getSessionToken } from '@/lib/session';
+import { getAvatarUrl } from '@/lib/vendor-tools';
 import { GroupIcon } from '../home/group-icon';
 import { ButtonLink } from '../ui/button';
 import { AccountMenu } from './account-menu';
@@ -93,11 +94,12 @@ export function SiteHeader() {
 
 /** Reads the session cookie, so it streams in after the static header. */
 async function AccountActions() {
-  const user = await getCurrentUser();
+  const [user, token] = await Promise.all([getCurrentUser(), getSessionToken()]);
+  const avatarUrl = user && token ? await getAvatarUrl(token) : '';
   return (
     <>
-      {user ? <AccountMenu firstName={user.firstName} lastName={user.lastName} email={user.email} /> : <GuestActions />}
-      <MobileMenu links={NAV_LINKS} account={user ? { firstName: user.firstName, email: user.email } : null} />
+      {user ? <AccountMenu firstName={user.firstName} lastName={user.lastName} email={user.email} accountType={user.accountType} avatarUrl={avatarUrl} /> : <GuestActions />}
+      <MobileMenu links={NAV_LINKS} account={user ? { firstName: user.firstName, email: user.email, accountType: user.accountType } : null} />
     </>
   );
 }

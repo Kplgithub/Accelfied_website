@@ -6,6 +6,7 @@ import { DataTable, FaqList, LandingHero, MoreGuides, QuoteCta, Sections, Servic
 import { Container } from '@/components/ui/container';
 import { CALCULATORS, getCalculator } from '@/lib/landing/calculators';
 import { landingMetadata } from '@/lib/landing/metadata';
+import { ArticleSkeleton } from '@/components/skeleton/public';
 
 /** Not linked from the site menus (kapil, 2026-11-18); listed in /sitemap.xml for search engines. */
 export function generateStaticParams() {
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }: PageProps<'/tools/[slug]'>): 
 
 export default function CalculatorPage({ params }: PageProps<'/tools/[slug]'>) {
   return (
-    <Suspense fallback={<div className="min-h-[60vh]" />}>
+    <Suspense fallback={<ArticleSkeleton />}>
       <Calculator params={params} />
     </Suspense>
   );

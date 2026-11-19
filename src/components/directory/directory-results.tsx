@@ -10,6 +10,7 @@ import { JsonLd } from '@/components/seo/json-ld';
 import { DirectoryFilters } from './directory-filters';
 import { Pagination } from './pagination';
 import { ListImpressions } from '../tracking/list-impressions';
+import { CompanyListSkeleton } from '@/components/skeleton/public';
 
 /** Query keys that come from the page address itself, not from the filter bar. */
 type FixedKey = 'service' | 'country' | 'city';
@@ -106,17 +107,5 @@ function itemListLd(items: Array<{ slug: string; name: string }>): Record<string
 }
 
 export function DirectorySkeleton() {
-  return (
-    <div aria-hidden="true" className="animate-pulse">
-      <div className="flex gap-3">
-        <div className="h-11 flex-1 rounded-xl bg-paper-deep" />
-        <div className="h-11 w-40 rounded-xl bg-paper-deep" />
-      </div>
-      <div className="mt-8 grid gap-5">
-        {[0, 1, 2].map((i) => (
-          <div key={i} className="h-56 rounded-[var(--radius-card)] bg-surface" />
-        ))}
-      </div>
-    </div>
-  );
+  return <CompanyListSkeleton />;
 }

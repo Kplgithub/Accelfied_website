@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 import { ContactForm } from '@/components/forms/contact-form';
 import { Container } from '@/components/ui/container';
 import { getSiteSettings } from '@/lib/data';
+import { FormSkeleton } from '@/components/skeleton/public';
 
 export const metadata: Metadata = {
   title: 'Contact the Accelfied Team',
@@ -36,7 +37,7 @@ export default function ContactPage({ searchParams }: PageProps<'/contact'>) {
         </Suspense>
       </div>
       <div className="rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-[var(--shadow-card)] sm:p-10">
-        <Suspense fallback={<div className="h-96" />}>
+        <Suspense fallback={<FormSkeleton className="min-h-96" />}>
           <Form searchParams={searchParams} />
         </Suspense>
       </div>

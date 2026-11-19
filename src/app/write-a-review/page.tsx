@@ -11,6 +11,7 @@ import { SignInPrompt } from '@/components/auth/sign-in-prompt';
 import { getCompanies, getCompany, getReviewInvite, getServiceGroups } from '@/lib/data';
 import { getCurrentUser } from '@/lib/session';
 import { getMyReviewDraft } from '@/lib/account-data';
+import { FormSkeleton } from '@/components/skeleton/public';
 
 export const metadata: Metadata = {
   title: 'Write a review',
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
 export default function WriteAReviewPage({ searchParams }: PageProps<'/write-a-review'>) {
   return (
     <Container className="max-w-5xl py-12 lg:py-16">
-      <Suspense fallback={<div className="h-[640px] animate-pulse rounded-[var(--radius-card)] bg-surface" />}>
+      <Suspense fallback={<FormSkeleton className="min-h-[640px]" />}>
         <ReviewContent searchParams={searchParams} />
       </Suspense>
     </Container>

@@ -479,6 +479,32 @@ html {
   }
 }
 
+/* Skeleton loaders: a soft light sweep across grey placeholders while data loads. */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--ink) 7%, var(--surface));
+  border-radius: 0.6rem;
+}
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--surface) 75%, transparent), transparent);
+  animation: skeleton-sweep 1.4s ease-in-out infinite;
+}
+@keyframes skeleton-sweep {
+  to {
+    transform: translateX(100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+  }
+}
+
 /* Get listed: reading the company website. */
 .af-shimmer {
   background: linear-gradient(90deg, var(--paper-deep) 0%, var(--line) 40%, var(--paper-deep) 80%);

@@ -18,6 +18,7 @@ import { PlaceFacts } from './place-facts';
 import { ServiceGuide } from './service-guide';
 import { Pagination } from './pagination';
 import { PlaceLinks } from './place-links';
+import { HeroSkeleton } from '@/components/skeleton/public';
 
 export interface PlaceParams {
   service: string;
@@ -156,14 +157,8 @@ async function Related({ service, place }: { service: Service; place: ServicePla
 function LandingSkeleton() {
   // At least a screen tall, so the footer does not jump when the page streams in.
   return (
-    <div aria-hidden="true" className="min-h-dvh">
-      <section className="grain border-b border-line">
-        <Container className="py-12 lg:py-16">
-          <div className="h-5 w-56 animate-pulse rounded bg-paper-deep" />
-          <div className="mt-5 h-12 w-2/3 animate-pulse rounded-lg bg-paper-deep" />
-          <div className="mt-5 h-6 w-1/2 animate-pulse rounded bg-paper-deep" />
-        </Container>
-      </section>
+    <div className="min-h-dvh">
+      <HeroSkeleton />
       <Container className="py-10">
         <DirectorySkeleton />
       </Container>

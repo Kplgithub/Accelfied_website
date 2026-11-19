@@ -10,6 +10,8 @@ import { pluralize } from '@/lib/format';
 import { INDUSTRY_PAGES, getIndustryPage } from '@/lib/landing/industries';
 import { landingMetadata } from '@/lib/landing/metadata';
 import type { IndustryPage } from '@/lib/landing/types';
+import { IndustrySkeleton } from '@/components/skeleton/public';
+import { CompanyListSkeleton } from '@/components/skeleton/public';
 
 /** Not linked from the site menus (kapil, 2026-11-18); listed in /sitemap.xml for search engines. */
 export function generateStaticParams() {
@@ -23,7 +25,7 @@ export async function generateMetadata({ params }: PageProps<'/industries/[slug]
 
 export default function IndustryLandingPage({ params }: PageProps<'/industries/[slug]'>) {
   return (
-    <Suspense fallback={<div className="min-h-[60vh]" />}>
+    <Suspense fallback={<IndustrySkeleton />}>
       <Industry params={params} />
     </Suspense>
   );
@@ -37,7 +39,7 @@ async function Industry({ params }: Pick<PageProps<'/industries/[slug]'>, 'param
     <>
       <LandingHero page={page} path={`/industries/${page.slug}`} />
       <Container className="py-10 lg:py-14">
-        <Suspense fallback={<div className="h-64 animate-pulse rounded-[var(--radius-card)] bg-surface" />}>
+        <Suspense fallback={<CompanyListSkeleton count={2} />}>
           <Companies page={page} />
         </Suspense>
         <section className="mt-14">

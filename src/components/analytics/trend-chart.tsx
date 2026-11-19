@@ -4,9 +4,9 @@ import { useId, useMemo, useState } from 'react';
 import type { CompanyAnalytics } from '@/lib/types';
 
 type Metric = 'impressions' | 'views' | 'websiteClicks' | 'leads';
-type Row = CompanyAnalytics['series'][number];
+type Row = Omit<CompanyAnalytics['series'][number], 'leads'> & { leads?: number };
 
-const METRICS: Array<{ key: Metric; label: string }> = [
+const ALL_METRICS: Array<{ key: Metric; label: string }> = [
   { key: 'impressions', label: 'Seen in lists' },
   { key: 'views', label: 'Profile views' },
   { key: 'websiteClicks', label: 'Website clicks' },
@@ -32,14 +32,15 @@ function niceMax(value: number): number {
 }
 
 /** One measure at a time over the chosen days, with a hover read-out and a table view. */
-export function TrendChart({ series }: { series: Row[] }) {
+export function TrendChart({ series, only }: { series: Row[]; /** Limit the measures offered, e.g. when a page filter has no clicks. */ only?: Metric[] }) {
+  const METRICS = only ? ALL_METRICS.filter((m) => only.includes(m.key)) : ALL_METRICS;
   const [metric, setMetric] = useState<Metric>('views');
   const [hover, setHover] = useState<number | null>(null);
   const id = useId();
   const current = METRICS.find((m) => m.key === metric)!;
 
   const { points, max, ticks } = useMemo(() => {
-    const top = niceMax(Math.max(0, ...series.map((row) => row[metric])));
+    const top = niceMax(Math.max(0, ...series.map((row) => (row[metric] ?? 0))));
     const innerW = W - PAD.left - PAD.right;
     const innerH = H - PAD.top - PAD.bottom;
     const step = series.length > 1 ? innerW / (series.length - 1) : 0;
@@ -48,7 +49,7 @@ export function TrendChart({ series }: { series: Row[] }) {
       ticks: [0, top / 2, top],
       points: series.map((row, index) => ({
         x: PAD.left + index * step,
-        y: PAD.top + innerH - (row[metric] / top) * innerH,
+        y: PAD.top + innerH - ((row[metric] ?? 0) / top) * innerH,
         row,
       })),
     };
@@ -138,7 +139,7 @@ export function TrendChart({ series }: { series: Row[] }) {
           >
             <p className="text-[12px] text-ink-faint">{label(active.row.day)}</p>
             <p className="font-medium text-ink tabular-nums">
-              {whole.format(active.row[metric])} <span className="font-normal text-ink-soft">{current.label.toLowerCase()}</span>
+              {whole.format(active.row[metric] ?? 0)} <span className="font-normal text-ink-soft">{current.label.toLowerCase()}</span>
             </p>
           </div>
         )}
@@ -163,7 +164,7 @@ export function TrendChart({ series }: { series: Row[] }) {
                   <td className="px-3 py-1.5 text-ink">{label(row.day)}</td>
                   {METRICS.map((m) => (
                     <td key={m.key} className="px-3 py-1.5 text-right text-ink">
-                      {whole.format(row[m.key])}
+                      {whole.format(row[m.key] ?? 0)}
                     </td>
                   ))}
                 </tr>

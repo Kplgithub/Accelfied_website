@@ -5,20 +5,27 @@ import { PersonAvatar } from '@/components/company/person-avatar';
 import { DashboardHeader, Panel } from '@/components/dashboard/bits';
 import { NoCompany } from '@/components/dashboard/no-company';
 import { TeamForm } from '@/components/dashboard/team-form';
+import { StoryForm } from '@/components/vendor/story-form';
 import { getMyCompany } from '@/lib/account-data';
+import { getMyWorkspace } from '@/lib/vendor-tools';
 
 export const metadata: Metadata = { title: 'Team' };
 
 export default async function TeamPage() {
   const company = await getMyCompany('/dashboard/company/team');
   if (!company || company.status === 'rejected') return <NoCompany />;
+  const workspace = await getMyWorkspace('/dashboard/company/team').catch(() => null);
   return (
     <>
       <DashboardHeader
         eyebrow={company.name}
-        title="Team"
-        intro="Introduce the people clients will work with. They appear in the Team section of your public profile, in this order."
+        title="About the team"
+        intro="Tell your story and introduce the people clients will work with. Both appear on your public profile."
       />
+      <Panel title="Our story" className="mb-8">
+        <StoryForm story={workspace?.story ?? ''} />
+      </Panel>
+      <h2 className="mb-4 font-display text-xl font-semibold text-ink">Team members</h2>
       {company.team.length > 0 ? (
         <ul className="mb-8 grid gap-4 sm:grid-cols-2">
           {company.team.map((member) => (

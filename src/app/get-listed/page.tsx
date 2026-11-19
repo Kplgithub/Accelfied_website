@@ -8,6 +8,7 @@ import { Container } from '@/components/ui/container';
 import { getMyCompany } from '@/lib/account-data';
 import { getServiceGroups } from '@/lib/data';
 import { redirect } from 'next/navigation';
+import { FormSkeleton } from '@/components/skeleton/public';
 import { getCurrentUser, verifyEmailHref } from '@/lib/session';
 
 export const metadata: Metadata = {
@@ -48,7 +49,7 @@ export default function GetListedPage() {
         </Container>
       </section>
       <Container className="max-w-5xl py-12 lg:py-16">
-        <Suspense fallback={<div className="h-[640px] animate-pulse rounded-[var(--radius-card)] bg-surface" />}>
+        <Suspense fallback={<FormSkeleton className="min-h-[640px]" />}>
           <ListingContent />
         </Suspense>
       </Container>
