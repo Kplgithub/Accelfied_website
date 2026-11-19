@@ -15,6 +15,7 @@ import { getPost, getPosts, getSitemapPosts } from '@/lib/data';
 import { formatDay } from '@/lib/format';
 import { MAX_TITLE, OG_DEFAULTS } from '@/lib/seo-text';
 import { SITE_URL } from '@/lib/site';
+import { ArticleSkeleton } from '@/components/skeleton/public';
 
 const SHELL_SLUG = '__shell__';
 
@@ -50,7 +51,7 @@ export async function generateMetadata({ params }: PageProps<'/blog/[slug]'>): P
 
 export default function PostPage({ params }: PageProps<'/blog/[slug]'>) {
   return (
-    <Suspense fallback={<div className="min-h-[60vh]" />}>
+    <Suspense fallback={<ArticleSkeleton />}>
       <PostView params={params} />
     </Suspense>
   );

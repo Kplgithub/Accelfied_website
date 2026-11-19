@@ -5,6 +5,7 @@ import { AuthShell } from '@/components/auth/auth-shell';
 import { ResetWithCodeForm } from '@/components/auth/code-forms';
 import { ResetPasswordForm } from '@/components/auth/password-forms';
 import { testOtpEnabled } from '@/lib/test-otp';
+import { FormSkeleton } from '@/components/skeleton/public';
 
 export const metadata: Metadata = {
   title: 'Set a new password',
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 export default function ResetPasswordPage({ searchParams }: PageProps<'/reset-password'>) {
   return (
     <AuthShell eyebrow="Account help" title="Set a new password" intro="Choose a password you do not use anywhere else. Every device will be logged out.">
-      <Suspense fallback={<div className="h-64" />}>
+      <Suspense fallback={<FormSkeleton className="min-h-64" />}>
         <ResetContent searchParams={searchParams} />
       </Suspense>
     </AuthShell>

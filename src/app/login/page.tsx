@@ -5,6 +5,7 @@ import { AuthShell } from '@/components/auth/auth-shell';
 import { LoginForm } from '@/components/auth/login-form';
 import { OAuthNotice, SocialSignIn } from '@/components/auth/social-sign-in';
 import { getCurrentUser, safeNext } from '@/lib/session';
+import { AuthSkeleton } from '@/components/skeleton/public';
 
 export const metadata: Metadata = {
   title: 'Log in',
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function LoginPage({ searchParams }: PageProps<'/login'>) {
   return (
-    <Suspense fallback={<div className="h-[560px]" />}>
+    <Suspense fallback={<AuthSkeleton />}>
       <LoginContent searchParams={searchParams} />
     </Suspense>
   );

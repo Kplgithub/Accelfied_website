@@ -5,6 +5,7 @@ import { Bullets, FaqList, LandingHero, MoreGuides, QuoteCta, Sections, ServiceL
 import { Container } from '@/components/ui/container';
 import { COMPARISONS, getComparison } from '@/lib/landing/comparisons';
 import { landingMetadata } from '@/lib/landing/metadata';
+import { ArticleSkeleton } from '@/components/skeleton/public';
 
 /** Not linked from the site menus (kapil, 2026-11-18); listed in /sitemap.xml for search engines. */
 export function generateStaticParams() {
@@ -18,7 +19,7 @@ export async function generateMetadata({ params }: PageProps<'/compare/[slug]'>)
 
 export default function ComparePage({ params }: PageProps<'/compare/[slug]'>) {
   return (
-    <Suspense fallback={<div className="min-h-[60vh]" />}>
+    <Suspense fallback={<ArticleSkeleton />}>
       <Comparison params={params} />
     </Suspense>
   );

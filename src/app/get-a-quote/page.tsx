@@ -5,6 +5,7 @@ import { Container } from '@/components/ui/container';
 import { SignInPrompt } from '@/components/auth/sign-in-prompt';
 import { getCompany, getServiceGroups } from '@/lib/data';
 import { getCurrentUser } from '@/lib/session';
+import { FormSkeleton } from '@/components/skeleton/public';
 
 export const metadata: Metadata = {
   title: 'Get a Quote',
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
 export default function GetAQuotePage({ searchParams }: PageProps<'/get-a-quote'>) {
   return (
     <Container className="max-w-5xl py-12 lg:py-16">
-      <Suspense fallback={<div className="h-[640px] animate-pulse rounded-[var(--radius-card)] bg-surface" />}>
+      <Suspense fallback={<FormSkeleton className="min-h-[640px]" />}>
         <QuoteContent searchParams={searchParams} />
       </Suspense>
     </Container>

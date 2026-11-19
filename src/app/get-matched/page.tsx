@@ -13,6 +13,7 @@ import { countryName } from '@/lib/countries';
 import { getCompanies, getService, getServiceGroups } from '@/lib/data';
 import { BUDGETS, budgetLabel, TIMELINES, timelineLabel } from '@/lib/labels';
 import { getCurrentUser } from '@/lib/session';
+import { FormSkeleton } from '@/components/skeleton/public';
 
 export const metadata: Metadata = {
   title: 'Get a Free Shortlist of Agencies in India',
@@ -26,7 +27,7 @@ const one = (value: string | string[] | undefined) => (typeof value === 'string'
 export default function GetMatchedPage({ searchParams }: PageProps<'/get-matched'>) {
   return (
     <Container className="max-w-5xl py-12 lg:py-16">
-      <Suspense fallback={<div className="h-[640px] animate-pulse rounded-[var(--radius-card)] bg-surface" />}>
+      <Suspense fallback={<FormSkeleton className="min-h-[640px]" />}>
         <MatchedContent searchParams={searchParams} />
       </Suspense>
     </Container>
