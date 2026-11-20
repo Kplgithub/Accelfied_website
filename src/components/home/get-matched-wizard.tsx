@@ -132,10 +132,10 @@ export function GetMatchedWizard({ groups, tone = 'dark' }: { groups: ServiceGro
                     <button
                       type="button"
                       onClick={() => pick('service', service.slug)}
-                      className={`${option} ${data.service === service.slug ? optionActive : optionIdle}`}
+                      className={`${option} h-full ${data.service === service.slug ? optionActive : optionIdle}`}
                     >
                       <span className="min-w-0">
-                        <span className="block truncate font-medium">{service.name}</span>
+                        <span className="line-clamp-2 block leading-snug font-medium">{service.name}</span>
                         <span className="block truncate text-xs text-ink-faint">{service.group}</span>
                       </span>
                       <ArrowRight className="size-4 shrink-0 text-ink-faint transition-transform group-hover:translate-x-0.5 group-hover:text-accent" aria-hidden="true" />

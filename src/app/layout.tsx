@@ -44,7 +44,9 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         >
           Skip to content
         </a>
-        <AnnouncementBar />
+        <div data-public-extra="">
+          <AnnouncementBar />
+        </div>
         <SiteHeader />
         <main id="main" className="flex-1">
           {children}

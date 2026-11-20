@@ -172,7 +172,7 @@ export function DirectoryFilters({
 
       <div
         id="directory-filter-panel"
-        className={`${open ? 'grid' : 'hidden'} mt-4 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid lg:grid-cols-[repeat(auto-fill,minmax(12rem,1fr))]`}
+        className={`${open ? 'grid' : 'hidden'} mt-4 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid lg:grid-flow-col lg:grid-cols-none lg:auto-cols-[minmax(0,1fr)]`}
       >
         {selects}
       </div>

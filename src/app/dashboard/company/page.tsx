@@ -90,7 +90,7 @@ export default async function EditProfilePage({ searchParams }: PageProps<'/dash
       {upgrade}
       {company.status !== 'published' && status}
       <div className="grid gap-6 xl:grid-cols-[260px_minmax(0,1fr)]">
-        <aside className="xl:sticky xl:top-32 xl:self-start">
+        <aside className="xl:sticky xl:top-24 xl:self-start">
           <div className="rounded-[var(--radius-card)] border border-line bg-surface p-4 shadow-[var(--shadow-card)]">
             <div className="flex items-center justify-between gap-2 px-2 pb-3">
               <p className="font-display text-lg font-semibold text-ink">Sections</p>

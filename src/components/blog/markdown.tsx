@@ -120,8 +120,8 @@ function inline(text: string): ReactNode[] {
           <Fragment key={at}>{label}</Fragment>
         ),
       );
-    } else if (bold) out.push(<strong key={at}>{bold}</strong>);
-    else if (italic) out.push(<em key={at}>{italic}</em>);
+    } else if (bold) out.push(<strong key={at}>{inline(bold)}</strong>);
+    else if (italic) out.push(<em key={at}>{inline(italic)}</em>);
     last = at + match[0].length;
   }
   if (last < text.length) out.push(text.slice(last));

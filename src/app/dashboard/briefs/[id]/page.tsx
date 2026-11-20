@@ -91,7 +91,7 @@ export default async function BriefPage({ params }: PageProps<'/dashboard/briefs
       )}
 
       <div id="brief" className="grid scroll-mt-32 gap-6 xl:grid-cols-[220px_minmax(0,1fr)]">
-        <aside className="hidden xl:block xl:sticky xl:top-32 xl:self-start">
+        <aside className="hidden xl:block xl:sticky xl:top-24 xl:self-start">
           <p className="mb-2 text-xs font-semibold tracking-[0.14em] text-ink-faint uppercase">Outline</p>
           <nav aria-label="Brief outline">
             <ul className="space-y-1 text-[15px]">
