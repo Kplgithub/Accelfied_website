@@ -293,7 +293,8 @@ html {
 }
 
 /* Blog post body. Written in Markdown in the admin panel. */
-.prose-post { color: var(--ink-soft); font-size: 1.0625rem; line-height: 1.8; }
+.prose-post { color: var(--ink-soft); font-size: 1.0625rem; line-height: 1.8; overflow-wrap: break-word; }
+.prose-post a { overflow-wrap: anywhere; }
 .prose-post > * + * { margin-top: 1.15em; }
 .prose-post h2 { margin-top: 1.8em; font-family: var(--font-display); font-size: 1.75rem; font-weight: 600; color: var(--ink); line-height: 1.25; letter-spacing: -0.01em; }
 .prose-post h3 { margin-top: 1.5em; font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; color: var(--ink); line-height: 1.3; }
@@ -556,4 +557,34 @@ a:focus-visible .client-logo {
 /* Logos fade out at both edges of the scrolling row. */
 .logo-fade {
   mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+}
+
+/*
+ * Focus pages. Form pages and the dashboard render <FocusPageMarker />: the full footer gives
+ * way to one row of key links, and inside the dashboard (data-app-page) the announcement bar
+ * and the service menu row are hidden so it reads as a workspace.
+ */
+[data-footer-slim] { display: none; }
+body:has([data-focus-page]) [data-footer-full] { display: none; }
+body:has([data-focus-page]) [data-footer-slim] { display: block; }
+body:has([data-app-page]) [data-public-extra] { display: none; }
+
+/*
+ * Mobile rail. On phones a row of cards slides sideways instead of stacking into several
+ * screens of scrolling. From 640px up the element keeps its own grid layout.
+ */
+@media (max-width: 639px) {
+  .mobile-rail {
+    display: flex;
+    gap: 1rem;
+    margin-inline: -1rem;
+    padding: 0 1rem 0.5rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1rem;
+    scrollbar-width: none;
+  }
+  .mobile-rail::-webkit-scrollbar { display: none; }
+  .mobile-rail > * { flex: 0 0 82%; scroll-snap-align: start; }
 }

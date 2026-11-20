@@ -6,6 +6,8 @@ import { GroupIcon } from './group-icon';
 
 const LIST = 5;
 const FEATURED_LIST = 8;
+/** Phones show fewer services in the big card; the link below it leads to the rest. */
+const FEATURED_LIST_PHONE = 5;
 
 /**
  * "Browse by service" as a bento grid: the first group is a large dark card, the others light
@@ -24,11 +26,14 @@ export function ServiceDirectory({ groups }: { groups: ServiceGroup[] }) {
       <Reveal className="sm:col-span-2">
         <FeaturedGroup group={first!} />
       </Reveal>
-      {rest.map((group, index) => (
-        <Reveal key={group.slug} delay={((index + 2) % 3) * 90} className="h-full">
-          <GroupCard group={group} index={index + 2} />
-        </Reveal>
-      ))}
+      {/* On phones the other groups slide sideways instead of stacking into several screens. */}
+      <div className="mobile-rail sm:contents">
+        {rest.map((group, index) => (
+          <Reveal key={group.slug} delay={((index + 2) % 3) * 90} className="h-full">
+            <GroupCard group={group} index={index + 2} />
+          </Reveal>
+        ))}
+      </div>
       <Reveal className={`h-full sm:col-span-2 ${closingSpan}`}>
         <ClosingCard />
       </Reveal>
@@ -58,8 +63,8 @@ function FeaturedGroup({ group }: { group: ServiceGroup }) {
           </span>
         </div>
         <ul className="mt-8 grid gap-x-8 sm:grid-cols-2">
-          {group.services.slice(0, FEATURED_LIST).map((service) => (
-            <li key={service.slug} className="border-b border-white/10">
+          {group.services.slice(0, FEATURED_LIST).map((service, i) => (
+            <li key={service.slug} className={`border-b border-white/10 ${i >= FEATURED_LIST_PHONE ? 'max-sm:hidden' : ''}`}>
               <Link href={`/agencies/${service.slug}`} className="group/link flex items-center justify-between gap-3 py-3 text-[15px] text-paper/85 transition-colors hover:text-white">
                 {service.name}
                 <ArrowUpRight
@@ -71,7 +76,8 @@ function FeaturedGroup({ group }: { group: ServiceGroup }) {
           ))}
         </ul>
         <Link href={`/services#${group.slug}`} className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-accent-soft hover:text-white">
-          {more > 0 ? `All ${group.services.length} ${group.name.toLowerCase()} services` : `About ${group.name.toLowerCase()}`}
+          {group.services.length > FEATURED_LIST_PHONE ? <span className="sm:hidden">All {group.services.length} {group.name.toLowerCase()} services</span> : null}
+          <span className={group.services.length > FEATURED_LIST_PHONE ? 'max-sm:hidden' : ''}>{more > 0 ? `All ${group.services.length} ${group.name.toLowerCase()} services` : `About ${group.name.toLowerCase()}`}</span>
           <ArrowRight className="size-4" aria-hidden="true" />
         </Link>
       </div>

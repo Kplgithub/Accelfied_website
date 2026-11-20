@@ -6,6 +6,7 @@ import { getServicePlaces, getSiteSettings } from '@/lib/data';
 import { getStatePlaces, isIndexable, placePath } from '@/lib/places';
 import type { ServicePlace } from '@/lib/types';
 import { Container } from '../ui/container';
+import { FooterMain } from './footer-main';
 import { Logo } from './logo';
 
 interface FooterLink {
@@ -88,6 +89,7 @@ export function SiteFooter() {
     <footer className="relative mt-auto border-t border-line bg-surface text-ink print:hidden">
       {/* A brick-red rule with a teal tail marks where the page ends. */}
       <div className="footer-rule" aria-hidden="true" />
+      <FooterMain>
       <Container>
         <div className="grid gap-x-10 gap-y-12 py-14 lg:grid-cols-[1.3fr_2.7fr] lg:py-16">
           <Reveal className="max-w-sm">
@@ -154,6 +156,7 @@ export function SiteFooter() {
           <p className="text-sm text-ink-faint">Made in India · All times in IST</p>
         </div>
       </Container>
+      </FooterMain>
 
       <div className="bg-night text-paper/60">
         <Container className="flex flex-col gap-6 py-7 text-[13px] lg:flex-row lg:items-center lg:justify-between">

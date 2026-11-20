@@ -77,6 +77,8 @@ export interface CompanyProfile extends Omit<CompanySummary, 'rating'> {
     distribution: Record<'1' | '2' | '3' | '4' | '5', number>;
   };
   publishedAt: string | null;
+  /** Someone manages this listing. Missing on older API builds, so treat it as unknown. */
+  claimed?: boolean;
 }
 
 export interface TeamMember {

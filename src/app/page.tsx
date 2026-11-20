@@ -173,7 +173,7 @@ export default async function HomePage() {
               </ButtonLink>
             }
           />
-          <ol className="relative mt-14 grid gap-5 md:grid-cols-3">
+          <ol className="mobile-rail relative mt-10 grid gap-5 sm:mt-14 md:grid-cols-3">
             {[
               { icon: ClipboardList, title: 'Say what you need', meta: 'About 2 minutes', text: 'Six short questions on the service, your budget, the timeline and what you are building. No sales call.' },
               { icon: Scale, title: 'Line them up', meta: 'Side by side', text: 'See the companies that fit side by side: approved client reviews, hourly rates, team size and the smallest project each one takes.' },
@@ -382,7 +382,7 @@ export default async function HomePage() {
         <section className="pt-20 lg:pt-28">
           <Container>
             <SectionHeading eyebrow="From the blog" title="Cost guides, hiring tips and founder stories" action={<ArrowLink href="/blog">All posts</ArrowLink>} />
-            <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mobile-rail mt-8 grid gap-6 sm:mt-12 sm:grid-cols-2 lg:grid-cols-3">
               {posts.items.map((post, index) => (
                 <Reveal key={post.slug} delay={index * 90} className="h-full">
                   <PostCard post={post} />

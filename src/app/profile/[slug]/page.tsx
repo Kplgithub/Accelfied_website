@@ -121,12 +121,39 @@ async function Profile({ params, searchParams }: PageProps<'/profile/[slug]'>) {
         <aside className="space-y-4 lg:sticky lg:top-32 lg:self-start">
           <QuoteCard company={company} />
           {extras.certifications.length > 0 && <CertifiedCard name={company.name} items={extras.certifications} />}
-          <ClaimCard company={company} />
+          {company.claimed !== true && <ClaimCard company={company} />}
           <Suspense fallback={null}>
             <SimilarCompanies slug={company.slug} service={[...company.services].sort((a, b) => b.percent - a.percent)[0]} />
           </Suspense>
         </aside>
       </Container>
+      <MobileQuoteBar company={company} />
+    </>
+  );
+}
+
+/** On phones the sidebar sits at the very end, so the two main actions stay pinned to the bottom. */
+function MobileQuoteBar({ company }: { company: CompanyProfile }) {
+  return (
+    <>
+      <div className="h-20 lg:hidden" aria-hidden="true" />
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-12px_30px_-18px_rgb(23_49_59/0.45)] backdrop-blur lg:hidden print:hidden">
+        <div className="mx-auto flex max-w-xl gap-2">
+          <Link
+            href={`/dashboard/messages/new?company=${company.slug}`}
+            className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full border border-line-strong text-sm font-medium text-ink transition-colors hover:border-ink"
+          >
+            <MessageSquare className="size-4" aria-hidden="true" />
+            Message
+          </Link>
+          <Link
+            href={`/get-a-quote?company=${company.slug}`}
+            className="inline-flex h-11 flex-[1.4] items-center justify-center rounded-full bg-brand text-sm font-medium text-white transition-colors hover:bg-brand-strong"
+          >
+            Get a quote
+          </Link>
+        </div>
+      </div>
     </>
   );
 }
@@ -211,10 +238,11 @@ function ProfileHeader({ company, details, awards }: { company: CompanyProfile; 
 
 function Overview({ company, details }: { company: CompanyProfile; details: PublicCompanyDetails | null }) {
   const facts = [
-    { icon: DollarSign, label: 'Min. project size', value: minProjectLabel(company.minProjectSize) },
-    { icon: Timer, label: 'Hourly rate', value: hourlyRateLabel(company.hourlyRate) },
+    // Price facts live in "Pricing at a glance" just below, so they are not repeated here.
     { icon: Users, label: 'Team size', value: teamSizeLabel(company.teamSize) },
     ...(company.foundedYear ? [{ icon: Calendar, label: 'Founded', value: String(company.foundedYear) }] : []),
+    ...(company.headquarters?.city ? [{ icon: MapPin, label: 'Headquarters', value: company.headquarters.city }] : []),
+    { icon: Star, label: 'Client reviews', value: company.rating.count > 0 ? pluralize(company.rating.count, 'review') : 'No reviews yet' },
   ];
   return (
     <>

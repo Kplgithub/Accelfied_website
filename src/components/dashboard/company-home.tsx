@@ -101,21 +101,30 @@ export function CompanyHome({
         </div>
         {analytics ? (
           <>
-            <dl className="mb-6 grid gap-4 sm:grid-cols-3">
+            <dl className="mb-6 grid grid-cols-3 gap-2 sm:gap-4">
               {[
                 { label: 'Seen in lists', value: analytics.totals.impressions },
                 { label: 'Profile views', value: analytics.totals.views },
                 { label: 'Website clicks', value: analytics.totals.websiteClicks },
               ].map((stat) => (
-                <div key={stat.label} className="rounded-2xl border border-line bg-paper/60 p-4">
-                  <dt className="text-sm text-ink-soft">{stat.label}</dt>
-                  <dd className="mt-1 font-display text-3xl font-semibold text-ink tabular-nums">
+                <div key={stat.label} className="min-w-0 rounded-2xl border border-line bg-paper/60 p-3 sm:p-4">
+                  <dt className="text-xs leading-snug text-ink-soft sm:text-sm">{stat.label}</dt>
+                  <dd className="mt-1 font-display text-2xl font-semibold text-ink tabular-nums sm:text-3xl">
                     <CountUp value={stat.value} />
                   </dd>
                 </div>
               ))}
             </dl>
-            <TrendChart series={analytics.series} />
+            {hasActivity(analytics.totals) ? (
+              <TrendChart series={analytics.series} />
+            ) : (
+              <div className="rounded-2xl border border-dashed border-line-strong bg-paper/60 px-5 py-8 text-center">
+                <p className="font-medium text-ink">No visits in the last 90 days yet</p>
+                <p className="mx-auto mt-1 max-w-md text-sm text-ink-soft">
+                  A fuller profile and a few client reviews help you show up in more lists. Your chart starts filling in from the first visit.
+                </p>
+              </div>
+            )}
           </>
         ) : (
           <p className="text-ink-soft">Numbers appear here once your profile is live and clients start seeing it.</p>
@@ -127,4 +136,9 @@ export function CompanyHome({
       <RecommendedTasks tasks={tasks} skipped={skippedTasks} />
     </div>
   );
+}
+
+/** True once anyone has seen, opened or contacted the profile in the period. */
+function hasActivity(totals: { impressions: number; views: number; websiteClicks: number; leads: number }): boolean {
+  return totals.impressions + totals.views + totals.websiteClicks + totals.leads > 0;
 }

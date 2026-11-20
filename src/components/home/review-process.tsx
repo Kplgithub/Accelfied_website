@@ -38,7 +38,7 @@ export function ReviewProcess() {
           </div>
         </Reveal>
 
-        <ol className="relative mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <ol className="mobile-rail relative mt-10 grid gap-5 sm:mt-14 sm:grid-cols-2 lg:grid-cols-4">
           {/* The track joining the four steps on wide screens. */}
           <span className="process-track absolute top-[34px] right-[12%] left-[12%] hidden h-px lg:block" aria-hidden="true" />
           {STEPS.map((step, index) => (

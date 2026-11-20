@@ -7,6 +7,7 @@ import { DashboardSkeleton } from '@/components/skeleton/skeleton';
 import { VerifyNudge } from '@/components/dashboard/verify-nudge';
 import { myVerifyStage, STAGE_COPY } from '@/lib/verification-stage';
 import { Container } from '@/components/ui/container';
+import { FocusPageMarker } from '@/components/layout/footer-main';
 import { getUnreadCounts } from '@/lib/account-data';
 import { apiPrivateGet } from '@/lib/api';
 import { getCurrentUser, getSessionToken } from '@/lib/session';
@@ -20,9 +21,10 @@ export const metadata: Metadata = {
 export default function DashboardLayout({ children }: LayoutProps<'/dashboard'>) {
   return (
     <Container className="grid grid-cols-1 gap-8 py-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-12 lg:py-12 print:block print:py-0">
+      <FocusPageMarker app />
       {/* On desktop the sidebar fits the screen and scrolls on its own, so reaching a lower link
           never scrolls the page, and the page does not jump back up after the click. */}
-      <aside className="min-w-0 print:hidden lg:sticky lg:top-32 lg:max-h-[calc(100dvh-9.5rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain lg:pr-1 lg:[scrollbar-width:thin]">
+      <aside className="min-w-0 print:hidden lg:sticky lg:top-24 lg:max-h-[calc(100dvh-7rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain lg:pr-1 lg:[scrollbar-width:thin]">
         <Suspense fallback={<NavSkeleton />}>
           <Nav />
         </Suspense>

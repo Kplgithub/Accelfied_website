@@ -34,6 +34,12 @@ const ROLES: Array<{ value: AccountType; Art: typeof HireArt; title: string; tex
   },
 ]
 
+const JOIN_POINTS = [
+  'Free to join, for clients and companies',
+  'Every listing and review is checked by our team',
+  'Sign in with Google, LinkedIn or your work email',
+];
+
 const one = (value: string | string[] | undefined) => (typeof value === 'string' ? value : undefined);
 
 export default function JoinPage({ searchParams }: PageProps<'/join'>) {
@@ -55,11 +61,29 @@ async function JoinContent({ searchParams }: Pick<PageProps<'/join'>, 'searchPar
   if (!role) {
     return (
       <section className="grain border-b border-line">
-        <Container className="flex justify-center py-12 lg:py-20">
+        <Container className="grid grid-cols-1 gap-10 py-12 lg:grid-cols-[1fr_minmax(0,560px)] lg:items-start lg:gap-16 lg:py-20">
+          {/* Same two-column frame as log in. Phones go straight to the choice. */}
+          <div className="hidden lg:block lg:pt-6">
+            <p className="text-sm font-semibold tracking-[0.16em] text-brand uppercase">Join free</p>
+            <p className="mt-3 font-display text-5xl leading-[1.08] font-semibold tracking-tight text-ink">
+              One account, <span className="scribble italic">two ways</span> to use it
+            </p>
+            <p className="mt-5 max-w-lg text-lg text-ink-soft">Hire a company you can trust, or list your own and let past clients speak for you.</p>
+            <ul className="mt-8 space-y-3 text-[15px] text-ink-soft">
+              {JOIN_POINTS.map((point) => (
+                <li key={point} className="flex items-start gap-3">
+                  <span className="mt-0.5 inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-accent-tint text-accent">
+                    <Check className="size-3" strokeWidth={3} aria-hidden="true" />
+                  </span>
+                  {point}
+                </li>
+              ))}
+            </ul>
+          </div>
           <form
             action="/join"
             method="get"
-            className="animate-rise w-full max-w-[600px] rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-[var(--shadow-lift)] sm:p-10"
+            className="animate-rise mx-auto w-full max-w-[600px] rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-[var(--shadow-lift)] sm:p-10"
           >
             <h1 className="font-display text-[27px] leading-tight font-semibold tracking-tight text-balance text-ink sm:text-[32px]">
               How will you use Accelfied today?

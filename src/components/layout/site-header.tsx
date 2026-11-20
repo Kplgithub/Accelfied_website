@@ -85,9 +85,12 @@ export function SiteHeader() {
           </Suspense>
         </div>
       </Container>
-      <Suspense fallback={<div className="hidden h-11 border-t border-line/70 lg:block" />}>
-        <ServiceBar />
-      </Suspense>
+      {/* Hidden inside the dashboard by CSS (see "Focus pages" in globals.css). */}
+      <div data-public-extra="">
+        <Suspense fallback={<div className="hidden h-11 border-t border-line/70 lg:block" />}>
+          <ServiceBar />
+        </Suspense>
+      </div>
     </header>
   );
 }
