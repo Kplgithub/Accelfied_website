@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { ApiError, apiGet, apiSend } from '@/lib/api';
 import type { FormState } from '@/lib/form-state';
-import { clearedSessionCookie, safeNext, SESSION_COOKIE, sessionCookieOptions } from '@/lib/session';
+import { clearedRoleCookie, clearedSessionCookie, ROLE_COOKIE, safeNext, SESSION_COOKIE, sessionCookieOptions } from '@/lib/session';
 import { dashboardUrl, SITE_URL } from '@/lib/site';
 import { clientIp, echo, friendly, text } from '@/lib/submit';
 import { testOtpEnabled } from '@/lib/test-otp';
@@ -19,7 +19,11 @@ interface IssuedSession {
 
 async function startSession(session: IssuedSession, remember: boolean) {
   // Without "stay logged in" the cookie ends with the browser session.
-  (await cookies()).set(SESSION_COOKIE, session.token, sessionCookieOptions(remember ? session.expiresAt : undefined));
+  const store = await cookies();
+  const options = sessionCookieOptions(remember ? session.expiresAt : undefined);
+  store.set(SESSION_COOKIE, session.token, options);
+  // Tells the proxy which dashboard subdomain this account uses.
+  store.set(ROLE_COOKIE, session.user.accountType, options);
 }
 
 function failure(error: unknown, form: FormData, fallback: string, omit: string[] = []): FormState {
@@ -75,7 +79,7 @@ export async function register(_prev: FormState, form: FormData): Promise<FormSt
   // Companies go straight into creating their listing; clients to where they were headed.
   const destination = safeNext(text(form, 'next'), accountType === 'provider' ? '/dashboard/company' : '/dashboard');
   // First the 6-digit code from the signup email, then on to where they were going.
-  redirect(session.user.emailVerified ? dashboardUrl(destination) : `/verify-email?next=${encodeURIComponent(destination)}`);
+  redirect(session.user.emailVerified ? dashboardUrl(destination, session.user.accountType) : `/verify-email?next=${encodeURIComponent(destination)}`);
 }
 
 export async function login(_prev: FormState, form: FormData): Promise<FormState> {
@@ -92,7 +96,7 @@ export async function login(_prev: FormState, form: FormData): Promise<FormState
     return failure(error, form, 'Login failed', ['password']);
   }
   await startSession(session, remember);
-  redirect(dashboardUrl(safeNext(text(form, 'next'))));
+  redirect(dashboardUrl(safeNext(text(form, 'next')), session.user.accountType));
 }
 
 export async function logout(): Promise<void> {
@@ -100,7 +104,8 @@ export async function logout(): Promise<void> {
   const token = store.get(SESSION_COOKIE)?.value;
   if (token) await apiSend('POST', '/v1/auth/logout', undefined, { token }).catch(() => undefined);
   store.set(clearedSessionCookie());
-  // Logging out from the vendor subdomain lands on the public home page.
+  store.set(clearedRoleCookie());
+  // Logging out from a dashboard subdomain lands on the public home page.
   redirect(`${SITE_URL}/`);
 }
 

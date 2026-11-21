@@ -40,9 +40,9 @@ npm run dev                   # http://localhost:3000
 
 The session lives in an httpOnly `af_sid` cookie set by server actions. Pages read it inside `<Suspense>` so the rest of each page still prerenders.
 
-### Vendor subdomain
+### Dashboard subdomains
 
-In production the dashboard lives on `vendor.accelfied.com` (`NEXT_PUBLIC_VENDOR_URL`) and public pages on `www.accelfied.com`. The same app serves both hosts; `src/proxy.ts` sends `/dashboard/*` on www to the vendor host (308), sends every public page asked for on the vendor host back to www, and marks the vendor host `noindex` with a `Disallow: /` robots.txt. Log in, Join and Google/LinkedIn sign-in stay on www; `COOKIE_DOMAIN=accelfied.com` shares the cookie so the vendor host sees the sign-in. Old `af_session` cookies are moved to `af_sid` on the next visit.
+In production the dashboard lives on its own subdomain per account type: companies on `vendor.accelfied.com` (`NEXT_PUBLIC_VENDOR_URL`) and clients on `my.accelfied.com` (`NEXT_PUBLIC_CLIENT_URL`). Public pages stay on `www.accelfied.com`. The same app serves every host. `src/proxy.ts` sends `/dashboard/*` on www to the visitor's own subdomain (307, since it depends on who asks), moves a dashboard opened on the other subdomain to the right one, sends public pages asked for on a dashboard subdomain back to www, and marks dashboard subdomains `noindex` with a `Disallow: /` robots.txt. The account type comes from the `af_role` cookie set at sign-in (older sign-ins ask the API once). Log in, Join and Google/LinkedIn sign-in stay on www; `COOKIE_DOMAIN=accelfied.com` shares the cookies so every subdomain sees the sign-in. Old `af_session` cookies are moved to `af_sid` on the next visit.
 
 ## Rules this codebase follows
 

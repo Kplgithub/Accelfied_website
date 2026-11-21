@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { ApiError, apiSend } from '@/lib/api';
-import { safeNext, SESSION_COOKIE, sessionCookieOptions } from '@/lib/session';
+import { ROLE_COOKIE, safeNext, SESSION_COOKIE, sessionCookieOptions } from '@/lib/session';
 import { dashboardUrl, SITE_URL } from '@/lib/site';
 import type { Account } from '@/lib/types';
 
@@ -36,9 +36,11 @@ export async function GET(request: NextRequest, ctx: RouteContext<'/auth/callbac
     return failed((error instanceof ApiError && reasons[error.code]) || 'failed');
   }
 
-  (await cookies()).set(SESSION_COOKIE, session.token, sessionCookieOptions(session.expiresAt));
+  const store = await cookies();
+  store.set(SESSION_COOKIE, session.token, sessionCookieOptions(session.expiresAt));
+  store.set(ROLE_COOKIE, session.user.accountType, sessionCookieOptions(session.expiresAt));
   const fallback = session.user.accountType === 'provider' && session.created ? '/dashboard/company' : '/dashboard';
   const next = safeNext(session.next, fallback);
-  const target = dashboardUrl(next);
+  const target = dashboardUrl(next, session.user.accountType);
   return Response.redirect(target === next ? `${SITE_URL}${next}` : target, 303);
 }

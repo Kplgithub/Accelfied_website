@@ -32,3 +32,14 @@ export function sessionCookieOptions(expiresAt?: string) {
 export function clearedSessionCookie() {
   return { name: SESSION_COOKIE, value: '', ...sessionCookieOptions(), expires: new Date(0), maxAge: 0 };
 }
+
+/**
+ * Account type of the signed-in person ('provider' or 'client'), so the proxy can send them to
+ * their own dashboard subdomain without asking the API. Only a routing hint: pages still check
+ * the session itself.
+ */
+export const ROLE_COOKIE = 'af_role';
+
+export function clearedRoleCookie() {
+  return { name: ROLE_COOKIE, value: '', ...sessionCookieOptions(), expires: new Date(0), maxAge: 0 };
+}
