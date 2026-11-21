@@ -37,7 +37,7 @@ async function Content({ searchParams }: Pick<PageProps<'/verify-email'>, 'searc
   const destination = safeNext(typeof next === 'string' ? next : undefined);
   const user = await getCurrentUser();
   if (!user) redirect(loginHref(`/verify-email?next=${encodeURIComponent(destination)}`));
-  if (user.emailVerified) redirect(dashboardUrl(destination));
+  if (user.emailVerified) redirect(dashboardUrl(destination, user.accountType));
 
   return (
     <AuthShell

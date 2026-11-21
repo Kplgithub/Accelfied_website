@@ -53,7 +53,8 @@ export default function JoinPage({ searchParams }: PageProps<'/join'>) {
 async function JoinContent({ searchParams }: Pick<PageProps<'/join'>, 'searchParams'>) {
   const params = await searchParams;
   const next = typeof params.next === 'string' ? safeNext(params.next, '') || undefined : undefined;
-  if (await getCurrentUser()) redirect(dashboardUrl(next ?? '/dashboard'));
+  const user = await getCurrentUser();
+  if (user) redirect(dashboardUrl(next ?? '/dashboard', user.accountType));
 
   const role = params.as === 'client' || params.as === 'provider' ? params.as : null;
   const withNext = (path: string) => (next ? `${path}${path.includes('?') ? '&' : '?'}next=${encodeURIComponent(next)}` : path);

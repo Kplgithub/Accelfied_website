@@ -6,7 +6,7 @@ import { ApiError, apiPrivateGet } from './api';
 import type { Account } from './types';
 import { SESSION_COOKIE } from './session-cookie';
 
-export { clearedSessionCookie, SESSION_COOKIE, sessionCookieOptions } from './session-cookie';
+export { clearedRoleCookie, clearedSessionCookie, ROLE_COOKIE, SESSION_COOKIE, sessionCookieOptions } from './session-cookie';
 
 export async function getSessionToken(): Promise<string | undefined> {
   return (await cookies()).get(SESSION_COOKIE)?.value || undefined;

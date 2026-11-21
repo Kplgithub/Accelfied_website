@@ -1,14 +1,15 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { LEGACY_SESSION_COOKIE, SESSION_COOKIE, sessionCookieOptions } from '@/lib/session-cookie';
-import { isDashboardPath, SITE_URL, VENDOR_URL } from '@/lib/site';
+import { LEGACY_SESSION_COOKIE, ROLE_COOKIE, SESSION_COOKIE, sessionCookieOptions } from '@/lib/session-cookie';
+import { CLIENT_URL, dashboardBase, type DashboardRole, isDashboardPath, SITE_URL, VENDOR_URL } from '@/lib/site';
 
 /**
  * Runs before every page. It does three cheap things:
  *
- * 1. Keeps the account dashboard on the vendor subdomain (NEXT_PUBLIC_VENDOR_URL, e.g.
- *    https://vendor.accelfied.com). /dashboard on www moves there with a permanent redirect, and
- *    public pages asked for on the vendor subdomain move back to www. The vendor subdomain is
- *    never indexed. Without NEXT_PUBLIC_VENDOR_URL the dashboard stays on the main site.
+ * 1. Keeps the account dashboard on its subdomain: companies on NEXT_PUBLIC_VENDOR_URL, clients
+ *    on NEXT_PUBLIC_CLIENT_URL. /dashboard on www moves to the visitor's own subdomain, a
+ *    dashboard opened on the other one moves too, and public pages asked for on a dashboard
+ *    subdomain move back to www. Dashboard subdomains are never indexed. With neither set the
+ *    dashboard stays on the main site.
  * 2. Moves an old host-only sign-in cookie to the shared one, so nobody is logged out by the move.
  * 3. Answers unknown company profiles with a real 404.
  *
@@ -46,10 +47,11 @@ async function profileExists(slug: string): Promise<boolean> {
   return exists;
 }
 
-const VENDOR_HOST = VENDOR_URL ? new URL(VENDOR_URL).host : '';
+const hostOf = (url: string) => (url ? new URL(url).host : '');
+const DASHBOARD_HOSTS = new Set([hostOf(VENDOR_URL), hostOf(CLIENT_URL)].filter(Boolean));
 const NOINDEX = 'noindex, nofollow';
 /** Paths the dashboard needs on its own host: framework files, uploads, the site's own API routes. */
-const VENDOR_PASS = /^\/(?:dashboard(?:\/|$)|_next\/|api\/|uploads\/|blog-images\/)/;
+const DASHBOARD_PASS = /^\/(?:dashboard(?:\/|$)|_next\/|api\/|uploads\/|blog-images\/)/;
 /** Files from /public such as the logo and textures; sitemaps and text files belong to www. */
 const STATIC_FILE = /\/[^/]+\.(?!xml$|txt$)[a-z0-9]+$/i;
 
@@ -57,14 +59,52 @@ function moveTo(base: string, request: NextRequest, status = 308): NextResponse 
   return NextResponse.redirect(`${base}${request.nextUrl.pathname}${request.nextUrl.search}`, status);
 }
 
-function vendorResponse(request: NextRequest): NextResponse {
+const isRole = (value: unknown): value is DashboardRole => value === 'provider' || value === 'client';
+
+/**
+ * The signed-in visitor's account type. Read from the routing cookie set at sign-in; for older
+ * sign-ins without it, asked from the API once and then remembered in the cookie.
+ */
+async function visitorRole(request: NextRequest): Promise<{ role: DashboardRole | null; remember: boolean }> {
+  const saved = request.cookies.get(ROLE_COOKIE)?.value;
+  if (isRole(saved)) return { role: saved, remember: false };
+  const token = request.cookies.get(SESSION_COOKIE)?.value || request.cookies.get(LEGACY_SESSION_COOKIE)?.value;
+  if (!token) return { role: null, remember: false };
+  try {
+    const res = await fetch(`${API_URL}/v1/auth/me`, {
+      headers: { accept: 'application/json', authorization: `Bearer ${token}` },
+      signal: AbortSignal.timeout(3_000),
+    });
+    if (!res.ok) {
+      await res.body?.cancel();
+      return { role: null, remember: false };
+    }
+    const body = (await res.json()) as { user?: { accountType?: unknown } };
+    const role = body.user?.accountType;
+    return isRole(role) ? { role, remember: true } : { role: null, remember: false };
+  } catch {
+    return { role: null, remember: false };
+  }
+}
+
+function rememberRole(response: NextResponse, role: DashboardRole | null, remember: boolean): NextResponse {
+  if (remember && role) response.cookies.set(ROLE_COOKIE, role, sessionCookieOptions());
+  return response;
+}
+
+async function dashboardHostResponse(request: NextRequest, host: string): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
   let response: NextResponse;
   if (pathname === '/robots.txt') {
     response = new NextResponse('User-agent: *\nDisallow: /\n', { headers: { 'content-type': 'text/plain; charset=utf-8' } });
   } else if (pathname === '/') {
-    response = NextResponse.redirect(new URL('/dashboard', VENDOR_URL), 307);
-  } else if (VENDOR_PASS.test(pathname) || STATIC_FILE.test(pathname)) {
+    response = NextResponse.redirect(new URL('/dashboard', request.nextUrl.origin), 307);
+  } else if (isDashboardPath(pathname) && (request.method === 'GET' || request.method === 'HEAD')) {
+    // A company on the clients' subdomain (or the other way round) moves to its own one.
+    const { role, remember } = await visitorRole(request);
+    const own = role ? dashboardBase(role) : '';
+    response = rememberRole(own && hostOf(own) !== host ? moveTo(own, request, 307) : carrySession(request), role, remember);
+  } else if (DASHBOARD_PASS.test(pathname) || STATIC_FILE.test(pathname)) {
     response = carrySession(request);
   } else {
     // Log in, Join, profiles, blogs and every other public page live on www.
@@ -95,12 +135,15 @@ function carrySession(request: NextRequest, response?: NextResponse): NextRespon
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  if (VENDOR_HOST) {
-    if (request.headers.get('host') === VENDOR_HOST) return vendorResponse(request);
-    // Old links, bookmarks and emails to www.accelfied.com/dashboard keep working. Form posts
-    // from a page opened before the move still finish here instead of being redirected.
+  if (DASHBOARD_HOSTS.size) {
+    const host = request.headers.get('host') ?? '';
+    if (DASHBOARD_HOSTS.has(host)) return dashboardHostResponse(request, host);
+    // Old links, bookmarks and emails to www.accelfied.com/dashboard keep working and land on the
+    // visitor's own subdomain. Form posts from a page opened before the move still finish here.
     if (isDashboardPath(pathname) && (request.method === 'GET' || request.method === 'HEAD')) {
-      return carrySession(request, moveTo(VENDOR_URL, request));
+      const { role, remember } = await visitorRole(request);
+      // 307: where /dashboard goes depends on who asks, so browsers must not remember it.
+      return rememberRole(carrySession(request, moveTo(dashboardBase(role), request, 307)), role, remember);
     }
   }
   if (!pathname.startsWith('/profile/') || pathname.split('/').length !== 3) return carrySession(request);

@@ -26,7 +26,8 @@ export default function LoginPage({ searchParams }: PageProps<'/login'>) {
 async function LoginContent({ searchParams }: Pick<PageProps<'/login'>, 'searchParams'>) {
   const params = await searchParams;
   const next = typeof params.next === 'string' ? safeNext(params.next, '') || undefined : undefined;
-  if (await getCurrentUser()) redirect(dashboardUrl(next ?? '/dashboard'));
+  const user = await getCurrentUser();
+  if (user) redirect(dashboardUrl(next ?? '/dashboard', user.accountType));
 
   return (
     <AuthShell
