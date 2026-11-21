@@ -133,7 +133,27 @@ function carrySession(request: NextRequest, response?: NextResponse): NextRespon
   return out;
 }
 
+/**
+ * When the cookie became shared (COOKIE_DOMAIN), browsers that signed in before kept a host-only
+ * `af_sid` on www next to the shared one. Two cookies with one name confuse sign-in and keep www
+ * signed in after logging out, so the host-only copy is removed (a delete without a domain only
+ * touches that one).
+ */
+function dropHostOnlyCopy(request: NextRequest, response: NextResponse): NextResponse {
+  if (!process.env.COOKIE_DOMAIN?.trim()) return response;
+  const raw = request.headers.get('cookie') ?? '';
+  const copies = raw.split(';').filter((part) => part.trim().startsWith(`${SESSION_COOKIE}=`)).length;
+  if (copies > 1 && !response.cookies.get(SESSION_COOKIE)) {
+    response.headers.append('set-cookie', `${SESSION_COOKIE}=; Path=/; Max-Age=0`);
+  }
+  return response;
+}
+
 export async function proxy(request: NextRequest) {
+  return dropHostOnlyCopy(request, await route(request));
+}
+
+async function route(request: NextRequest) {
   const { pathname } = request.nextUrl;
   if (DASHBOARD_HOSTS.size) {
     const host = request.headers.get('host') ?? '';
